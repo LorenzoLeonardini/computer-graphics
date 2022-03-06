@@ -32,7 +32,7 @@ const { content } = Astro.props;
 		</ul>
 	</aside>
 	<div class="md:border-t-0 border-t border-t-gray-600 w-full md:w-3/4 h-full overflow-y-auto">
-		<article class="w-11/12 prose prose-amber prose-invert mx-auto mt-6 mb-16 md:my-16">
+		<article class="w-11/12 prose prose-amber prose-invert prose-code:before:hidden prose-code:after:hidden prose-code:font-normal prose-code:text-amber-200 mx-auto mt-6 mb-16 md:my-16">
 			<h1>{content.title ?? 'Computer Graphics - A.A. 2021/2022'}</h1>
 			<slot></slot>
 		</article>
