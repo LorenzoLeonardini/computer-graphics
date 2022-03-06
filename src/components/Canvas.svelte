@@ -5,7 +5,7 @@
 
 	onMount(async () => {
 		let canvas: HTMLCanvasElement = document.querySelector(`#${example}`)
-		let width = canvas.parentElement.clientWidth
+		let width = canvas.parentElement?.parentElement?.clientWidth ?? 500
 		if (width > 500) width = 500
 		canvas.width = width
 		canvas.height = width
@@ -26,6 +26,7 @@
 		position: relative;
 		margin: 40px auto;
 		width: fit-content;
+		z-index: -1;
 	}
 
 	canvas {
@@ -53,10 +54,12 @@
 	}
 </style>
 
-<div class="container">
-	<canvas id="{example}" width="500" height="500"></canvas>
-	<a
-		href="{`https://github.com/LorenzoLeonardini/computer-graphics/blob/main/src/examples/${example}.ts`}"
-		target="_blank"
-		rel="noreferrer noopener"><button class="bg-gray-800">&lt;/&gt;</button></a>
+<div>
+	<div class="container">
+		<canvas id="{example}" width="500" height="500"></canvas>
+		<a
+			href="{`https://github.com/LorenzoLeonardini/computer-graphics/blob/main/src/examples/${example}.ts`}"
+			target="_blank"
+			rel="noreferrer noopener"><button class="bg-gray-800">&lt;/&gt;</button></a>
+	</div>
 </div>
