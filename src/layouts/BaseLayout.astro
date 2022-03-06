@@ -1,0 +1,42 @@
+---
+// src/layouts/BaseLayout.astro
+const { content } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#1f2937">
+	<title>{ content.title }{ content.title ? ' | ' : ''}Computer Graphics - A.A. 2021/2022</title>
+
+	<style global>
+		@import "../styles/global.css";
+	</style>
+</head>
+<body class="bg-gray-800">
+<main class="flex flex-col md:flex-row h-screen">
+	<input type="checkbox" id="toggleMenu" class="peer hidden">
+	<label for="toggleMenu" class="md:hidden peer-checked:bg-gray-900 mx-3 my-3 cursor-pointer w-fit border bg-gray-800 border-gray-600 rounded-md z-10"><div class="mx-2 my-5 w-8 h-0.5 bg-gray-300 relative before:absolute before:w-8 before:h-0.5 before:bg-gray-300 before:-top-2 after:absolute after:w-8 after:h-0.5 after:bg-gray-300 after:-bottom-2"></div></label>
+	<div class="md:hidden absolute text-gray-200 font-semibold ml-20 mt-5 text-lg">{content.title ?? 'Computer Graphics'}</div>
+	<aside class="absolute md:static origin-left scale-x-0 transition-transform peer-checked:scale-x-100 md:scale-x-100 w-full md:w-1/4 bg-gray-900 py-8 h-full overflow-y-auto">
+		<h1 class="text-gray-50 font-extrabold text-2xl text-center w-full">Computer Graphics</h1>
+		<ul class="text-gray-200 font-semibold tracking-wide my-8 mx-10">
+			<a href="/" class="block hover:underline"><li class="before:[content:'-'] relative before:absolute before:-left-3">Home</li></a>
+			<li class="before:[content:'-'] relative before:absolute before:-left-3">Teoria</li>
+			<a href="/" class="block ml-6 hover:underline"><li class="font-normal before:[content:'-'] relative before:absolute before:-left-3">Home</li></a>
+			<li class="before:[content:'-'] relative before:absolute before:-left-3">Pratica</li>
+			<a href="/practice/first-steps" class="block ml-6 hover:underline"><li class="font-normal before:[content:'-'] relative before:absolute before:-left-3">First steps</li></a>
+		</ul>
+	</aside>
+	<div class="md:border-t-0 border-t border-t-gray-600 w-full md:w-3/4 h-full overflow-y-auto">
+		<article class="w-11/12 prose prose-amber prose-invert mx-auto mt-6 mb-16 md:my-16">
+			<h1>{content.title ?? 'Computer Graphics - A.A. 2021/2022'}</h1>
+			<slot></slot>
+		</article>
+	</div>
+</main>
+</body>
+</html>

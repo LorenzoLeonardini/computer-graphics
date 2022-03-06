@@ -1,0 +1,62 @@
+<script lang="ts">
+	import { onMount } from 'svelte'
+
+	export let example: string
+
+	onMount(async () => {
+		let canvas: HTMLCanvasElement = document.querySelector(`#${example}`)
+		let width = canvas.parentElement.clientWidth
+		if (width > 500) width = 500
+		canvas.width = width
+		canvas.height = width
+
+		const { setupWebGL, setupWhatToDraw, setupHowToDraw, draw } = (await import(
+			`../examples/${example}.ts`
+		)) as any
+
+		setupWebGL(canvas)
+		setupWhatToDraw()
+		setupHowToDraw()
+		draw()
+	})
+</script>
+
+<style>
+	div.container {
+		position: relative;
+		margin: 40px auto;
+		width: fit-content;
+	}
+
+	canvas {
+		display: block;
+		border: solid 1px black;
+	}
+
+	button {
+		position: absolute;
+		width: 34px;
+		height: 34px;
+		line-height: 17px;
+		text-align: center;
+		border-radius: 3px;
+		left: 10px;
+		top: 10px;
+		font-weight: bold;
+		opacity: 0.8;
+		transition: opacity 100ms ease;
+		color: white !important;
+	}
+
+	button:hover {
+		opacity: 1;
+	}
+</style>
+
+<div class="container">
+	<canvas id="{example}" width="500" height="500"></canvas>
+	<a
+		href="{`https://github.com/LorenzoLeonardini/computer-graphics/blob/main/src/examples/${example}.ts`}"
+		target="_blank"
+		rel="noreferrer noopener"><button class="bg-gray-800">&lt;/&gt;</button></a>
+</div>
