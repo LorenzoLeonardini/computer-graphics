@@ -26,7 +26,6 @@
 		position: relative;
 		margin: 40px auto;
 		width: fit-content;
-		z-index: -1;
 	}
 
 	canvas {

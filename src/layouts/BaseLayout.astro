@@ -19,9 +19,13 @@ const { content } = Astro.props;
 <body class="bg-gray-800">
 <main class="flex flex-col md:flex-row h-screen">
 	<input type="checkbox" id="toggleMenu" class="peer hidden">
-	<label for="toggleMenu" class="md:hidden peer-checked:bg-gray-900 mx-3 my-3 cursor-pointer w-fit border bg-gray-800 border-gray-600 rounded-md z-10"><div class="mx-2 my-5 w-8 h-0.5 bg-gray-300 relative before:absolute before:w-8 before:h-0.5 before:bg-gray-300 before:-top-2 after:absolute after:w-8 after:h-0.5 after:bg-gray-300 after:-bottom-2"></div></label>
-	<div class="md:hidden absolute text-gray-200 font-semibold ml-20 mt-5 text-lg">{content.title ?? 'Computer Graphics'}</div>
-	<aside class="absolute md:static origin-left scale-x-0 transition-transform peer-checked:scale-x-100 md:scale-x-100 w-full md:w-1/4 bg-gray-900 py-8 h-full overflow-y-auto">
+	<div class="md:hidden flex items-center gap-5 px-4 peer-checked:group">
+		<label for="toggleMenu" class="my-3 cursor-pointer w-fit border border-gray-600 rounded-md z-20">
+			<div class="mx-2 my-5 w-8 h-0.5 bg-gray-300 relative before:absolute before:w-8 before:h-0.5 before:bg-gray-300 before:-top-2 after:absolute after:w-8 after:h-0.5 after:bg-gray-300 after:-bottom-2"></div>
+		</label>
+		<div class="md:hidden text-gray-200 font-semibold leading-6 text-lg">{content.title ?? 'Computer Graphics'}</div>
+	</div>
+	<aside class="absolute md:static origin-left scale-x-0 transition-transform peer-checked:scale-x-100 md:scale-x-100 w-full md:w-1/4 bg-gray-900 py-8 h-full overflow-y-auto z-10">
 		<h1 class="text-gray-50 font-extrabold text-2xl text-center w-full">Computer Graphics</h1>
 		<ul class="text-gray-200 font-semibold tracking-wide my-8 mx-10">
 			<a href="/" class="block hover:underline"><li class="before:[content:'-'] relative before:absolute before:-left-3">Home</li></a>
@@ -31,8 +35,8 @@ const { content } = Astro.props;
 			<a href="/practice/first-steps" class="block ml-6 hover:underline"><li class="font-normal before:[content:'-'] relative before:absolute before:-left-3">First steps</li></a>
 		</ul>
 	</aside>
-	<div class="md:border-t-0 border-t border-t-gray-600 w-full md:w-3/4 h-full overflow-y-auto">
-		<article class="w-11/12 prose prose-amber prose-invert prose-code:before:hidden prose-code:after:hidden prose-code:font-normal prose-code:text-amber-200 mx-auto mt-6 mb-16 md:my-16">
+	<div class="md:border-t-0 border-t border-t-gray-600 w-full md:w-3/4 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-900 scrollbar-track-gray-700">
+		<article class="w-11/12 prose prose-amber prose-invert prose-code:before:hidden prose-code:after:hidden prose-code:font-normal prose-code:text-amber-200 mx-auto mt-6 mb-16 md:my-16 px-1 md:px-0">
 			<h1>{content.title ?? 'Computer Graphics - A.A. 2021/2022'}</h1>
 			<slot></slot>
 		</article>
