@@ -17,6 +17,10 @@ const { content } = Astro.props;
 	<style global>
 		@import "../styles/global.css";
 
+		.katex .katex-mathml {
+			display: none;
+		}
+
 		.menu ul ul li a {
 			@apply font-normal text-gray-300;
 		}
