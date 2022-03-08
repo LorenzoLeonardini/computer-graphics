@@ -23,6 +23,14 @@ export default /** @type {import('astro').AstroUserConfig} */ ({
 					langs: ['ts'],
 					wrap: false,
 				},
+				remarkPlugins: [
+					'remark-gfm',
+					'remark-math'
+				],
+				rehypePlugins: [
+					'rehype-slug',
+					'rehype-katex'
+				]
 			},
 		],
 	},
