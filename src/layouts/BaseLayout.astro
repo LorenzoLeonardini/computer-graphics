@@ -1,4 +1,5 @@
 ---
+import Menu from './Menu.astro';
 // src/layouts/BaseLayout.astro
 const { content } = Astro.props;
 ---
@@ -14,6 +15,22 @@ const { content } = Astro.props;
 
 	<style global>
 		@import "../styles/global.css";
+
+		.menu ul {
+			@apply font-semibold tracking-wide ml-6;
+		}
+
+		.menu ul ul {
+			@apply font-normal text-gray-300;
+		}
+
+		.menu a {
+			@apply block hover:underline;
+		}
+
+		.menu li {
+			@apply before:[content:'-'] relative before:absolute before:-left-3 leading-5 my-1;
+		}
 	</style>
 </head>
 <body class="bg-gray-800">
@@ -27,13 +44,9 @@ const { content } = Astro.props;
 	</div>
 	<aside class="absolute md:static origin-left scale-x-0 transition-transform peer-checked:scale-x-100 md:scale-x-100 w-full md:w-1/4 bg-gray-900 py-8 h-full overflow-y-auto z-10">
 		<h1 class="text-gray-50 font-extrabold text-2xl text-center w-full">Computer Graphics</h1>
-		<ul class="text-gray-200 font-semibold tracking-wide my-8 mx-10">
-			<a href="/" class="block hover:underline"><li class="before:[content:'-'] relative before:absolute before:-left-3">Home</li></a>
-			<li class="before:[content:'-'] relative before:absolute before:-left-3">Teoria</li>
-			<a href="/" class="block ml-6 hover:underline"><li class="font-normal before:[content:'-'] relative before:absolute before:-left-3">Home</li></a>
-			<li class="before:[content:'-'] relative before:absolute before:-left-3">Pratica</li>
-			<a href="/practice/first-steps" class="block ml-6 hover:underline"><li class="font-normal before:[content:'-'] relative before:absolute before:-left-3">First steps</li></a>
-		</ul>
+		<div class="menu my-8 ml-4 mr-10 text-gray-200">
+			<Menu />
+		</div>
 	</aside>
 	<div class="md:border-t-0 border-t border-t-gray-600 w-full md:w-3/4 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-900 scrollbar-track-gray-700">
 		<article class="w-11/12 prose prose-amber prose-invert prose-code:before:hidden prose-code:after:hidden prose-code:font-normal prose-code:text-amber-200 mx-auto mt-6 mb-16 md:my-16 px-1 md:px-0">
