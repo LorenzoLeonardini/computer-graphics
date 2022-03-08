@@ -9,4 +9,4 @@ Gli snippet di codice usano [TypeScript](https://www.typescriptlang.org/) invece
 
 Il codice completo è disponibile su [GitHub](https://github.com/LorenzoLeonardini/computer-graphics).
 
-<Canvas example='colored-square' client:only />
+<Canvas example='colored-square' client:load />
