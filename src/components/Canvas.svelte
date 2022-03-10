@@ -18,6 +18,9 @@
 		setupWhatToDraw()
 		setupHowToDraw()
 		draw()
+
+		// var img = canvas.toDataURL('image/png')
+		// document.write('<img src="' + img + '"/>')
 	})
 </script>
 
