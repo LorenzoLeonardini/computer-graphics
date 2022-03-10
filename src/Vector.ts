@@ -1,4 +1,4 @@
-interface Vector {
+export interface Vector {
 	add: (vec: Vector) => Vector,
 	sub: (vec: Vector) => Vector,
 	mul: (num: number) => Vector,
@@ -7,7 +7,7 @@ interface Vector {
 	normalize: () => Vector
 }
 
-class Vector2 implements Vector {
+export class Vector2 implements Vector {
 	x: number
 	y: number
 
@@ -50,7 +50,7 @@ class Vector2 implements Vector {
 	}
 }
 
-class Vector3 implements Vector {
+export class Vector3 implements Vector {
 	x: number
 	y: number
 	z: number
@@ -99,7 +99,7 @@ class Vector3 implements Vector {
 	}
 }
 
-class Vector4 implements Vector {
+export class Vector4 implements Vector {
 	x: number
 	y: number
 	z: number
