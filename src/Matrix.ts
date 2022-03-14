@@ -18,19 +18,17 @@ export interface Matrix {
 }
 
 export class Matrix3 implements Matrix {
-	value: [number, number, number,
-		number, number, number,
-		number, number, number]
+	value: Float32Array
 
 	constructor(value?: [number, number, number, number, number, number, number, number, number] | undefined) {
 		if (value) {
-			this.value = [...value]
+			this.value = new Float32Array([...value])
 		} else {
-			this.value = [
+			this.value = new Float32Array([
 				1, 0, 0,
 				0, 1, 0,
 				0, 0, 1
-			]
+			])
 		}
 	}
 
@@ -145,21 +143,18 @@ export class Matrix3 implements Matrix {
 }
 
 export class Matrix4 implements Matrix {
-	value: [number, number, number, number,
-		number, number, number, number,
-		number, number, number, number,
-		number, number, number, number]
+	value: Float32Array
 
 	constructor(value?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number] | undefined) {
 		if (value) {
-			this.value = [...value]
+			this.value = new Float32Array([...value])
 		} else {
-			this.value = [
+			this.value = new Float32Array([
 				1, 0, 0, 0,
 				0, 1, 0, 0,
 				0, 0, 1, 0,
 				0, 0, 0, 1
-			]
+			])
 		}
 	}
 
