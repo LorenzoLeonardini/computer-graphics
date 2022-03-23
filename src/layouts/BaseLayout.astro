@@ -1,5 +1,6 @@
 ---
 import Menu from './Menu.astro';
+import '../styles/global.css';
 // src/layouts/BaseLayout.astro
 const { content } = Astro.props;
 ---
@@ -15,8 +16,6 @@ const { content } = Astro.props;
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css" crossorigin="anonymous">
 
 	<style global>
-		@import "../styles/global.css";
-
 		.katex .katex-mathml {
 			display: none;
 		}
