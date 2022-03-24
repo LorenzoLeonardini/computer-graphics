@@ -1,10 +1,11 @@
 export interface Vector {
-	add: (vec: Vector) => Vector,
-	sub: (vec: Vector) => Vector,
-	mul: (num: number) => Vector,
-	dot: (vec: Vector) => number,
-	length: () => number,
+	add: (vec: Vector) => Vector
+	sub: (vec: Vector) => Vector
+	mul: (num: number) => Vector
+	dot: (vec: Vector) => number
+	length: () => number
 	normalize: () => Vector
+	array: () => number[]
 }
 
 export class Vector2 implements Vector {
@@ -47,6 +48,10 @@ export class Vector2 implements Vector {
 		this.x /= len
 		this.y /= len
 		return this
+	}
+
+	array(): number[] {
+		return [this.x, this.y]
 	}
 }
 
@@ -96,6 +101,10 @@ export class Vector3 implements Vector {
 		this.y /= len
 		this.z /= len
 		return this
+	}
+
+	array(): number[] {
+		return [this.x, this.y, this.z]
 	}
 }
 
@@ -151,5 +160,9 @@ export class Vector4 implements Vector {
 		this.z /= len
 		this.w /= len
 		return this
+	}
+
+	array(): number[] {
+		return [this.x, this.y, this.z, this.w]
 	}
 }
