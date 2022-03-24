@@ -14,11 +14,7 @@ export function setupWhatToDraw() {
 		1, -1, 0, 1, 0,
 		// 3rd vertex
 		-1, 1, 0, 0, 1,
-		// 1st vertex
-		-1, 1, 0, 0, 1,
-		// 2nd vertex
-		1, -1, 0, 1, 0,
-		// 3rd vertex
+		// 4th vertex
 		1, 1, 1, 1, 1
 	]
 	const typedVertices = new Float32Array(vertices)
@@ -26,6 +22,18 @@ export function setupWhatToDraw() {
 	const buffer = gl.createBuffer()
 	gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
 	gl.bufferData(gl.ARRAY_BUFFER, typedVertices, gl.STATIC_DRAW)
+
+	const indices = [
+		// 1st triangle
+		0, 1, 2,
+		// 2nd triangle
+		2, 1, 3
+	]
+	const typedIndices = new Uint16Array(indices)
+
+	const ibo = gl.createBuffer()
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo)
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, typedIndices, gl.STATIC_DRAW)
 
 	gl.enableVertexAttribArray(slotPositions)
 	gl.vertexAttribPointer(slotPositions, 2, gl.FLOAT, false, 20, 0)
@@ -79,5 +87,5 @@ export function setupHowToDraw() {
 export function draw() {
 	gl.clearColor(0.2, 0.3, 0.4, 1)
 	gl.clear(gl.COLOR_BUFFER_BIT)
-	gl.drawArrays(gl.TRIANGLES, 0, 6)
+	gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
 }
