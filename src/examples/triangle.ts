@@ -22,7 +22,7 @@ export function setupWhatToDraw() {
 	gl.bufferData(gl.ARRAY_BUFFER, typedPositions, gl.STATIC_DRAW)
 
 	gl.enableVertexAttribArray(slotPositions)
-	gl.vertexAttribPointer(slotPositions, 2, gl.FLOAT, false, 0, 0)
+	gl.vertexAttribPointer(slotPositions, 2, gl.FLOAT, false, 8, 0)
 }
 
 export function setupHowToDraw() {
