@@ -3,7 +3,7 @@ import { Vector, Vector2, Vector3, Vector4 } from './Vector'
 type MulType = Matrix | Vector | number
 type MulRetType<T> = T extends Matrix ? Matrix : T extends Vector ? Vector : Matrix
 
-export interface Matrix {
+export interface Matrix extends Float32Array {
 	add: (mat: Matrix) => Matrix
 	sub: (mat: Matrix) => Matrix
 	mul: <T extends MulType>(b: T) => MulRetType<T>

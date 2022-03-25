@@ -4,7 +4,7 @@ export class Cube implements Model {
 	buffer: WebGLBuffer
 	ibo: WebGLBuffer
 
-	create(gl: WebGLRenderingContext): void {
+	constructor(gl: WebGLRenderingContext) {
 		const vertices = [
 			-1, -1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, 1, 1, 1, 1, 1
 		]
@@ -23,8 +23,7 @@ export class Cube implements Model {
 		gl.bufferData(gl.ARRAY_BUFFER, typedVertices, gl.STATIC_DRAW)
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, typedIndices, gl.STATIC_DRAW)
 
-		gl.enableVertexAttribArray(0)
-		gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 4 * 3, 0)
+		this.unbind(gl)
 	}
 
 	destroy(gl: WebGLRenderingContext): void {
@@ -36,6 +35,7 @@ export class Cube implements Model {
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer)
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo)
 		gl.enableVertexAttribArray(0)
+		gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 4 * 3, 0)
 	}
 
 	unbind(gl: WebGLRenderingContext): void {

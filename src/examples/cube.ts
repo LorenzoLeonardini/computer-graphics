@@ -15,8 +15,7 @@ export function setupWebGL(canvas: HTMLCanvasElement) {
 }
 
 export function setupWhatToDraw() {
-	cube = new Cube()
-	cube.create(gl)
+	cube = new Cube(gl)
 }
 
 export function setupHowToDraw() {
