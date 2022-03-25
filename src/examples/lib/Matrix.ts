@@ -14,43 +14,41 @@ export interface Matrix {
 	col: (idx: number) => Vector
 }
 
-export class Matrix3 implements Matrix {
-	value: Float32Array
-
+export class Matrix3 extends Float32Array implements Matrix {
 	constructor(
 		value?: [number, number, number, number, number, number, number, number, number] | undefined
 	) {
 		if (value) {
-			this.value = new Float32Array([...value])
+			super([...value])
 		} else {
-			this.value = new Float32Array([1, 0, 0, 0, 1, 0, 0, 0, 1])
+			super([1, 0, 0, 0, 1, 0, 0, 0, 1])
 		}
 	}
 
 	add(mat: Matrix3): Matrix3 {
-		for (let i = 0; i < 9; i++) this.value[i] += mat.value[i]
+		for (let i = 0; i < 9; i++) this[i] += mat[i]
 		return this
 	}
 
 	sub(mat: Matrix3): Matrix3 {
-		for (let i = 0; i < 9; i++) this.value[i] -= mat.value[i]
+		for (let i = 0; i < 9; i++) this[i] -= mat[i]
 		return this
 	}
 
 	mul<T extends MulType>(b: T): MulRetType<T> {
 		if (b instanceof Matrix3) {
 			return new Matrix3([
-				this.value[0] * b.value[0] + this.value[1] * b.value[3] + this.value[2] * b.value[6],
-				this.value[0] * b.value[1] + this.value[1] * b.value[4] + this.value[2] * b.value[7],
-				this.value[0] * b.value[2] + this.value[1] * b.value[5] + this.value[2] * b.value[8],
+				this[0] * b[0] + this[3] * b[1] + this[6] * b[2],
+				this[1] * b[0] + this[4] * b[1] + this[7] * b[2],
+				this[2] * b[0] + this[5] * b[1] + this[8] * b[2],
 
-				this.value[3] * b.value[0] + this.value[4] * b.value[3] + this.value[5] * b.value[6],
-				this.value[3] * b.value[1] + this.value[4] * b.value[4] + this.value[5] * b.value[7],
-				this.value[3] * b.value[2] + this.value[4] * b.value[5] + this.value[5] * b.value[8],
+				this[0] * b[3] + this[3] * b[4] + this[6] * b[5],
+				this[1] * b[3] + this[4] * b[4] + this[7] * b[5],
+				this[2] * b[3] + this[5] * b[4] + this[8] * b[5],
 
-				this.value[6] * b.value[0] + this.value[7] * b.value[3] + this.value[8] * b.value[6],
-				this.value[6] * b.value[1] + this.value[7] * b.value[4] + this.value[8] * b.value[7],
-				this.value[6] * b.value[2] + this.value[7] * b.value[5] + this.value[8] * b.value[8]
+				this[0] * b[6] + this[3] * b[7] + this[6] * b[8],
+				this[1] * b[6] + this[4] * b[7] + this[7] * b[8],
+				this[2] * b[6] + this[5] * b[7] + this[8] * b[8]
 			]) as unknown as MulRetType<T>
 		} else if (b instanceof Vector3) {
 			let x = this.row(0).dot(b)
@@ -58,7 +56,7 @@ export class Matrix3 implements Matrix {
 			let z = this.row(2).dot(b)
 			return new Vector3(x, y, z) as unknown as MulRetType<T>
 		} else if (typeof b === 'number') {
-			for (let i = 0; i < 9; i++) this.value[i] *= b
+			for (let i = 0; i < 9; i++) this[i] *= b
 			return this as unknown as MulRetType<T>
 		} else {
 			throw new Error('Invalid input parameter type')
@@ -66,7 +64,7 @@ export class Matrix3 implements Matrix {
 	}
 
 	translate(vec: Vector2 | Vector3 | Vector4): Matrix3 {
-		let translation = new Matrix3([1, 0, vec.x, 0, 1, vec.y, 0, 0, 1])
+		let translation = new Matrix3([1, 0, 0, 0, 1, 0, vec.x, vec.y, 1])
 
 		return translation.mul(this) as unknown as Matrix3
 	}
@@ -78,9 +76,9 @@ export class Matrix3 implements Matrix {
 
 		let rotation = new Matrix3([
 			Math.cos(vec.z),
-			-Math.sin(vec.z),
-			0,
 			Math.sin(vec.z),
+			0,
+			-Math.sin(vec.z),
 			Math.cos(vec.z),
 			0,
 			0,
@@ -107,28 +105,26 @@ export class Matrix3 implements Matrix {
 		if (idx < 0 || idx >= 4) {
 			throw new Error('Invalid index')
 		}
-		return new Vector3(this.value[idx * 3], this.value[idx * 3 + 1], this.value[idx * 3 + 2])
+		return new Vector3(this[idx], this[idx + 3], this[idx + 9])
 	}
 
 	col(idx: number): Vector3 {
 		if (idx < 0 || idx >= 4) {
 			throw new Error('Invalid index')
 		}
-		return new Vector3(this.value[idx], this.value[idx + 3], this.value[idx + 9])
+		return new Vector3(this[idx * 3], this[idx * 3 + 1], this[idx * 3 + 2])
 	}
 
 	toString(): string {
 		return `
-[ ${this.value[0]}, ${this.value[1]}, ${this.value[2]},
-  ${this.value[3]}, ${this.value[4]}, ${this.value[5]},
-  ${this.value[6]}, ${this.value[7]}, ${this.value[8]} ]
+[ ${this[0]}, ${this[3]}, ${this[6]},
+  ${this[1]}, ${this[4]}, ${this[7]},
+  ${this[2]}, ${this[5]}, ${this[8]} ]
 		`
 	}
 }
 
-export class Matrix4 implements Matrix {
-	value: Float32Array
-
+export class Matrix4 extends Float32Array implements Matrix {
 	constructor(
 		value?:
 			| [
@@ -152,92 +148,44 @@ export class Matrix4 implements Matrix {
 			| undefined
 	) {
 		if (value) {
-			this.value = new Float32Array([...value])
+			super([...value])
 		} else {
-			this.value = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])
+			super([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])
 		}
 	}
 
 	add(mat: Matrix4): Matrix4 {
-		for (let i = 0; i < 16; i++) this.value[i] += mat.value[i]
+		for (let i = 0; i < 16; i++) this[i] += mat[i]
 		return this
 	}
 
 	sub(mat: Matrix4): Matrix4 {
-		for (let i = 0; i < 16; i++) this.value[i] -= mat.value[i]
+		for (let i = 0; i < 16; i++) this[i] -= mat[i]
 		return this
 	}
 
 	mul<T extends MulType>(b: T): MulRetType<T> {
 		if (b instanceof Matrix4) {
 			return new Matrix4([
-				this.value[0] * b.value[0] +
-					this.value[1] * b.value[4] +
-					this.value[2] * b.value[8] +
-					this.value[3] * b.value[12],
-				this.value[0] * b.value[1] +
-					this.value[1] * b.value[5] +
-					this.value[2] * b.value[9] +
-					this.value[3] * b.value[13],
-				this.value[0] * b.value[2] +
-					this.value[1] * b.value[6] +
-					this.value[2] * b.value[10] +
-					this.value[3] * b.value[14],
-				this.value[0] * b.value[3] +
-					this.value[1] * b.value[7] +
-					this.value[2] * b.value[11] +
-					this.value[3] * b.value[15],
+				this[0] * b[0] + this[4] * b[1] + this[8] * b[2] + this[12] * b[3],
+				this[1] * b[0] + this[5] * b[1] + this[9] * b[2] + this[13] * b[3],
+				this[2] * b[0] + this[6] * b[1] + this[10] * b[2] + this[14] * b[3],
+				this[3] * b[0] + this[7] * b[1] + this[11] * b[2] + this[15] * b[3],
 
-				this.value[4] * b.value[0] +
-					this.value[5] * b.value[4] +
-					this.value[6] * b.value[8] +
-					this.value[7] * b.value[12],
-				this.value[4] * b.value[1] +
-					this.value[5] * b.value[5] +
-					this.value[6] * b.value[9] +
-					this.value[7] * b.value[13],
-				this.value[4] * b.value[2] +
-					this.value[5] * b.value[6] +
-					this.value[6] * b.value[10] +
-					this.value[7] * b.value[14],
-				this.value[4] * b.value[3] +
-					this.value[5] * b.value[7] +
-					this.value[6] * b.value[11] +
-					this.value[7] * b.value[15],
+				this[0] * b[4] + this[4] * b[5] + this[8] * b[6] + this[12] * b[7],
+				this[1] * b[4] + this[5] * b[5] + this[9] * b[6] + this[13] * b[7],
+				this[2] * b[4] + this[6] * b[5] + this[10] * b[6] + this[14] * b[7],
+				this[3] * b[4] + this[7] * b[5] + this[11] * b[6] + this[15] * b[7],
 
-				this.value[8] * b.value[0] +
-					this.value[9] * b.value[4] +
-					this.value[10] * b.value[8] +
-					this.value[11] * b.value[12],
-				this.value[8] * b.value[1] +
-					this.value[9] * b.value[5] +
-					this.value[10] * b.value[9] +
-					this.value[11] * b.value[13],
-				this.value[8] * b.value[2] +
-					this.value[9] * b.value[6] +
-					this.value[10] * b.value[10] +
-					this.value[11] * b.value[14],
-				this.value[8] * b.value[3] +
-					this.value[9] * b.value[7] +
-					this.value[10] * b.value[11] +
-					this.value[11] * b.value[15],
+				this[0] * b[8] + this[4] * b[9] + this[8] * b[10] + this[12] * b[11],
+				this[1] * b[8] + this[5] * b[9] + this[9] * b[10] + this[13] * b[11],
+				this[2] * b[8] + this[6] * b[9] + this[10] * b[10] + this[14] * b[11],
+				this[3] * b[8] + this[7] * b[9] + this[11] * b[10] + this[15] * b[11],
 
-				this.value[12] * b.value[0] +
-					this.value[13] * b.value[4] +
-					this.value[14] * b.value[8] +
-					this.value[15] * b.value[12],
-				this.value[12] * b.value[1] +
-					this.value[13] * b.value[5] +
-					this.value[14] * b.value[9] +
-					this.value[15] * b.value[13],
-				this.value[12] * b.value[2] +
-					this.value[13] * b.value[6] +
-					this.value[14] * b.value[10] +
-					this.value[15] * b.value[14],
-				this.value[12] * b.value[3] +
-					this.value[13] * b.value[7] +
-					this.value[14] * b.value[11] +
-					this.value[15] * b.value[15]
+				this[0] * b[12] + this[4] * b[13] + this[8] * b[14] + this[12] * b[15],
+				this[1] * b[12] + this[5] * b[13] + this[9] * b[14] + this[13] * b[15],
+				this[2] * b[12] + this[6] * b[13] + this[10] * b[14] + this[14] * b[15],
+				this[3] * b[12] + this[7] * b[13] + this[11] * b[14] + this[15] * b[15]
 			]) as unknown as MulRetType<T>
 		} else if (b instanceof Vector4) {
 			let x = this.row(0).dot(b)
@@ -246,7 +194,7 @@ export class Matrix4 implements Matrix {
 			let w = this.row(3).dot(b)
 			return new Vector4(x, y, z, w) as unknown as MulRetType<T>
 		} else if (typeof b === 'number') {
-			for (let i = 0; i < 16; i++) this.value[i] *= b
+			for (let i = 0; i < 16; i++) this[i] *= b
 			return this as unknown as MulRetType<T>
 		} else {
 			throw new Error('Invalid input parameter type')
@@ -254,7 +202,7 @@ export class Matrix4 implements Matrix {
 	}
 
 	translate(vec: Vector3 | Vector4): Matrix4 {
-		let translation = new Matrix4([1, 0, 0, vec.x, 0, 1, 0, vec.y, 0, 0, 1, vec.z, 0, 0, 0, 1])
+		let translation = new Matrix4([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, vec.x, vec.y, vec.z, 1])
 
 		return translation.mul(this) as unknown as Matrix4
 	}
@@ -268,10 +216,10 @@ export class Matrix4 implements Matrix {
 				0,
 				0,
 				Math.cos(vec.x),
-				-Math.sin(vec.x),
-				0,
-				0,
 				Math.sin(vec.x),
+				0,
+				0,
+				-Math.sin(vec.x),
 				Math.cos(vec.x),
 				0,
 				0,
@@ -285,13 +233,13 @@ export class Matrix4 implements Matrix {
 			let rotation = new Matrix4([
 				Math.cos(vec.y),
 				0,
-				-Math.sin(vec.y),
+				Math.sin(vec.y),
 				0,
 				0,
 				1,
 				0,
 				0,
-				Math.sin(vec.y),
+				-Math.sin(vec.y),
 				0,
 				Math.cos(vec.y),
 				0,
@@ -305,10 +253,10 @@ export class Matrix4 implements Matrix {
 		} else if (vec.x === 0 && vec.y === 0 && vec.z !== 0) {
 			let rotation = new Matrix4([
 				Math.cos(vec.z),
-				-Math.sin(vec.z),
-				0,
-				0,
 				Math.sin(vec.z),
+				0,
+				0,
+				-Math.sin(vec.z),
 				Math.cos(vec.z),
 				0,
 				0,
@@ -344,41 +292,51 @@ export class Matrix4 implements Matrix {
 		if (idx < 0 || idx >= 4) {
 			throw new Error('Invalid index')
 		}
-		return new Vector4(
-			this.value[idx * 4],
-			this.value[idx * 4 + 1],
-			this.value[idx * 4 + 2],
-			this.value[idx * 4 + 3]
-		)
+		return new Vector4(this[idx], this[idx + 4], this[idx + 8], this[idx + 12])
 	}
 
 	col(idx: number): Vector4 {
 		if (idx < 0 || idx >= 4) {
 			throw new Error('Invalid index')
 		}
-		return new Vector4(
-			this.value[idx],
-			this.value[idx + 4],
-			this.value[idx + 8],
-			this.value[idx + 12]
-		)
+		return new Vector4(this[idx * 4], this[idx * 4 + 1], this[idx * 4 + 2], this[idx * 4 + 3])
 	}
 
 	toString(): string {
 		return `
-[ ${this.value[0]}, ${this.value[1]}, ${this.value[2]}, ${this.value[3]},
-  ${this.value[4]}, ${this.value[5]}, ${this.value[6]}, ${this.value[7]},
-  ${this.value[8]}, ${this.value[9]}, ${this.value[10]}, ${this.value[11]}, 
-  ${this.value[12]}, ${this.value[13]}, ${this.value[14]}, ${this.value[15]} ]
+[ ${this[0]}, ${this[4]}, ${this[8]}, ${this[12]},
+  ${this[1]}, ${this[5]}, ${this[9]}, ${this[13]},
+  ${this[2]}, ${this[6]}, ${this[10]}, ${this[14]}, 
+  ${this[3]}, ${this[7]}, ${this[11]}, ${this[15]} ]
 		`
 	}
 
-	transpose(): Float32Array {
-		return new Float32Array([
-			...this.col(0).array(),
-			...this.col(1).array(),
-			...this.col(2).array(),
-			...this.col(3).array()
+	static perspective(
+		yfov: number,
+		aspectRatio: number,
+		nearPlane: number,
+		farPlane: number
+	): Matrix4 {
+		const h = Math.tan(yfov / 2) * 2 * nearPlane
+		const w = h / aspectRatio
+
+		return new Matrix4([
+			(2 * nearPlane) / w,
+			0,
+			0,
+			0,
+			0,
+			(2 * nearPlane) / h,
+			0,
+			0,
+			0,
+			0,
+			-(farPlane + nearPlane) / (farPlane - nearPlane),
+			-1,
+			0,
+			0,
+			(-2 * farPlane * nearPlane) / (farPlane - nearPlane),
+			0
 		])
 	}
 }

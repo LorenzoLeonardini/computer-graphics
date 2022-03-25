@@ -63,36 +63,8 @@ export function setupHowToDraw() {
 	gl.linkProgram(program)
 	gl.useProgram(program)
 
-	const yfov = 3.14 / 4
-	const aspectRatio = 1
-	const near = 0.01
-	const far = 15
-	const h = Math.tan(yfov / 2) * 2 * near
-	const w = h / aspectRatio
-
-	projectionMatrix = new Matrix4([
-		(2 * near) / w,
-		0,
-		0,
-		0,
-		0,
-		(2 * near) / h,
-		0,
-		0,
-		0,
-		0,
-		-(far + near) / (far - near),
-		(-2 * far * near) / (far - near),
-		0,
-		0,
-		-1,
-		0
-	])
-	gl.uniformMatrix4fv(
-		gl.getUniformLocation(program, 'uProjectionMat'),
-		false,
-		projectionMatrix.transpose()
-	)
+	projectionMatrix = Matrix4.perspective(3.14 / 4, 1, 0.01, 15)
+	gl.uniformMatrix4fv(gl.getUniformLocation(program, 'uProjectionMat'), false, projectionMatrix)
 }
 
 export function draw() {
@@ -102,7 +74,7 @@ export function draw() {
 		.rotate(new Vector3(0, rotation, 0))
 		.rotate(new Vector3(0, 0, rotation / 2))
 		.translate(new Vector3(0, 0, -4.6))
-	gl.uniformMatrix4fv(gl.getUniformLocation(program, 'uMat'), false, mat.transpose())
+	gl.uniformMatrix4fv(gl.getUniformLocation(program, 'uMat'), false, mat)
 
 	gl.clearColor(0.2, 0.3, 0.4, 1)
 	gl.clear(gl.COLOR_BUFFER_BIT)
