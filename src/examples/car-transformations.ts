@@ -90,10 +90,7 @@ export function draw() {
 	gl.clearColor(0.2, 0.3, 0.4, 1)
 	gl.clear(gl.COLOR_BUFFER_BIT)
 
-	gl.uniform3fv(
-		gl.getUniformLocation(program, 'uColor'),
-		new Float32Array(new Vector3(0.784, 0, 0).array())
-	)
+	gl.uniform3fv(gl.getUniformLocation(program, 'uColor'), new Vector3(0.784, 0, 0))
 
 	const bodyMat = new Matrix4().scale(new Vector3(0.8, 0.25, 0.5))
 	gl.uniformMatrix4fv(gl.getUniformLocation(program, 'uMat'), false, mat.mul(bodyMat))
@@ -105,10 +102,7 @@ export function draw() {
 	gl.uniformMatrix4fv(gl.getUniformLocation(program, 'uMat'), false, mat.mul(topMat))
 	top.render(gl)
 
-	gl.uniform3fv(
-		gl.getUniformLocation(program, 'uColor'),
-		new Float32Array(new Vector3(0.133, 0.133, 0.133).array())
-	)
+	gl.uniform3fv(gl.getUniformLocation(program, 'uColor'), new Vector3(0.133, 0.133, 0.133))
 
 	const wheelsMat = new Matrix4()
 		.rotate(new Vector3(Math.PI / 2, 0, 0))

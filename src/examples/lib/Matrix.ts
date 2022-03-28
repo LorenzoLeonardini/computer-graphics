@@ -64,22 +64,22 @@ export class Matrix3 extends Float32Array implements Matrix {
 	}
 
 	translate(vec: Vector2 | Vector3 | Vector4): Matrix3 {
-		let translation = new Matrix3([1, 0, 0, 0, 1, 0, vec.x, vec.y, 1])
+		let translation = new Matrix3([1, 0, 0, 0, 1, 0, vec[0], vec[1], 1])
 
 		return translation.mul(this) as unknown as Matrix3
 	}
 
 	rotate(vec: Vector3): Matrix3 {
-		if (vec.x !== 0 || vec.y !== 0) {
+		if (vec[0] !== 0 || vec[1] !== 0) {
 			throw new Error('Cannot rotate on axis different than z')
 		}
 
 		let rotation = new Matrix3([
-			Math.cos(vec.z),
-			Math.sin(vec.z),
+			Math.cos(vec[2]),
+			Math.sin(vec[2]),
 			0,
-			-Math.sin(vec.z),
-			Math.cos(vec.z),
+			-Math.sin(vec[2]),
+			Math.cos(vec[2]),
 			0,
 			0,
 			0,
@@ -95,7 +95,7 @@ export class Matrix3 extends Float32Array implements Matrix {
 
 			return scale.mul(this) as unknown as Matrix3
 		} else {
-			let scale = new Matrix3([vec.x, 0, 0, 0, vec.y, 0, 0, 0, 1])
+			let scale = new Matrix3([vec[0], 0, 0, 0, vec[1], 0, 0, 0, 1])
 
 			return scale.mul(this) as unknown as Matrix3
 		}
@@ -202,25 +202,25 @@ export class Matrix4 extends Float32Array implements Matrix {
 	}
 
 	translate(vec: Vector3 | Vector4): Matrix4 {
-		let translation = new Matrix4([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, vec.x, vec.y, vec.z, 1])
+		let translation = new Matrix4([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, vec[0], vec[1], vec[2], 1])
 
 		return translation.mul(this) as unknown as Matrix4
 	}
 
 	rotate(vec: Vector3): Matrix4 {
-		if (vec.x !== 0 && vec.y === 0 && vec.z === 0) {
+		if (vec[0] !== 0 && vec[1] === 0 && vec[2] === 0) {
 			let rotation = new Matrix4([
 				1,
 				0,
 				0,
 				0,
 				0,
-				Math.cos(vec.x),
-				Math.sin(vec.x),
+				Math.cos(vec[0]),
+				Math.sin(vec[0]),
 				0,
 				0,
-				-Math.sin(vec.x),
-				Math.cos(vec.x),
+				-Math.sin(vec[0]),
+				Math.cos(vec[0]),
 				0,
 				0,
 				0,
@@ -229,19 +229,19 @@ export class Matrix4 extends Float32Array implements Matrix {
 			])
 
 			return rotation.mul(this) as unknown as Matrix4
-		} else if (vec.x === 0 && vec.y !== 0 && vec.z === 0) {
+		} else if (vec[0] === 0 && vec[1] !== 0 && vec[2] === 0) {
 			let rotation = new Matrix4([
-				Math.cos(vec.y),
+				Math.cos(vec[1]),
 				0,
-				Math.sin(vec.y),
+				Math.sin(vec[1]),
 				0,
 				0,
 				1,
 				0,
 				0,
-				-Math.sin(vec.y),
+				-Math.sin(vec[1]),
 				0,
-				Math.cos(vec.y),
+				Math.cos(vec[1]),
 				0,
 				0,
 				0,
@@ -250,14 +250,14 @@ export class Matrix4 extends Float32Array implements Matrix {
 			])
 
 			return rotation.mul(this) as unknown as Matrix4
-		} else if (vec.x === 0 && vec.y === 0 && vec.z !== 0) {
+		} else if (vec[0] === 0 && vec[1] === 0 && vec[2] !== 0) {
 			let rotation = new Matrix4([
-				Math.cos(vec.z),
-				Math.sin(vec.z),
+				Math.cos(vec[2]),
+				Math.sin(vec[2]),
 				0,
 				0,
-				-Math.sin(vec.z),
-				Math.cos(vec.z),
+				-Math.sin(vec[2]),
+				Math.cos(vec[2]),
 				0,
 				0,
 				0,
@@ -282,7 +282,7 @@ export class Matrix4 extends Float32Array implements Matrix {
 
 			return scale.mul(this) as unknown as Matrix4
 		} else {
-			let scale = new Matrix4([vec.x, 0, 0, 0, 0, vec.y, 0, 0, 0, 0, vec.z, 0, 0, 0, 0, 1])
+			let scale = new Matrix4([vec[0], 0, 0, 0, 0, vec[1], 0, 0, 0, 0, vec[2], 0, 0, 0, 0, 1])
 
 			return scale.mul(this) as unknown as Matrix4
 		}
