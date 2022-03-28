@@ -6,20 +6,19 @@
 // helpful tooltips, and warnings if your exported object is invalid.
 // You can disable this by removing "@ts-check" and `@type` comments below.
 
+import svelte from '@astrojs/svelte'
+
 // @ts-check
 export default /** @type {import('astro').AstroUserConfig} */ ({
 	// Comment out "renderers: []" to enable Astro's default component support.
-	renderers: ['@astrojs/renderer-svelte'],
+	integrations: [
+		svelte()
+	],
 	markdownOptions: {
 		render: [
 			'@astrojs/markdown-remark',
 			{
-				// Pick a syntax highlighter. Can be 'prism' (default), 'shiki' or false to disable any highlighting.
-				syntaxHighlight: 'shiki',
-				// If you are using shiki, here you can define a global theme and
-				// add custom languages.
 				shikiConfig: {
-					theme: 'github-dark',
 					langs: ['ts'],
 					wrap: false,
 				},

@@ -42,6 +42,6 @@ Una nota molto importante: nell'impostare la dimensione del canvas, è fondament
 
 Di seguito un esempio di canvas con dimensione specificata negli attributi contro un canvas stretchato da CSS:
 
-<Canvas example='triangle' client:load />
+<Canvas example='triangle' client:only />
 
-<StretchedCanvas example='triangle' client:load />
+<StretchedCanvas example='triangle' client:only />

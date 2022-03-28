@@ -64,4 +64,4 @@ gl.bindAttribLocation(program, slotPositions, 'aPosition')
 gl.bindAttribLocation(program, slotColors, 'aColor')
 ```
 
-<Canvas example='colored-triangle' client:load />
+<Canvas example='colored-triangle' client:only />

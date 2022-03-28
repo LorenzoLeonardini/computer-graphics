@@ -47,7 +47,7 @@ function draw() {
 }
 ```
 
-<Canvas example='clear-canvas' client:load />
+<Canvas example='clear-canvas' client:only />
 
 Notiamo come i valori RGBA non siano nel range 0-255, ma nel range 0-1. Si tratta di **float normalizzati**. In generale vedremo spesso che in WebGL molti valori vengono normalizzati tra 0 e 1 o tra -1 e 1. Ad esempio, le coordinate del viewport vanno da -1 a 1: il centro del viewport ha coordinate (0,0), l'angolo in alto a sinistra (-1,-1) e così via. Questo significa che un movimento di 0.1 orizzontale non corrisponde allo stesso numero di pixel di un movimento di 0.1 verticale.
 
@@ -176,4 +176,4 @@ export function draw() {
 
 questa ci permette di disegnare il contenuto dell'`ARRAY_BUFFER`, indicando che si tratta di 3 vertici, a partire dall'indice 0.
 
-<Canvas example='triangle' client:load />
+<Canvas example='triangle' client:only />

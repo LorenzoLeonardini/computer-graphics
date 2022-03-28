@@ -4,4 +4,4 @@ setup: import Canvas from '../../components/Canvas.svelte'
 title: Trasformazioni - macchinina
 ---
 
-<Canvas example='car-transformations' client:load />
+<Canvas example='car-transformations' client:only />
