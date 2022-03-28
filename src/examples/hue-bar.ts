@@ -61,11 +61,11 @@ export function setupHowToDraw() {
 		varying float vHue;
 
 		vec3 Hue(float H) {
-            float R = abs(H * 6.0 - 3.0) - 1.0;
-            float G = 2.0 - abs(H * 6.0 - 2.0);
-            float B = 2.0 - abs(H * 6.0 - 4.0);
-            return vec3(R,G,B);
-        }
+			float R = abs(H * 6.0 - 3.0) - 1.0;
+			float G = 2.0 - abs(H * 6.0 - 2.0);
+			float B = 2.0 - abs(H * 6.0 - 4.0);
+			return vec3(R,G,B);
+		}
 
 		void main(void) {
 			// HSV to RGB conversion
