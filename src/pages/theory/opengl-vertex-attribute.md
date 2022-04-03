@@ -33,9 +33,9 @@ gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 2 * 4, 0)
 Un altro passo fondamentale affinché il layout funzioni è quello di **abilitare** l'attributo di indice n. È irrilevante abilitare prima o dopo la chiamata a `vertexAttribPointer`, sempre perché OpenGL è una macchina a stati, ma è importante avere il buffer bound.
 
 ```cpp
-glEnableVertexAttribPointer(0);
+glEnableVertexAttribArray(0);
 ```
 
 ```ts
-gl.enableVertexAttribPointer(0)
+gl.enableVertexAttribArray(0)
 ```
