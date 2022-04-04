@@ -5,7 +5,7 @@ setup: |
 title: Uniform
 ---
 
-Se si vogliono passare dati alle shader ci sono due alternative. La prima, come si è già visto, consiste nell'associare un valore ad ogni vertice, inserendolo nel [vertex buffer](/theory/opengl-vertex-buffer) e definendone la struttura con i [vertex attribute](/theory/opengl-vertex-attribute). Altrimenti OpenGL offre la possibilità di caricare valori per "draw call", ovvero valori uguali per ogni vertice, che vengono caricati prima di chiamare `drawArrays` o `drawElements`. Questo secondo tipo di variabile si chiama `uniform` (rimane uniforme per tutti i vertici) e può essere definito nella vertex shader in maniera simile agli attributi e i varying:
+Se si vogliono passare dati alle shader ci sono due alternative. La prima, come si è già visto, consiste nell'associare un valore ad ogni vertice, inserendolo nel [vertex buffer](/theory/opengl-vertex-buffer) e definendone la struttura con i [vertex attribute](/theory/opengl-vertex-attribute). Altrimenti OpenGL offre la possibilità di caricare valori per "draw call", ovvero valori uguali per ogni vertice, che vengono caricati prima di chiamare `drawArrays` o `drawElements`. Questo secondo tipo di variabile si chiama `uniform` (rimane uniforme per tutti i vertici) e può essere definito nelle shader in maniera simile agli attributi e i varying:
 
 ```shader
 uniform mat4 uProjectionMatrix;
