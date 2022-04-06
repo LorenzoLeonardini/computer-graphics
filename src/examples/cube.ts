@@ -5,7 +5,6 @@ import { Vector3 } from './lib/Vector'
 let gl: WebGLRenderingContext = null
 let program: WebGLProgram
 const slotPositions = 0
-const slotHue = 1
 let cube: Cube = null
 let rotation = 0.1
 let projectionMatrix: Matrix4
@@ -58,7 +57,6 @@ export function setupHowToDraw() {
 	gl.attachShader(program, vertexShader)
 	gl.attachShader(program, fragmentShader)
 	gl.bindAttribLocation(program, slotPositions, 'aPosition')
-	gl.bindAttribLocation(program, slotHue, 'aHue')
 	gl.linkProgram(program)
 	gl.useProgram(program)
 

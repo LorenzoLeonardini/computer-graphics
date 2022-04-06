@@ -14,9 +14,9 @@
 			`../examples/${example}.ts`
 		)) as any
 
-		setupWebGL(canvas)
-		setupWhatToDraw()
-		setupHowToDraw()
+		await setupWebGL(canvas)
+		await setupWhatToDraw()
+		await setupHowToDraw()
 		draw()
 
 		// var img = canvas.toDataURL('image/png')

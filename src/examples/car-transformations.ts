@@ -6,7 +6,6 @@ import { Vector3 } from './lib/Vector'
 let gl: WebGLRenderingContext = null
 let program: WebGLProgram
 const slotPositions = 0
-const slotHue = 1
 
 let body: Cube
 let top: Cube
@@ -72,7 +71,6 @@ export function setupHowToDraw() {
 	gl.attachShader(program, vertexShader)
 	gl.attachShader(program, fragmentShader)
 	gl.bindAttribLocation(program, slotPositions, 'aPosition')
-	gl.bindAttribLocation(program, slotHue, 'aHue')
 	gl.linkProgram(program)
 	gl.useProgram(program)
 

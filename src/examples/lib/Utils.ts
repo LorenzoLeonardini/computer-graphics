@@ -22,3 +22,13 @@ export function glCall<F extends (...args: any) => any>(
 
 	return returnValue
 }
+
+export async function loadImage(url: string): Promise<HTMLImageElement> {
+	return new Promise((resolve) => {
+		const image = new Image()
+		image.src = url
+		image.onload = () => {
+			resolve(image)
+		}
+	})
+}
