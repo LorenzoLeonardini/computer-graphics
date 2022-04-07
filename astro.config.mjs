@@ -10,6 +10,9 @@ import svelte from '@astrojs/svelte'
 
 // @ts-check
 export default /** @type {import('astro').AstroUserConfig} */ ({
+	buildOptions: {
+		site: 'https://graphics.leonardini.dev',
+	},
 	// Comment out "renderers: []" to enable Astro's default component support.
 	integrations: [
 		svelte()

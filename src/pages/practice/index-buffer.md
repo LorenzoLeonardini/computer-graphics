@@ -31,7 +31,7 @@ Aggiornando ora la chiamata a `drawArrays` per disegnare 6 vertici otteniamo il 
 gl.drawArrays(gl.TRIANGLES, 0, 6)
 ```
 
-<Canvas example='colored-square' client:only />
+<Canvas example='colored-square' client:load />
 
 Vogliamo quindi ridurre la dimensione di `vertices` e introdurre un index buffer:
 
@@ -84,4 +84,4 @@ gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
 
 Come per `drawArrays` è richiesto il tipo di primitiva (`TRIANGLES`), il numero di primitive da renderizzare (6), e l'offset (0), ma è anche richiesto il tipo utilizzato per gli indici (`UNSIGNED_SHORT` nel nostro caso)
 
-<Canvas example='index-buffer' client:only />
+<Canvas example='index-buffer' client:load />

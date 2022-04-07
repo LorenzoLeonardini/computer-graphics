@@ -21,6 +21,12 @@ export function loadObjModel(file: string): {
 			if (data === null) {
 				if (vertices.length !== textures.length || vertices.length !== normals.length) {
 					// throw new Error('Weird sizes')
+					console.warn(
+						`Object loaded with ${vertices.length} vertices, ${textures.length} texture coordinates and ${normals.length} normals`
+					)
+				}
+				if (vertices.length > Math.pow(2, 16)) {
+					throw new Error('16 bit indices are not enough for this model')
 				}
 				data = Array(vertices.length * (3 + 2 + 3))
 			}
@@ -43,6 +49,7 @@ export function loadObjModel(file: string): {
 		}
 	})
 
+	console.log(`Model loaded, ${indices.length} indices, ${data.length / 8} vertices`)
 	return {
 		indices: indices,
 		vertices: data

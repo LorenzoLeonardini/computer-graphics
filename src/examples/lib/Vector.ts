@@ -76,6 +76,14 @@ export class Vector3 extends Float32Array implements Vector {
 		return this[0] * vec[0] + this[1] * vec[1] + this[2] * vec[2]
 	}
 
+	cross(vec: Vector3): Vector3 {
+		return new Vector3(
+			this[1] * vec[2] - this[2] * vec[1],
+			this[2] * vec[0] - this[0] * vec[2],
+			this[0] * vec[1] - this[1] * vec[0]
+		)
+	}
+
 	getLength(): number {
 		return Math.sqrt(this[0] * this[0] + this[1] * this[1] + this[2] * this[2])
 	}
