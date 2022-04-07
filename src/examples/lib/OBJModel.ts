@@ -55,8 +55,6 @@ export class OBJModel implements Model {
 	}
 
 	render(gl: WebGLRenderingContext): void {
-		this.bind(gl)
 		glCall(gl, gl.drawElements, gl.TRIANGLES, this.vertexCount, gl.UNSIGNED_SHORT, 0)
-		this.unbind(gl)
 	}
 }

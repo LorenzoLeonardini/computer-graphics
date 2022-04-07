@@ -75,7 +75,9 @@ export function draw() {
 
 	gl.clearColor(0.2, 0.3, 0.4, 1)
 	gl.clear(gl.COLOR_BUFFER_BIT)
+	Cube.bind(gl)
 	cube.render(gl)
+	Cube.unbind(gl)
 
 	rotation += 0.01
 	window.requestAnimationFrame(draw)
