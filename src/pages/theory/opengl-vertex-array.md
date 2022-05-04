@@ -11,7 +11,7 @@ Definire i vertex attribute, però, non è un'operazione associata al vertex buf
 
 Questo diventa piuttosto scomodo e ripetitivo, oltre a sembrare apparentemente inutile, basterebbe che OpenGL memorizzasse il layout associandolo a quel vertex buffer. Ebbene, nelle versioni recenti di OpenGL e in **WebGL 2** (non in WebGL 1), viene presentata una soluzione che funziona esattamente in questa maniera. L'unica differenza è che il layout non viene associato direttamente al vertex buffer, ma a quello che si chiama **vertex array**. I vertex array associano un layout a uno specifico buffer. Effettuare il binding del vertex array significa contemporaneamente fare il binding al buffer e caricare il layout dei vertex attribute.
 
-In realtà in OpenGL moderno i vertex array sono obbligatori e si utilizzano sempre, anche quando non ce se ne rende conto: ve ne è infatti sempre attivo uno di default.
+In realtà in OpenGL moderno i vertex array sono obbligatori e si utilizzano sempre, anche quando non ce ne si rende conto: ve ne è infatti sempre attivo uno di default.
 
 ```cpp
 unsigned int vao;
