@@ -22,6 +22,7 @@
 
 	onMount(async () => {
 		let canvas: HTMLCanvasElement = document.querySelector(`#${example.replaceAll('/', '_')}`)
+		canvas.parentElement.classList.add('loading')
 
 		document.body.onresize = resize
 
@@ -31,6 +32,7 @@
 		await functions.setupWhatToDraw()
 		resize()
 		await functions.setupHowToDraw()
+		canvas.parentElement.classList.remove('loading')
 		functions.draw()
 
 		// var img = canvas.toDataURL('image/png')
@@ -40,8 +42,33 @@
 
 <style>
 	div.container {
-		position: relative;
-		width: fit-content;
+		width: 100vw !important;
+		height: 100vh !important;
+	}
+
+	@keyframes rotating {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	:global(div.container.loading::after) {
+		content: '';
+		position: absolute;
+		box-sizing: border-box;
+		top: calc(50% - 50px);
+		left: calc(50% - 50px);
+		width: 100px;
+		height: 100px;
+		border-width: 10px;
+		border-style: solid;
+		border-color: #f0f0f0;
+		border-radius: 100%;
+		border-top-color: transparent;
+		animation: rotating 1s linear infinite;
 	}
 
 	canvas {
@@ -70,7 +97,7 @@
 </style>
 
 <div>
-	<div class="container h-screen w-screen">
+	<div class="container">
 		<canvas id="{example.replaceAll('/', '_')}" width="500" height="500"></canvas>
 		<a
 			href="{`https://github.com/LorenzoLeonardini/computer-graphics/blob/main/src/examples/${example}.ts`}"
