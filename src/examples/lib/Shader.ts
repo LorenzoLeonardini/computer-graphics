@@ -1,3 +1,5 @@
+import { showErrorModal } from './ErrorModal'
+
 export class Shader {
 	vertexShader: WebGLShader
 	fragmentShader: WebGLShader
@@ -19,11 +21,15 @@ export class Shader {
 			console.error('%cERROR COMPILING VERTEX SHADER', 'font-weight: bold;')
 			console.log(vertexSrc)
 			console.error(message_vs)
+			const errorLine = parseInt(message_vs.split('ERROR: ')[1].split(':')[1])
+			showErrorModal('Error compiling vertex shader', vertexSrc, errorLine)
 		}
 		if (message_fs.length > 0) {
 			console.error('%cERROR COMPILING FRAGMENT SHADER', 'font-weight: bold;')
 			console.log(fragmentSrc)
 			console.error(message_fs)
+			const errorLine = parseInt(message_fs.split('ERROR: ')[1].split(':')[1])
+			showErrorModal('Error compiling fragment shader', fragmentSrc, errorLine)
 		}
 
 		this.program = gl.createProgram()
