@@ -26,6 +26,8 @@ export class OBJModel implements Model {
 
 		glCall(gl, gl.bufferData, gl.ARRAY_BUFFER, typedVertices, gl.STATIC_DRAW)
 		glCall(gl, gl.bufferData, gl.ELEMENT_ARRAY_BUFFER, typedIndices, gl.STATIC_DRAW)
+
+		this.unbind(gl)
 	}
 
 	destroy(gl: WebGLRenderingContext): void {

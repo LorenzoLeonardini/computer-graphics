@@ -1,4 +1,5 @@
 import { Camera } from './lib/Camera'
+import { FlatShader } from './lib/FlatShader'
 import { Matrix4 } from './lib/Matrix'
 import { NormalsShader } from './lib/NormalsShader'
 import { loadObjModel } from './lib/ObjectLoader'
@@ -30,7 +31,7 @@ export async function changeAspectRatio(width: number, height: number) {
 }
 
 export async function setupHowToDraw() {
-	shader = await new NormalsShader(gl)._init()
+	shader = await new FlatShader(gl, new Vector3(0.8, 0, 0))._init()
 }
 
 export function draw() {
@@ -41,7 +42,9 @@ export function draw() {
 	gl.clearColor(0.2, 0.3, 0.4, 1)
 	gl.clear(gl.COLOR_BUFFER_BIT)
 
+	dragon.bind(gl)
 	camera.render(gl, dragon, shader, mat)
+	dragon.unbind(gl)
 
 	rotation += 0.01
 	window.requestAnimationFrame(draw)
