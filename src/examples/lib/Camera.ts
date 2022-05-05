@@ -1,6 +1,6 @@
-import { Material } from './Material'
 import { Matrix4 } from './Matrix'
 import { Model } from './Model'
+import { Shader } from './Shader'
 import { glCall } from './Utils'
 import { Vector3 } from './Vector'
 
@@ -177,20 +177,20 @@ export class Camera {
 		return r
 	}
 
-	render(gl: WebGLRenderingContext, model: Model, material: Material, objectMat: Matrix4) {
-		material.prepareRender(gl)
-		if (material.currentCamera !== this.uid || this.frameChanged || this.perspectiveChanged) {
-			material.loadPerspective(gl, this.perspective)
-			material.loadView(gl, this.viewMatrix())
-			material.currentCamera = this.uid
-			this.frameChanged = false
-			this.perspectiveChanged = false
-		}
+	render(gl: WebGLRenderingContext, model: Model, shader: Shader, objectMat: Matrix4) {
+		shader.bind()
+		// if (material.currentCamera !== this.uid || this.frameChanged || this.perspectiveChanged) {
+		shader.loadPerspective(this.perspective)
+		shader.loadView(this.viewMatrix())
+		// material.currentCamera = this.uid
+		// this.frameChanged = false
+		// this.perspectiveChanged = false
+		// }
 
 		glCall(
 			gl,
 			gl.uniformMatrix4fv,
-			glCall(gl, gl.getUniformLocation, material.shader.program, 'uObjectMat'),
+			glCall(gl, gl.getUniformLocation, shader.program, 'uObjectMat'),
 			false,
 			objectMat
 		)

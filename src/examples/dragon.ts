@@ -1,16 +1,12 @@
 import { Camera } from './lib/Camera'
 import { Matrix4 } from './lib/Matrix'
-import { NormalsMaterial } from './lib/NormalsMaterial'
+import { NormalsShader } from './lib/NormalsShader'
 import { loadObjModel } from './lib/ObjectLoader'
 import { OBJModel } from './lib/OBJModel'
-import { Shader } from './lib/Shader'
 import { Vector3 } from './lib/Vector'
 
 let gl: WebGLRenderingContext = null
-let material: NormalsMaterial
-const slotPositions = 0
-const slotTexCoords = 1
-const slotNormals = 2
+let shader: NormalsShader
 let dragon: OBJModel = null
 let rotation = 0.1
 
@@ -34,7 +30,7 @@ export async function changeAspectRatio(width: number, height: number) {
 }
 
 export async function setupHowToDraw() {
-	material = new NormalsMaterial(gl)
+	shader = await new NormalsShader(gl)._init()
 }
 
 export function draw() {
@@ -44,8 +40,9 @@ export function draw() {
 
 	gl.clearColor(0.2, 0.3, 0.4, 1)
 	gl.clear(gl.COLOR_BUFFER_BIT)
+
 	dragon.bind(gl)
-	camera.render(gl, dragon, material, mat)
+	camera.render(gl, dragon, shader, mat)
 	dragon.unbind(gl)
 
 	rotation += 0.01
