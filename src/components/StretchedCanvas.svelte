@@ -4,7 +4,9 @@
 	export let example: string
 
 	onMount(async () => {
-		let canvas: HTMLCanvasElement = document.querySelector(`#${example}_stretched`)
+		let canvas: HTMLCanvasElement = document.querySelector(
+			`#${example.replaceAll('/', '_')}_stretched`
+		)
 		let width = canvas.parentElement?.parentElement?.clientWidth ?? 500
 		if (width > 500) width = 500
 		canvas.width = width / 10
@@ -60,7 +62,7 @@
 
 <div>
 	<div class="container">
-		<canvas id="{example}_stretched" width="500" height="500"></canvas>
+		<canvas id="{example.replaceAll('/', '_')}_stretched" width="500" height="500"></canvas>
 		<a
 			href="{`https://github.com/LorenzoLeonardini/computer-graphics/blob/main/src/examples/${example}.ts`}"
 			target="_blank"

@@ -2,23 +2,36 @@
 	import { onMount } from 'svelte'
 
 	export let example: string
+	let functions = {
+		setupWebGL: null,
+		setupWhatToDraw: null,
+		setupHowToDraw: null,
+		draw: null,
+		changeAspectRatio: null
+	}
+
+	async function resize() {
+		let canvas: HTMLCanvasElement = document.querySelector(`#${example.replaceAll('/', '_')}`)
+		let width = canvas.parentElement?.parentElement?.clientWidth ?? 500
+		let height = canvas.parentElement?.parentElement?.clientHeight ?? 500
+		canvas.width = width
+		canvas.height = height
+
+		await functions.changeAspectRatio?.(width, height)
+	}
 
 	onMount(async () => {
 		let canvas: HTMLCanvasElement = document.querySelector(`#${example.replaceAll('/', '_')}`)
-		let width = canvas.parentElement?.parentElement?.clientWidth ?? 500
-		if (width > 500) width = 500
-		canvas.width = width
-		canvas.height = width
 
-		const { setupWebGL, setupWhatToDraw, changeAspectRatio, setupHowToDraw, draw } = (await import(
-			`../examples/${example}.ts`
-		)) as any
+		document.body.onresize = resize
 
-		await setupWebGL(canvas)
-		await setupWhatToDraw()
-		await changeAspectRatio(width, width)
-		await setupHowToDraw()
-		draw()
+		functions = (await import(`../examples/${example}.ts`)) as any
+
+		await functions.setupWebGL(canvas)
+		await functions.setupWhatToDraw()
+		resize()
+		await functions.setupHowToDraw()
+		functions.draw()
 
 		// var img = canvas.toDataURL('image/png')
 		// document.write('<img src="' + img + '"/>')
@@ -28,14 +41,11 @@
 <style>
 	div.container {
 		position: relative;
-		margin: 40px auto;
 		width: fit-content;
 	}
 
 	canvas {
 		display: block;
-		border: solid 1px black;
-		border-radius: 4px;
 		overflow: hidden;
 	}
 
@@ -60,7 +70,7 @@
 </style>
 
 <div>
-	<div class="container">
+	<div class="container h-screen w-screen">
 		<canvas id="{example.replaceAll('/', '_')}" width="500" height="500"></canvas>
 		<a
 			href="{`https://github.com/LorenzoLeonardini/computer-graphics/blob/main/src/examples/${example}.ts`}"
