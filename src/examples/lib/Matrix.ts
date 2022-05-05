@@ -201,15 +201,19 @@ export class Matrix4 extends Float32Array implements Matrix {
 		}
 	}
 
+	static translate(vec: Vector3 | Vector4): Matrix4 {
+		return new Matrix4([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, vec[0], vec[1], vec[2], 1])
+	}
+
 	translate(vec: Vector3 | Vector4): Matrix4 {
-		let translation = new Matrix4([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, vec[0], vec[1], vec[2], 1])
+		let translation = Matrix4.translate(vec)
 
 		return translation.mul(this) as unknown as Matrix4
 	}
 
-	rotate(vec: Vector3): Matrix4 {
+	static rotate(vec: Vector3): Matrix4 {
 		if (vec[0] !== 0 && vec[1] === 0 && vec[2] === 0) {
-			let rotation = new Matrix4([
+			return new Matrix4([
 				1,
 				0,
 				0,
@@ -227,10 +231,9 @@ export class Matrix4 extends Float32Array implements Matrix {
 				0,
 				1
 			])
-
-			return rotation.mul(this) as unknown as Matrix4
-		} else if (vec[0] === 0 && vec[1] !== 0 && vec[2] === 0) {
-			let rotation = new Matrix4([
+		}
+		if (vec[0] === 0 && vec[1] !== 0 && vec[2] === 0) {
+			return new Matrix4([
 				Math.cos(vec[1]),
 				0,
 				Math.sin(vec[1]),
@@ -248,10 +251,9 @@ export class Matrix4 extends Float32Array implements Matrix {
 				0,
 				1
 			])
-
-			return rotation.mul(this) as unknown as Matrix4
-		} else if (vec[0] === 0 && vec[1] === 0 && vec[2] !== 0) {
-			let rotation = new Matrix4([
+		}
+		if (vec[0] === 0 && vec[1] === 0 && vec[2] !== 0) {
+			return new Matrix4([
 				Math.cos(vec[2]),
 				Math.sin(vec[2]),
 				0,
@@ -269,23 +271,26 @@ export class Matrix4 extends Float32Array implements Matrix {
 				0,
 				1
 			])
+		}
+		throw new Error('Invalid rotation')
+	}
 
-			return rotation.mul(this) as unknown as Matrix4
+	rotate(vec: Vector3): Matrix4 {
+		const rotation = Matrix4.rotate(vec)
+		return rotation.mul(this)
+	}
+
+	static scale(vec: Vector3 | Vector4 | number): Matrix4 {
+		if (typeof vec === 'number') {
+			return new Matrix4([vec, 0, 0, 0, 0, vec, 0, 0, 0, 0, vec, 0, 0, 0, 0, 1])
 		} else {
-			throw new Error('Invalid rotation')
+			return new Matrix4([vec[0], 0, 0, 0, 0, vec[1], 0, 0, 0, 0, vec[2], 0, 0, 0, 0, 1])
 		}
 	}
 
 	scale(vec: Vector3 | Vector4 | number): Matrix4 {
-		if (typeof vec === 'number') {
-			let scale = new Matrix4([vec, 0, 0, 0, 0, vec, 0, 0, 0, 0, vec, 0, 0, 0, 0, 1])
-
-			return scale.mul(this) as unknown as Matrix4
-		} else {
-			let scale = new Matrix4([vec[0], 0, 0, 0, 0, vec[1], 0, 0, 0, 0, vec[2], 0, 0, 0, 0, 1])
-
-			return scale.mul(this) as unknown as Matrix4
-		}
+		let scale = Matrix4.scale(vec)
+		return scale.mul(this)
 	}
 
 	row(idx: number): Vector4 {
