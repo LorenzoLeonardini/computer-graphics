@@ -1,6 +1,7 @@
 import { Material } from './Material'
 import { Matrix4 } from './Matrix'
 import { Model } from './Model'
+import { glCall } from './Utils'
 import { Vector3 } from './Vector'
 
 export class Camera {
@@ -177,6 +178,7 @@ export class Camera {
 	}
 
 	render(gl: WebGLRenderingContext, model: Model, material: Material, objectMat: Matrix4) {
+		material.prepareRender(gl)
 		if (material.currentCamera !== this.uid || this.frameChanged || this.perspectiveChanged) {
 			material.loadPerspective(gl, this.perspective)
 			material.loadView(gl, this.viewMatrix())
@@ -185,12 +187,13 @@ export class Camera {
 			this.perspectiveChanged = false
 		}
 
-		gl.uniformMatrix4fv(
-			gl.getUniformLocation(material.shader.program, 'uObjectMat'),
+		glCall(
+			gl,
+			gl.uniformMatrix4fv,
+			glCall(gl, gl.getUniformLocation, material.shader.program, 'uObjectMat'),
 			false,
 			objectMat
 		)
-		material.prepareRender(gl)
 		model.render(gl)
 	}
 }

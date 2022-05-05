@@ -1,5 +1,6 @@
 import { Matrix4 } from './Matrix'
 import { Shader } from './Shader'
+import { glCall } from './Utils'
 
 const slotPositions = 0
 const slotTexCoords = 1
@@ -11,6 +12,7 @@ export abstract class Material {
 	gl_FragColor: string
 	vertexSrc: string = ''
 	fragmentSrc: string = ''
+	fragmentUniforms: string = ''
 
 	create(gl: WebGLRenderingContext) {
 		const vertexShaderSource = `
@@ -36,7 +38,7 @@ void main(void) {
 		const fragmentShaderSource = `
 precision lowp float;
 
-uniform sampler2D uTexture;
+${this.fragmentUniforms}
 
 varying vec2 vTexCoords;
 varying vec3 vNormal;
@@ -54,16 +56,26 @@ void main(void) {
 	}
 
 	loadPerspective(gl: WebGLRenderingContext, perspective: Matrix4) {
-		gl.uniformMatrix4fv(
-			gl.getUniformLocation(this.shader.program, 'uProjectionMat'),
+		glCall(
+			gl,
+			gl.uniformMatrix4fv,
+			glCall(gl, gl.getUniformLocation, this.shader.program, 'uProjectionMat'),
 			false,
 			perspective
 		)
 	}
 
 	loadView(gl: WebGLRenderingContext, viewMatrix: Matrix4) {
-		gl.uniformMatrix4fv(gl.getUniformLocation(this.shader.program, 'uViewMat'), false, viewMatrix)
+		glCall(
+			gl,
+			gl.uniformMatrix4fv,
+			glCall(gl, gl.getUniformLocation, this.shader.program, 'uViewMat'),
+			false,
+			viewMatrix
+		)
 	}
 
-	prepareRender(gl: WebGLRenderingContext) {}
+	prepareRender(gl: WebGLRenderingContext) {
+		glCall(gl, gl.useProgram, this.shader.program)
+	}
 }
