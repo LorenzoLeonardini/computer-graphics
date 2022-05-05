@@ -41,9 +41,7 @@ export function draw() {
 	gl.clearColor(0.2, 0.3, 0.4, 1)
 	gl.clear(gl.COLOR_BUFFER_BIT)
 
-	dragon.bind(gl)
 	camera.render(gl, dragon, shader, mat)
-	dragon.unbind(gl)
 
 	rotation += 0.01
 	window.requestAnimationFrame(draw)
