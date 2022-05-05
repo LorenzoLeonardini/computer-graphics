@@ -4,11 +4,13 @@ export function setupWebGL(canvas: HTMLCanvasElement) {
 	gl = canvas.getContext('webgl')
 }
 
-export function setupWhatToDraw() {
+export async function changeAspectRatio(width: number, height: number) {
+	gl.viewport(0, 0, width, height)
 }
 
-export function setupHowToDraw() {
-}
+export function setupWhatToDraw() {}
+
+export function setupHowToDraw() {}
 
 export function draw() {
 	gl.clearColor(0.2, 0.3, 0.4, 1)

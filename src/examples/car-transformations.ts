@@ -30,6 +30,10 @@ export function setupWhatToDraw() {
 	backLeftWheel = new Cylinder(gl)
 }
 
+export async function changeAspectRatio(width: number, height: number) {
+	gl.viewport(0, 0, width, height)
+}
+
 export function setupHowToDraw() {
 	const vertexShaderSource = `
 		attribute vec3 aPosition;

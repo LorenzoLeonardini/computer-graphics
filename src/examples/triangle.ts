@@ -25,6 +25,10 @@ export function setupWhatToDraw() {
 	gl.vertexAttribPointer(slotPositions, 2, gl.FLOAT, false, 8, 0)
 }
 
+export async function changeAspectRatio(width: number, height: number) {
+	gl.viewport(0, 0, width, height)
+}
+
 export function setupHowToDraw() {
 	const vertexShaderSource = `
 		attribute vec2 aPosition;

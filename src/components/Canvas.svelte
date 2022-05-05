@@ -10,12 +10,13 @@
 		canvas.width = width
 		canvas.height = width
 
-		const { setupWebGL, setupWhatToDraw, setupHowToDraw, draw } = (await import(
+		const { setupWebGL, setupWhatToDraw, changeAspectRatio, setupHowToDraw, draw } = (await import(
 			`../examples/${example}.ts`
 		)) as any
 
 		await setupWebGL(canvas)
 		await setupWhatToDraw()
+		await changeAspectRatio(width, width)
 		await setupHowToDraw()
 		draw()
 
