@@ -1,10 +1,14 @@
+#version 300 es
+
 precision lowp float;
 
 uniform vec3 uColor;
 
-varying vec2 vTexCoords;
-varying vec3 vNormal;
+in vec2 vTexCoords;
+in vec3 vNormal;
+
+out vec4 outColor;
 
 void main(void) {
-	gl_FragColor = vec4(uColor, 1.0);
+	outColor = vec4(uColor, 1.0);
 }

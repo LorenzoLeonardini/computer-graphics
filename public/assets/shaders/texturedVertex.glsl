@@ -1,13 +1,15 @@
-attribute vec3 aPosition;
-attribute vec2 aTexCoords;
-attribute vec3 aNormal;
+#version 300 es
+
+layout(location = 0) in vec3 aPosition;
+layout(location = 1) in vec2 aTexCoords;
+layout(location = 2) in vec3 aNormal;
 
 uniform mat4 uProjectionMat;
 uniform mat4 uViewMat;
 uniform mat4 uObjectMat;
 
-varying vec2 vTexCoords;
-varying vec3 vNormal;
+out vec2 vTexCoords;
+out vec3 vNormal;
 
 void main(void) {
 	vTexCoords = aTexCoords;

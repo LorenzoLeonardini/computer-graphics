@@ -48,10 +48,6 @@ export class Shader {
 		glCall(gl, gl.linkProgram, this.program)
 		glCall(gl, gl.useProgram, this.program)
 
-		this.bindAttribLocation(0, 'aPosition')
-		this.bindAttribLocation(1, 'aTexCoords')
-		this.bindAttribLocation(2, 'aNormal')
-
 		this.projectionMatUniformLocation = glCall(
 			this.gl,
 			this.gl.getUniformLocation,
@@ -66,10 +62,6 @@ export class Shader {
 		)
 
 		return this
-	}
-
-	bindAttribLocation(index: number, name: string) {
-		glCall(this.gl, this.gl.bindAttribLocation, this.program, index, name)
 	}
 
 	bind() {
