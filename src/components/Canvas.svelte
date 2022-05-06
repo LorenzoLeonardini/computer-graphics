@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
+	import { Shader } from '../examples/lib/Shader'
+	import { Texture } from '../examples/lib/Texture'
 
 	export let example: string
 
@@ -18,6 +20,7 @@
 		await setupWhatToDraw()
 		await changeAspectRatio(width, width)
 		await setupHowToDraw()
+		await Promise.all([Texture.loadAll(), Shader.loadAll()])
 		draw()
 
 		// var img = canvas.toDataURL('image/png')

@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
+	import { Shader } from '../examples/lib/Shader'
+	import { Texture } from '../examples/lib/Texture'
 
 	export let example: string
 	let functions = {
@@ -32,6 +34,7 @@
 		await functions.setupWhatToDraw()
 		resize()
 		await functions.setupHowToDraw()
+		await Promise.all([Texture.loadAll(), Shader.loadAll()])
 		canvas.parentElement.classList.remove('loading')
 		functions.draw()
 

@@ -6,6 +6,8 @@ export class Shader {
 	vertexShader: WebGLShader
 	fragmentShader: WebGLShader
 	program: WebGLProgram
+	vertexPath: string
+	fragmentPath: string
 	vertexSrc: string
 	fragmentSrc: string
 	gl: WebGL2RenderingContext
@@ -13,8 +15,20 @@ export class Shader {
 	projectionMatUniformLocation: WebGLUniformLocation
 	viewMatUniformLocation: WebGLUniformLocation
 
-	protected async _init(gl: WebGL2RenderingContext): Promise<Shader> {
+	static shaderPromises = []
+
+	protected constructor(gl: WebGL2RenderingContext, vertexPath: string, fragmentPath: string) {
 		this.gl = gl
+		this.vertexPath = vertexPath
+		this.fragmentPath = fragmentPath
+
+		Shader.shaderPromises.push(this._init())
+	}
+
+	protected async _init() {
+		const gl = this.gl
+		this.vertexSrc = await (await fetch(this.vertexPath)).text()
+		this.fragmentSrc = await (await fetch(this.fragmentPath)).text()
 
 		this.vertexShader = glCall(gl, gl.createShader, gl.VERTEX_SHADER)
 		glCall(gl, gl.shaderSource, this.vertexShader, this.vertexSrc)
@@ -60,8 +74,6 @@ export class Shader {
 			this.program,
 			'uViewMat'
 		)
-
-		return this
 	}
 
 	bind() {
@@ -77,5 +89,9 @@ export class Shader {
 
 	loadView(viewMatrix: Matrix4) {
 		glCall(this.gl, this.gl.uniformMatrix4fv, this.viewMatUniformLocation, false, viewMatrix)
+	}
+
+	static async loadAll() {
+		await Promise.all(Shader.shaderPromises)
 	}
 }

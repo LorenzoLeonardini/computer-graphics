@@ -30,7 +30,7 @@ export async function changeAspectRatio(width: number, height: number) {
 }
 
 export async function setupHowToDraw() {
-	shader = await new NormalsShader(gl)._init()
+	shader = new NormalsShader(gl)
 }
 
 export function draw() {
