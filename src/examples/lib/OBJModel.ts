@@ -2,6 +2,7 @@ import { Model } from './Model'
 import { glCall } from './Utils'
 
 export class OBJModel implements Model {
+	vao: WebGLVertexArrayObject
 	buffer: WebGLBuffer
 	ibo: WebGLBuffer
 	vertexCount: number
@@ -19,25 +20,20 @@ export class OBJModel implements Model {
 		const indices = model.indices
 		const typedIndices = new Uint16Array(indices)
 
+		this.vao = glCall(gl, gl.createVertexArray)
+		glCall(gl, gl.bindVertexArray, this.vao)
+
 		this.buffer = glCall(gl, gl.createBuffer)
+		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, this.buffer)
+
 		this.ibo = glCall(gl, gl.createBuffer)
+		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, this.ibo)
+
 		this.vertexCount = indices.length
-		this.bind(gl)
 
 		glCall(gl, gl.bufferData, gl.ARRAY_BUFFER, typedVertices, gl.STATIC_DRAW)
 		glCall(gl, gl.bufferData, gl.ELEMENT_ARRAY_BUFFER, typedIndices, gl.STATIC_DRAW)
 
-		this.unbind(gl)
-	}
-
-	destroy(gl: WebGL2RenderingContext): void {
-		glCall(gl, gl.deleteBuffer, this.buffer)
-		glCall(gl, gl.deleteBuffer, this.ibo)
-	}
-
-	bind(gl: WebGL2RenderingContext): void {
-		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, this.buffer)
-		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, this.ibo)
 		glCall(gl, gl.enableVertexAttribArray, 0)
 		glCall(gl, gl.enableVertexAttribArray, 1)
 		glCall(gl, gl.enableVertexAttribArray, 2)
@@ -46,13 +42,18 @@ export class OBJModel implements Model {
 		glCall(gl, gl.vertexAttribPointer, 2, 3, gl.FLOAT, false, 4 * 8, 4 * 5)
 	}
 
-	unbind(gl: WebGL2RenderingContext): void {
-		glCall(gl, gl.disableVertexAttribArray, 0)
-		glCall(gl, gl.disableVertexAttribArray, 1)
-		glCall(gl, gl.disableVertexAttribArray, 2)
-		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, null)
-		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, null)
+	destroy(gl: WebGL2RenderingContext): void {
+		glCall(gl, gl.deleteBuffer, this.buffer)
+		glCall(gl, gl.deleteBuffer, this.ibo)
+		glCall(gl, gl.deleteVertexArray, this.vao)
 	}
+
+	bind(gl: WebGL2RenderingContext): void {
+		glCall(gl, gl.bindVertexArray, this.vao)
+		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, this.ibo)
+	}
+
+	unbind(gl: WebGL2RenderingContext): void {}
 
 	render(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.drawElements, gl.TRIANGLES, this.vertexCount, gl.UNSIGNED_SHORT, 0)

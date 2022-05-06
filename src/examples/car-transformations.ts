@@ -104,7 +104,6 @@ export function draw() {
 		.translate(new Vector3(0.175, 0.45, 0))
 	gl.uniformMatrix4fv(gl.getUniformLocation(program, 'uMat'), false, mat.mul(topMat))
 	top.render(gl)
-	Cube.unbind(gl)
 
 	gl.uniform3fv(gl.getUniformLocation(program, 'uColor'), new Vector3(0.133, 0.133, 0.133))
 
@@ -129,7 +128,6 @@ export function draw() {
 	const backLeftMat = wheelsMat.translate(new Vector3(0.5, 0, -0.5))
 	gl.uniformMatrix4fv(gl.getUniformLocation(program, 'uMat'), false, mat.mul(backLeftMat))
 	backLeftWheel.render(gl)
-	Cylinder.unbind(gl)
 
 	// const backWheelMat = new Matrix4()
 	// 	.rotate(new Vector3(Math.PI / 2, 0, 0))

@@ -4,6 +4,7 @@ import { glCall } from './Utils'
 const SUBDIVISIONS: number = 32
 
 export class Cylinder implements Model {
+	static vao: WebGLVertexArrayObject
 	static buffer: WebGLBuffer
 	static ibo: WebGLBuffer
 	static count: number = 0
@@ -50,14 +51,20 @@ export class Cylinder implements Model {
 		}
 		const typedIndices = new Uint16Array(indices)
 
+		Cylinder.vao = glCall(gl, gl.createVertexArray)
+		glCall(gl, gl.bindVertexArray, Cylinder.vao)
+
 		Cylinder.buffer = glCall(gl, gl.createBuffer)
+		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, Cylinder.buffer)
+
 		Cylinder.ibo = glCall(gl, gl.createBuffer)
-		Cylinder.bind(gl)
+		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, Cylinder.ibo)
 
 		gl.bufferData(gl.ARRAY_BUFFER, typedVertices, gl.STATIC_DRAW)
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, typedIndices, gl.STATIC_DRAW)
 
-		Cylinder.unbind(gl)
+		glCall(gl, gl.enableVertexAttribArray, 0)
+		glCall(gl, gl.vertexAttribPointer, 0, 3, gl.FLOAT, false, 4 * 3, 0)
 	}
 
 	destroy(gl: WebGL2RenderingContext): void {
@@ -65,21 +72,16 @@ export class Cylinder implements Model {
 		if (Cylinder.count === 0) {
 			glCall(gl, gl.deleteBuffer, Cylinder.buffer)
 			glCall(gl, gl.deleteBuffer, Cylinder.ibo)
+			glCall(gl, gl.deleteVertexArray, Cylinder.vao)
 		}
 	}
 
 	static bind(gl: WebGL2RenderingContext): void {
-		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, Cylinder.buffer)
+		glCall(gl, gl.bindVertexArray, Cylinder.vao)
 		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, Cylinder.ibo)
-		glCall(gl, gl.enableVertexAttribArray, 0)
-		glCall(gl, gl.vertexAttribPointer, 0, 3, gl.FLOAT, false, 4 * 3, 0)
 	}
 
-	static unbind(gl: WebGL2RenderingContext): void {
-		glCall(gl, gl.disableVertexAttribArray, 0)
-		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, null)
-		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, null)
-	}
+	static unbind(gl: WebGL2RenderingContext): void {}
 
 	render(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.drawElements, gl.TRIANGLES, SUBDIVISIONS * 3 * 4, gl.UNSIGNED_SHORT, 0)

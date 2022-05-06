@@ -2,6 +2,7 @@ import { Model } from './Model'
 import { glCall } from './Utils'
 
 export class Quad implements Model {
+	static vao: WebGLVertexArrayObject
 	static buffer: WebGLBuffer
 	static ibo: WebGLBuffer
 	static count: number = 0
@@ -21,27 +22,18 @@ export class Quad implements Model {
 		const indices = [0, 1, 2, 2, 1, 3]
 		const typedIndices = new Uint16Array(indices)
 
+		Quad.vao = glCall(gl, gl.createVertexArray)
+		glCall(gl, gl.bindVertexArray, Quad.vao)
+
 		Quad.buffer = glCall(gl, gl.createBuffer)
+		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, Quad.buffer)
+
 		Quad.ibo = glCall(gl, gl.createBuffer)
-		Quad.bind(gl)
+		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, Quad.ibo)
 
 		glCall(gl, gl.bufferData, gl.ARRAY_BUFFER, typedVertices, gl.STATIC_DRAW)
 		glCall(gl, gl.bufferData, gl.ELEMENT_ARRAY_BUFFER, typedIndices, gl.STATIC_DRAW)
 
-		Quad.unbind(gl)
-	}
-
-	destroy(gl: WebGL2RenderingContext): void {
-		Quad.count -= 1
-		if (Quad.count === 0) {
-			glCall(gl, gl.deleteBuffer, Quad.buffer)
-			glCall(gl, gl.deleteBuffer, Quad.ibo)
-		}
-	}
-
-	static bind(gl: WebGL2RenderingContext): void {
-		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, Quad.buffer)
-		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, Quad.ibo)
 		glCall(gl, gl.enableVertexAttribArray, 0)
 		glCall(gl, gl.enableVertexAttribArray, 1)
 		glCall(gl, gl.enableVertexAttribArray, 2)
@@ -50,13 +42,21 @@ export class Quad implements Model {
 		glCall(gl, gl.vertexAttribPointer, 2, 3, gl.FLOAT, false, 4 * 8, 4 * 5)
 	}
 
-	static unbind(gl: WebGL2RenderingContext): void {
-		glCall(gl, gl.disableVertexAttribArray, 0)
-		glCall(gl, gl.disableVertexAttribArray, 1)
-		glCall(gl, gl.disableVertexAttribArray, 2)
-		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, null)
-		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, null)
+	destroy(gl: WebGL2RenderingContext): void {
+		Quad.count -= 1
+		if (Quad.count === 0) {
+			glCall(gl, gl.deleteBuffer, Quad.buffer)
+			glCall(gl, gl.deleteBuffer, Quad.ibo)
+			glCall(gl, gl.deleteVertexArray, Quad.vao)
+		}
 	}
+
+	static bind(gl: WebGL2RenderingContext): void {
+		glCall(gl, gl.bindVertexArray, Quad.vao)
+		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, Quad.ibo)
+	}
+
+	static unbind(gl: WebGL2RenderingContext): void {}
 
 	render(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.drawElements, gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)

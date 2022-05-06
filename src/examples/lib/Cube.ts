@@ -2,6 +2,7 @@ import { Model } from './Model'
 import { glCall } from './Utils'
 
 export class Cube implements Model {
+	static vao: WebGLVertexArrayObject
 	static buffer: WebGLBuffer
 	static ibo: WebGLBuffer
 	static count: number = 0
@@ -24,15 +25,23 @@ export class Cube implements Model {
 		]
 		const typedIndices = new Uint16Array(indices)
 
+		Cube.vao = glCall(gl, gl.createVertexArray)
+		glCall(gl, gl.bindVertexArray, Cube.vao)
+
 		Cube.buffer = glCall(gl, gl.createBuffer)
+		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, Cube.buffer)
+
 		Cube.ibo = glCall(gl, gl.createBuffer)
-		Cube.bind(gl)
+		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, Cube.ibo)
 
 		gl.bufferData(gl.ARRAY_BUFFER, typedVertices, gl.STATIC_DRAW)
 		glCall(gl, gl.bufferData, gl.ARRAY_BUFFER, typedVertices, gl.STATIC_DRAW)
 		glCall(gl, gl.bufferData, gl.ELEMENT_ARRAY_BUFFER, typedIndices, gl.STATIC_DRAW)
 
-		Cube.unbind(gl)
+		glCall(gl, gl.enableVertexAttribArray, 0)
+		glCall(gl, gl.enableVertexAttribArray, 1)
+		glCall(gl, gl.vertexAttribPointer, 0, 3, gl.FLOAT, false, 4 * 5, 0)
+		glCall(gl, gl.vertexAttribPointer, 1, 2, gl.FLOAT, false, 4 * 5, 4 * 3)
 	}
 
 	destroy(gl: WebGL2RenderingContext): void {
@@ -40,24 +49,16 @@ export class Cube implements Model {
 		if (Cube.count === 0) {
 			glCall(gl, gl.deleteBuffer, Cube.buffer)
 			glCall(gl, gl.deleteBuffer, Cube.ibo)
+			glCall(gl, gl.deleteVertexArray, Cube.vao)
 		}
 	}
 
 	static bind(gl: WebGL2RenderingContext): void {
-		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, Cube.buffer)
+		glCall(gl, gl.bindVertexArray, Cube.vao)
 		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, Cube.ibo)
-		glCall(gl, gl.enableVertexAttribArray, 0)
-		glCall(gl, gl.enableVertexAttribArray, 1)
-		glCall(gl, gl.vertexAttribPointer, 0, 3, gl.FLOAT, false, 4 * 5, 0)
-		glCall(gl, gl.vertexAttribPointer, 1, 2, gl.FLOAT, false, 4 * 5, 4 * 3)
 	}
 
-	static unbind(gl: WebGL2RenderingContext): void {
-		glCall(gl, gl.disableVertexAttribArray, 0)
-		glCall(gl, gl.disableVertexAttribArray, 1)
-		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, null)
-		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, null)
-	}
+	static unbind(gl: WebGL2RenderingContext): void {}
 
 	render(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.drawElements, gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0)
