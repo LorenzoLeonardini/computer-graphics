@@ -1,7 +1,7 @@
 export function glCall<F extends (...args: any) => any>(
-	gl: WebGLRenderingContext,
+	gl: WebGL2RenderingContext | WebGLRenderingContext,
 	fn: F,
-	...args: Parameters<F>
+	...args: any // Parameters<F> sad https://github.com/microsoft/TypeScript/issues/29732
 ): ReturnType<F> {
 	// Clearing errors
 	while (gl.getError() !== gl.NO_ERROR);

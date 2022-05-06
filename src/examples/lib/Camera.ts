@@ -177,7 +177,7 @@ export class Camera {
 		return r
 	}
 
-	render(gl: WebGLRenderingContext, model: Model, shader: Shader, objectMat: Matrix4) {
+	render(gl: WebGL2RenderingContext, model: Model, shader: Shader, objectMat: Matrix4) {
 		shader.bind()
 		// if (material.currentCamera !== this.uid || this.frameChanged || this.perspectiveChanged) {
 		shader.loadPerspective(this.perspective)

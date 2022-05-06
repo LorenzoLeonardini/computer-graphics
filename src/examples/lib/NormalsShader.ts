@@ -1,7 +1,7 @@
 import { Shader } from './Shader'
 
 export class NormalsShader extends Shader {
-	constructor(gl: WebGLRenderingContext) {
+	constructor(gl: WebGL2RenderingContext) {
 		super()
 		this.gl = gl
 	}

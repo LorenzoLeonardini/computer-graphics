@@ -1,20 +1,19 @@
 import { Vector, Vector2, Vector3, Vector4 } from './Vector'
 
-type MulType = Matrix | Vector | number
-type MulRetType<T> = T extends Matrix ? Matrix : T extends Vector ? Vector : Matrix
-
-export interface Matrix extends Float32Array {
-	add: (mat: Matrix) => Matrix
-	sub: (mat: Matrix) => Matrix
-	mul: <T extends MulType>(b: T) => MulRetType<T>
-	translate: (vec: Vector) => Matrix
-	rotate: (vec: Vector) => Matrix
-	scale: (vec: Vector | number) => Matrix
-	row: (idx: number) => Vector
-	col: (idx: number) => Vector
+export interface Matrix<T> extends Float32Array {
+	add(mat: T): T
+	sub(mat: T): T
+	mul(num: number): T
+	mul(vec: Vector): Vector
+	mul(mat: T): T
+	translate(vec: Vector): T
+	rotate(vec: Vector): T
+	scale(vec: Vector | number): T
+	row(idx: number): Vector
+	col(idx: number): Vector
 }
 
-export class Matrix3 extends Float32Array implements Matrix {
+export class Matrix3 extends Float32Array implements Matrix<Matrix3> {
 	constructor(
 		value?: [number, number, number, number, number, number, number, number, number] | undefined
 	) {
@@ -35,7 +34,7 @@ export class Matrix3 extends Float32Array implements Matrix {
 		return this
 	}
 
-	mul<T extends MulType>(b: T): MulRetType<T> {
+	mul(b: number | Vector | Matrix3): any {
 		if (b instanceof Matrix3) {
 			return new Matrix3([
 				this[0] * b[0] + this[3] * b[1] + this[6] * b[2],
@@ -49,15 +48,15 @@ export class Matrix3 extends Float32Array implements Matrix {
 				this[0] * b[6] + this[3] * b[7] + this[6] * b[8],
 				this[1] * b[6] + this[4] * b[7] + this[7] * b[8],
 				this[2] * b[6] + this[5] * b[7] + this[8] * b[8]
-			]) as unknown as MulRetType<T>
+			])
 		} else if (b instanceof Vector3) {
 			let x = this.row(0).dot(b)
 			let y = this.row(1).dot(b)
 			let z = this.row(2).dot(b)
-			return new Vector3(x, y, z) as unknown as MulRetType<T>
+			return new Vector3(x, y, z)
 		} else if (typeof b === 'number') {
 			for (let i = 0; i < 9; i++) this[i] *= b
-			return this as unknown as MulRetType<T>
+			return this
 		} else {
 			throw new Error('Invalid input parameter type')
 		}
@@ -124,7 +123,7 @@ export class Matrix3 extends Float32Array implements Matrix {
 	}
 }
 
-export class Matrix4 extends Float32Array implements Matrix {
+export class Matrix4 extends Float32Array implements Matrix<Matrix4> {
 	constructor(
 		value?:
 			| [
@@ -164,7 +163,7 @@ export class Matrix4 extends Float32Array implements Matrix {
 		return this
 	}
 
-	mul<T extends MulType>(b: T): MulRetType<T> {
+	mul(b: number | Vector | Matrix4): any {
 		if (b instanceof Matrix4) {
 			return new Matrix4([
 				this[0] * b[0] + this[4] * b[1] + this[8] * b[2] + this[12] * b[3],
@@ -186,16 +185,16 @@ export class Matrix4 extends Float32Array implements Matrix {
 				this[1] * b[12] + this[5] * b[13] + this[9] * b[14] + this[13] * b[15],
 				this[2] * b[12] + this[6] * b[13] + this[10] * b[14] + this[14] * b[15],
 				this[3] * b[12] + this[7] * b[13] + this[11] * b[14] + this[15] * b[15]
-			]) as unknown as MulRetType<T>
+			])
 		} else if (b instanceof Vector4) {
 			let x = this.row(0).dot(b)
 			let y = this.row(1).dot(b)
 			let z = this.row(2).dot(b)
 			let w = this.row(3).dot(b)
-			return new Vector4(x, y, z, w) as unknown as MulRetType<T>
+			return new Vector4(x, y, z, w)
 		} else if (typeof b === 'number') {
 			for (let i = 0; i < 16; i++) this[i] *= b
-			return this as unknown as MulRetType<T>
+			return this
 		} else {
 			throw new Error('Invalid input parameter type')
 		}

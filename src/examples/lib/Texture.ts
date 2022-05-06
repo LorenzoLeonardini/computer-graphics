@@ -3,7 +3,7 @@ import { glCall } from './Utils'
 export class Texture {
 	texture: WebGLTexture
 
-	constructor(gl: WebGLRenderingContext, image: HTMLImageElement) {
+	constructor(gl: WebGL2RenderingContext, image: HTMLImageElement) {
 		this.texture = glCall(gl, gl.createTexture)
 		glCall(gl, gl.bindTexture, gl.TEXTURE_2D, this.texture)
 		glCall(gl, gl.texImage2D, gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image)
@@ -16,12 +16,12 @@ export class Texture {
 		glCall(gl, gl.generateMipmap, gl.TEXTURE_2D)
 	}
 
-	bind(gl: WebGLRenderingContext, textureUnit: number = 0) {
+	bind(gl: WebGL2RenderingContext, textureUnit: number = 0) {
 		glCall(gl, gl.activeTexture, gl.TEXTURE0 + textureUnit)
 		glCall(gl, gl.bindTexture, gl.TEXTURE_2D, this.texture)
 	}
 
-	unbind(gl: WebGLRenderingContext, textureUnit: number = 0) {
+	unbind(gl: WebGL2RenderingContext, textureUnit: number = 0) {
 		glCall(gl, gl.activeTexture, gl.TEXTURE0 + textureUnit)
 		glCall(gl, gl.bindTexture, gl.TEXTURE_2D, null)
 	}

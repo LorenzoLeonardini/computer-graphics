@@ -7,7 +7,7 @@ export class OBJModel implements Model {
 	vertexCount: number
 
 	constructor(
-		gl: WebGLRenderingContext,
+		gl: WebGL2RenderingContext,
 		model: {
 			vertices: number[]
 			indices: number[]
@@ -30,12 +30,12 @@ export class OBJModel implements Model {
 		this.unbind(gl)
 	}
 
-	destroy(gl: WebGLRenderingContext): void {
+	destroy(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.deleteBuffer, this.buffer)
 		glCall(gl, gl.deleteBuffer, this.ibo)
 	}
 
-	bind(gl: WebGLRenderingContext): void {
+	bind(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, this.buffer)
 		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, this.ibo)
 		glCall(gl, gl.enableVertexAttribArray, 0)
@@ -46,7 +46,7 @@ export class OBJModel implements Model {
 		glCall(gl, gl.vertexAttribPointer, 2, 3, gl.FLOAT, false, 4 * 8, 4 * 5)
 	}
 
-	unbind(gl: WebGLRenderingContext): void {
+	unbind(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.disableVertexAttribArray, 0)
 		glCall(gl, gl.disableVertexAttribArray, 1)
 		glCall(gl, gl.disableVertexAttribArray, 2)
@@ -54,7 +54,7 @@ export class OBJModel implements Model {
 		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, null)
 	}
 
-	render(gl: WebGLRenderingContext): void {
+	render(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.drawElements, gl.TRIANGLES, this.vertexCount, gl.UNSIGNED_SHORT, 0)
 	}
 }

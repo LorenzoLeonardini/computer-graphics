@@ -6,7 +6,7 @@ export class Quad implements Model {
 	static ibo: WebGLBuffer
 	static count: number = 0
 
-	constructor(gl: WebGLRenderingContext) {
+	constructor(gl: WebGL2RenderingContext) {
 		if (Quad.count > 0) {
 			return
 		}
@@ -31,7 +31,7 @@ export class Quad implements Model {
 		Quad.unbind(gl)
 	}
 
-	destroy(gl: WebGLRenderingContext): void {
+	destroy(gl: WebGL2RenderingContext): void {
 		Quad.count -= 1
 		if (Quad.count === 0) {
 			glCall(gl, gl.deleteBuffer, Quad.buffer)
@@ -39,7 +39,7 @@ export class Quad implements Model {
 		}
 	}
 
-	static bind(gl: WebGLRenderingContext): void {
+	static bind(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, Quad.buffer)
 		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, Quad.ibo)
 		glCall(gl, gl.enableVertexAttribArray, 0)
@@ -50,7 +50,7 @@ export class Quad implements Model {
 		glCall(gl, gl.vertexAttribPointer, 2, 3, gl.FLOAT, false, 4 * 8, 4 * 5)
 	}
 
-	static unbind(gl: WebGLRenderingContext): void {
+	static unbind(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.disableVertexAttribArray, 0)
 		glCall(gl, gl.disableVertexAttribArray, 1)
 		glCall(gl, gl.disableVertexAttribArray, 2)
@@ -58,7 +58,7 @@ export class Quad implements Model {
 		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, null)
 	}
 
-	render(gl: WebGLRenderingContext): void {
+	render(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.drawElements, gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
 	}
 }

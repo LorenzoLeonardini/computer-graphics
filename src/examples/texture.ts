@@ -3,7 +3,7 @@ import { Matrix4 } from './lib/Matrix'
 import { loadImage } from './lib/Utils'
 import { Vector3 } from './lib/Vector'
 
-let gl: WebGLRenderingContext = null
+let gl: WebGL2RenderingContext = null
 let program: WebGLProgram
 const slotPositions = 0
 const slotTexCoords = 1
@@ -12,7 +12,7 @@ let rotation = 0.1
 let projectionMatrix: Matrix4
 
 export function setupWebGL(canvas: HTMLCanvasElement) {
-	gl = canvas.getContext('webgl')
+	gl = canvas.getContext('webgl2')
 }
 
 export function setupWhatToDraw() {

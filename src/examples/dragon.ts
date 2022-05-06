@@ -1,12 +1,11 @@
 import { Camera } from './lib/Camera'
-import { FlatShader } from './lib/FlatShader'
 import { Matrix4 } from './lib/Matrix'
 import { NormalsShader } from './lib/NormalsShader'
 import { loadObjModel } from './lib/ObjectLoader'
 import { OBJModel } from './lib/OBJModel'
 import { Vector3 } from './lib/Vector'
 
-let gl: WebGLRenderingContext = null
+let gl: WebGL2RenderingContext = null
 let shader: NormalsShader
 let dragon: OBJModel = null
 let rotation = 0.1
@@ -14,7 +13,7 @@ let rotation = 0.1
 let camera: Camera
 
 export function setupWebGL(canvas: HTMLCanvasElement) {
-	gl = canvas.getContext('webgl')
+	gl = canvas.getContext('webgl2')
 }
 
 export async function setupWhatToDraw() {
@@ -31,7 +30,7 @@ export async function changeAspectRatio(width: number, height: number) {
 }
 
 export async function setupHowToDraw() {
-	shader = await new FlatShader(gl, new Vector3(0.8, 0, 0))._init()
+	shader = await new NormalsShader(gl)._init()
 }
 
 export function draw() {

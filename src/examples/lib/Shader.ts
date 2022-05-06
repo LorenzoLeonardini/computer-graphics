@@ -8,12 +8,12 @@ export class Shader {
 	program: WebGLProgram
 	vertexSrc: string
 	fragmentSrc: string
-	gl: WebGLRenderingContext
+	gl: WebGL2RenderingContext
 
 	projectionMatUniformLocation: WebGLUniformLocation
 	viewMatUniformLocation: WebGLUniformLocation
 
-	protected async _init(gl: WebGLRenderingContext): Promise<Shader> {
+	protected async _init(gl: WebGL2RenderingContext): Promise<Shader> {
 		this.gl = gl
 
 		this.vertexShader = glCall(gl, gl.createShader, gl.VERTEX_SHADER)

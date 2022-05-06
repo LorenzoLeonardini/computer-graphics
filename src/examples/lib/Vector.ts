@@ -1,10 +1,10 @@
 export interface Vector extends Float32Array {
-	add: (vec: Vector) => Vector
-	sub: (vec: Vector) => Vector
-	mul: (num: number) => Vector
-	dot: (vec: Vector) => number
-	getLength: () => number
-	normalize: () => Vector
+	add(vec: Vector): Vector
+	sub(vec: Vector): Vector
+	mul(num: number): Vector
+	dot(vec: Vector): number
+	getLength(): number
+	normalize(): Vector
 }
 
 export class Vector2 extends Float32Array implements Vector {

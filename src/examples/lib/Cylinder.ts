@@ -8,7 +8,7 @@ export class Cylinder implements Model {
 	static ibo: WebGLBuffer
 	static count: number = 0
 
-	constructor(gl: WebGLRenderingContext) {
+	constructor(gl: WebGL2RenderingContext) {
 		if (Cylinder.count > 0) {
 			return
 		}
@@ -60,7 +60,7 @@ export class Cylinder implements Model {
 		Cylinder.unbind(gl)
 	}
 
-	destroy(gl: WebGLRenderingContext): void {
+	destroy(gl: WebGL2RenderingContext): void {
 		Cylinder.count -= 1
 		if (Cylinder.count === 0) {
 			glCall(gl, gl.deleteBuffer, Cylinder.buffer)
@@ -68,20 +68,20 @@ export class Cylinder implements Model {
 		}
 	}
 
-	static bind(gl: WebGLRenderingContext): void {
+	static bind(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, Cylinder.buffer)
 		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, Cylinder.ibo)
 		glCall(gl, gl.enableVertexAttribArray, 0)
 		glCall(gl, gl.vertexAttribPointer, 0, 3, gl.FLOAT, false, 4 * 3, 0)
 	}
 
-	static unbind(gl: WebGLRenderingContext): void {
+	static unbind(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.disableVertexAttribArray, 0)
 		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, null)
 		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, null)
 	}
 
-	render(gl: WebGLRenderingContext): void {
+	render(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.drawElements, gl.TRIANGLES, SUBDIVISIONS * 3 * 4, gl.UNSIGNED_SHORT, 0)
 	}
 }

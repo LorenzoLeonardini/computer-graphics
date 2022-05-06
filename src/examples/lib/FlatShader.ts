@@ -7,7 +7,7 @@ export class FlatShader extends Shader {
 
 	colorUniformLocation: WebGLUniformLocation
 
-	constructor(gl: WebGLRenderingContext, color: Vector3) {
+	constructor(gl: WebGL2RenderingContext, color: Vector3) {
 		super()
 		this.color = color
 		this.gl = gl
