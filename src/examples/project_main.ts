@@ -60,9 +60,9 @@ export async function setupHowToDraw() {
 	carTiresMaterial = new FlatShader(gl, new Vector3(0.133, 0.133, 0.133))
 	lineMaterial = new FlatShader(gl, new Vector3(1, 1, 0))
 
-	const blendMapTexture = new Texture(gl, 'assets/project/terrainBlendMap.png')
-	const grassTexture = new Texture(gl, 'assets/grass.jpg')
-	const asphaltTexture = new Texture(gl, 'assets/asphalt.jpg')
+	const blendMapTexture = new Texture(gl, '/assets/project/terrainBlendMap.png')
+	const grassTexture = new Texture(gl, '/assets/grass.jpg')
+	const asphaltTexture = new Texture(gl, '/assets/asphalt.jpg')
 	terrainShader = new TerrainShader(
 		gl,
 		blendMapTexture,
