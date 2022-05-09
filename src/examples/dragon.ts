@@ -25,7 +25,7 @@ export async function setupWhatToDraw() {
 export async function changeAspectRatio(width: number, height: number) {
 	camera = new Camera(3.14 / 4, height / width, 0.01, 50)
 	camera.position(0, 5, 20)
-	camera.lookAt(0, 5, 0)
+	camera.lookAt(new Vector3(0, 5, 0))
 	gl.viewport(0, 0, width, height)
 }
 

@@ -1,6 +1,5 @@
 ---
 layout: ../../layouts/BaseLayout.astro
-setup: import Canvas from '../../components/Canvas.svelte'
 title: Paradigmi di rendering
 ---
 
@@ -62,9 +61,9 @@ I vantaggi della rasterizzazione sono invece dati dalla facilità con cui si rie
 Non è vero che il ray tracing sia obbligatoriamente lento e non è vero che la rasterizzazione non possa portare a scene realistiche e con effetti complessi.
 
 > Rasterization is fast, but needs cleverness to support complex visual effects.
-> 
+>
 > Ray tracing supports complex visual effetcs, but needs cleverness to be fast.
-> 
+>
 > -- <cite>David Luebke (NVIDIA)</cite>
 
 Entrambi i metodi necessitano di riconoscere e scartare le porzioni della scena che non sono visibili (**hidden surface removal**).

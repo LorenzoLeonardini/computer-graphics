@@ -11,6 +11,7 @@ export interface Matrix<T> extends Float32Array {
 	scale(vec: Vector | number): T
 	row(idx: number): Vector
 	col(idx: number): Vector
+	copy(): T
 }
 
 export class Matrix3 extends Float32Array implements Matrix<Matrix3> {
@@ -121,6 +122,20 @@ export class Matrix3 extends Float32Array implements Matrix<Matrix3> {
   ${this[2]}, ${this[5]}, ${this[8]} ]
 		`
 	}
+
+	copy(): Matrix3 {
+		return new Matrix3([
+			this[0],
+			this[1],
+			this[2],
+			this[3],
+			this[4],
+			this[5],
+			this[6],
+			this[7],
+			this[8]
+		])
+	}
 }
 
 export class Matrix4 extends Float32Array implements Matrix<Matrix4> {
@@ -211,6 +226,9 @@ export class Matrix4 extends Float32Array implements Matrix<Matrix4> {
 	}
 
 	static rotate(vec: Vector3): Matrix4 {
+		if (vec[0] === 0 && vec[1] === 0 && vec[2] === 0) {
+			return new Matrix4()
+		}
 		if (vec[0] !== 0 && vec[1] === 0 && vec[2] === 0) {
 			return new Matrix4([
 				1,
@@ -342,5 +360,147 @@ export class Matrix4 extends Float32Array implements Matrix<Matrix4> {
 			(-2 * farPlane * nearPlane) / (farPlane - nearPlane),
 			0
 		])
+	}
+
+	copy(): Matrix4 {
+		return new Matrix4([
+			this[0],
+			this[1],
+			this[2],
+			this[3],
+			this[4],
+			this[5],
+			this[6],
+			this[7],
+			this[8],
+			this[9],
+			this[10],
+			this[11],
+			this[12],
+			this[13],
+			this[14],
+			this[15]
+		])
+	}
+
+	// This implementation is from the Mesa OpenGL function `__gluInvertMatrixd()` found in `project.c`
+	inverse(): Matrix4 {
+		let r = new Matrix4()
+		r[0] =
+			this[5] * this[10] * this[15] -
+			this[5] * this[14] * this[11] -
+			this[6] * this[9] * this[15] +
+			this[6] * this[13] * this[11] +
+			this[7] * this[9] * this[14] -
+			this[7] * this[13] * this[10]
+		r[1] =
+			-this[1] * this[10] * this[15] +
+			this[1] * this[14] * this[11] +
+			this[2] * this[9] * this[15] -
+			this[2] * this[13] * this[11] -
+			this[3] * this[9] * this[14] +
+			this[3] * this[13] * this[10]
+		r[2] =
+			this[1] * this[6] * this[15] -
+			this[1] * this[14] * this[7] -
+			this[2] * this[5] * this[15] +
+			this[2] * this[13] * this[7] +
+			this[3] * this[5] * this[14] -
+			this[3] * this[13] * this[6]
+		r[3] =
+			-this[1] * this[6] * this[11] +
+			this[1] * this[10] * this[7] +
+			this[2] * this[5] * this[11] -
+			this[2] * this[9] * this[7] -
+			this[3] * this[5] * this[10] +
+			this[3] * this[9] * this[6]
+
+		r[4] =
+			-this[4] * this[10] * this[15] +
+			this[4] * this[14] * this[11] +
+			this[6] * this[8] * this[15] -
+			this[6] * this[12] * this[11] -
+			this[7] * this[8] * this[14] +
+			this[7] * this[12] * this[10]
+		r[5] =
+			this[0] * this[10] * this[15] -
+			this[0] * this[14] * this[11] -
+			this[2] * this[8] * this[15] +
+			this[2] * this[12] * this[11] +
+			this[3] * this[8] * this[14] -
+			this[3] * this[12] * this[10]
+		r[6] =
+			-this[0] * this[6] * this[15] +
+			this[0] * this[14] * this[7] +
+			this[2] * this[4] * this[15] -
+			this[2] * this[12] * this[7] -
+			this[3] * this[4] * this[14] +
+			this[3] * this[12] * this[6]
+		r[7] =
+			this[0] * this[6] * this[11] -
+			this[0] * this[10] * this[7] -
+			this[2] * this[4] * this[11] +
+			this[2] * this[8] * this[7] +
+			this[3] * this[4] * this[10] -
+			this[3] * this[8] * this[6]
+
+		r[8] =
+			this[4] * this[9] * this[15] -
+			this[4] * this[13] * this[11] -
+			this[5] * this[8] * this[15] +
+			this[5] * this[12] * this[11] +
+			this[7] * this[8] * this[13] -
+			this[7] * this[12] * this[9]
+		r[9] =
+			-this[0] * this[9] * this[15] +
+			this[0] * this[13] * this[11] +
+			this[1] * this[8] * this[15] -
+			this[1] * this[12] * this[11] -
+			this[3] * this[8] * this[13] +
+			this[3] * this[12] * this[9]
+		r[10] =
+			this[0] * this[5] * this[15] -
+			this[0] * this[13] * this[7] -
+			this[1] * this[4] * this[15] +
+			this[1] * this[12] * this[7] +
+			this[3] * this[4] * this[13] -
+			this[3] * this[12] * this[5]
+		r[11] =
+			-this[0] * this[5] * this[11] +
+			this[0] * this[9] * this[7] +
+			this[1] * this[4] * this[11] -
+			this[1] * this[8] * this[7] -
+			this[3] * this[4] * this[9] +
+			this[3] * this[8] * this[5]
+
+		r[12] =
+			-this[4] * this[9] * this[14] +
+			this[4] * this[13] * this[10] +
+			this[5] * this[8] * this[14] -
+			this[5] * this[12] * this[10] -
+			this[6] * this[8] * this[13] +
+			this[6] * this[12] * this[9]
+		r[13] =
+			this[0] * this[9] * this[14] -
+			this[0] * this[13] * this[10] -
+			this[1] * this[8] * this[14] +
+			this[1] * this[12] * this[10] +
+			this[2] * this[8] * this[13] -
+			this[2] * this[12] * this[9]
+		r[14] =
+			-this[0] * this[5] * this[14] +
+			this[0] * this[13] * this[6] +
+			this[1] * this[4] * this[14] -
+			this[1] * this[12] * this[6] -
+			this[2] * this[4] * this[13] +
+			this[2] * this[12] * this[5]
+		r[15] =
+			this[0] * this[5] * this[10] -
+			this[0] * this[9] * this[6] -
+			this[1] * this[4] * this[10] +
+			this[1] * this[8] * this[6] +
+			this[2] * this[4] * this[9] -
+			this[2] * this[8] * this[5]
+		return r
 	}
 }

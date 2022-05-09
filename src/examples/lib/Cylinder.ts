@@ -8,6 +8,7 @@ export class Cylinder implements Model {
 	static buffer: WebGLBuffer
 	static ibo: WebGLBuffer
 	static count: number = 0
+	indicesCount: number = 0
 
 	constructor(gl: WebGL2RenderingContext) {
 		if (Cylinder.count > 0) {
@@ -39,16 +40,17 @@ export class Cylinder implements Model {
 			indices.push(0, i + 1, ((i + 1) % SUBDIVISIONS) + 1)
 			indices.push(
 				SUBDIVISIONS + 1,
-				SUBDIVISIONS + 1 + i + 1,
-				SUBDIVISIONS + 1 + ((i + 1) % SUBDIVISIONS) + 1
+				SUBDIVISIONS + 1 + ((i + 1) % SUBDIVISIONS) + 1,
+				SUBDIVISIONS + 1 + i + 1
 			)
 			indices.push(
 				i + 1,
-				((i + 1) % SUBDIVISIONS) + 1,
-				SUBDIVISIONS + 1 + ((i + 1) % SUBDIVISIONS) + 1
+				SUBDIVISIONS + 1 + ((i + 1) % SUBDIVISIONS) + 1,
+				((i + 1) % SUBDIVISIONS) + 1
 			)
-			indices.push(i + 1, SUBDIVISIONS + 1 + ((i + 1) % SUBDIVISIONS) + 1, SUBDIVISIONS + 1 + i + 1)
+			indices.push(i + 1, SUBDIVISIONS + 1 + i + 1, SUBDIVISIONS + 1 + ((i + 1) % SUBDIVISIONS) + 1)
 		}
+		this.indicesCount = indices.length
 		const typedIndices = new Uint16Array(indices)
 
 		Cylinder.vao = glCall(gl, gl.createVertexArray)
@@ -84,6 +86,6 @@ export class Cylinder implements Model {
 	static unbind(gl: WebGL2RenderingContext): void {}
 
 	render(gl: WebGL2RenderingContext): void {
-		glCall(gl, gl.drawElements, gl.TRIANGLES, SUBDIVISIONS * 3 * 4, gl.UNSIGNED_SHORT, 0)
+		glCall(gl, gl.drawElements, gl.TRIANGLES, this.indicesCount, gl.UNSIGNED_SHORT, 0)
 	}
 }

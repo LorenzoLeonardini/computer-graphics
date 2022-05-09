@@ -5,6 +5,7 @@ export interface Vector extends Float32Array {
 	dot(vec: Vector): number
 	getLength(): number
 	normalize(): Vector
+	copy(): Vector
 }
 
 export class Vector2 extends Float32Array implements Vector {
@@ -43,6 +44,10 @@ export class Vector2 extends Float32Array implements Vector {
 		this[0] /= len
 		this[1] /= len
 		return this
+	}
+
+	copy(): Vector2 {
+		return new Vector2(this[0], this[1])
 	}
 }
 
@@ -95,6 +100,10 @@ export class Vector3 extends Float32Array implements Vector {
 		this[2] /= len
 		return this
 	}
+
+	copy(): Vector3 {
+		return new Vector3(this[0], this[1], this[2])
+	}
 }
 
 export class Vector4 extends Float32Array implements Vector {
@@ -141,5 +150,9 @@ export class Vector4 extends Float32Array implements Vector {
 		this[2] /= len
 		this[3] /= len
 		return this
+	}
+
+	copy(): Vector4 {
+		return new Vector4(this[0], this[1], this[2], this[3])
 	}
 }

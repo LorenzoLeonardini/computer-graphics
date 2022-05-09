@@ -20,8 +20,8 @@ export class Cube implements Model {
 		const typedVertices = new Float32Array(vertices)
 
 		const indices = [
-			0, 1, 2, 2, 1, 3, 4, 6, 5, 6, 7, 5, 2, 3, 6, 6, 3, 7, 4, 5, 0, 0, 5, 1, 1, 5, 3, 3, 5, 7, 4,
-			0, 6, 0, 6, 2
+			0, 2, 1, 2, 3, 1, 4, 5, 6, 6, 5, 7, 2, 6, 3, 6, 7, 3, 4, 0, 5, 0, 1, 5, 1, 3, 5, 3, 7, 5, 4,
+			6, 0, 0, 6, 2
 		]
 		const typedIndices = new Uint16Array(indices)
 

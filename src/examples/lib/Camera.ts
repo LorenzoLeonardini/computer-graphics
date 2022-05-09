@@ -2,7 +2,7 @@ import { Matrix4 } from './Matrix'
 import { Model } from './Model'
 import { Shader } from './Shader'
 import { glCall } from './Utils'
-import { Vector3 } from './Vector'
+import { Vector3, Vector4 } from './Vector'
 
 export class Camera {
 	uid: number
@@ -34,10 +34,8 @@ export class Camera {
 		this.frameChanged = true
 	}
 
-	lookAt(x: number, y: number, z: number) {
-		let zDir = new Vector3(this.frame[12], this.frame[13], this.frame[14])
-			.sub(new Vector3(x, y, z))
-			.normalize()
+	lookAt(pos: Vector3) {
+		let zDir = new Vector3(this.frame[12], this.frame[13], this.frame[14]).sub(pos).normalize()
 		let up = new Vector3(0, 1, 0)
 		let xDir = up.cross(zDir).normalize()
 		let yDir = zDir.cross(xDir).normalize()
@@ -56,136 +54,75 @@ export class Camera {
 		this.frameChanged = true
 	}
 
-	// This implementation is from the Mesa OpenGL function `__gluInvertMatrixd()` found in `project.c`
+	forward(step: number) {
+		const direction = new Vector3(this.frame[8], 0, this.frame[10])
+		direction.normalize()
+		direction.mul(step)
+		this.frame[12] += direction[0]
+		this.frame[14] += direction[2]
+		this.frameChanged = true
+	}
+
+	zoom(step: number) {
+		const direction = new Vector3(this.frame[8], this.frame[9], this.frame[10])
+		direction.normalize()
+		direction.mul(step)
+		this.frame[12] += direction[0]
+		this.frame[13] += direction[1]
+		this.frame[14] += direction[2]
+		this.frameChanged = true
+	}
+
+	rotateYAround(point: Vector3, angle: number) {
+		if (angle === 0) return
+
+		const distance = new Vector3(this.frame[12], this.frame[13], this.frame[14])
+			.sub(point)
+			.getLength()
+
+		const position: Vector4 = Matrix4.rotate(new Vector3(0, angle, 0)).mul(
+			new Vector4(0, 0, distance, 1)
+		)
+		console.log(position)
+		const newPosition: Vector4 = this.frame.mul(position.sub(new Vector4(0, 0, distance, 0)))
+
+		this.frame[12] = newPosition[0]
+		this.frame[13] = newPosition[1]
+		this.frame[14] = newPosition[2]
+		this.frameChanged = true
+	}
+
+	rotateXAround(point: Vector3, angle: number) {
+		if (angle === 0) return
+
+		const distance = new Vector3(this.frame[12], this.frame[13], this.frame[14])
+			.sub(point)
+			.getLength()
+
+		const position: Vector4 = Matrix4.rotate(new Vector3(angle, 0, 0)).mul(
+			new Vector4(0, 0, distance, 1)
+		)
+		console.log(position)
+		const newPosition: Vector4 = this.frame.mul(position.sub(new Vector4(0, 0, distance, 0)))
+
+		this.frame[12] = newPosition[0]
+		this.frame[13] = newPosition[1]
+		this.frame[14] = newPosition[2]
+		this.frameChanged = true
+	}
+
 	viewMatrix(): Matrix4 {
-		let r = new Matrix4()
-		r[0] =
-			this.frame[5] * this.frame[10] * this.frame[15] -
-			this.frame[5] * this.frame[14] * this.frame[11] -
-			this.frame[6] * this.frame[9] * this.frame[15] +
-			this.frame[6] * this.frame[13] * this.frame[11] +
-			this.frame[7] * this.frame[9] * this.frame[14] -
-			this.frame[7] * this.frame[13] * this.frame[10]
-		r[1] =
-			-this.frame[1] * this.frame[10] * this.frame[15] +
-			this.frame[1] * this.frame[14] * this.frame[11] +
-			this.frame[2] * this.frame[9] * this.frame[15] -
-			this.frame[2] * this.frame[13] * this.frame[11] -
-			this.frame[3] * this.frame[9] * this.frame[14] +
-			this.frame[3] * this.frame[13] * this.frame[10]
-		r[2] =
-			this.frame[1] * this.frame[6] * this.frame[15] -
-			this.frame[1] * this.frame[14] * this.frame[7] -
-			this.frame[2] * this.frame[5] * this.frame[15] +
-			this.frame[2] * this.frame[13] * this.frame[7] +
-			this.frame[3] * this.frame[5] * this.frame[14] -
-			this.frame[3] * this.frame[13] * this.frame[6]
-		r[3] =
-			-this.frame[1] * this.frame[6] * this.frame[11] +
-			this.frame[1] * this.frame[10] * this.frame[7] +
-			this.frame[2] * this.frame[5] * this.frame[11] -
-			this.frame[2] * this.frame[9] * this.frame[7] -
-			this.frame[3] * this.frame[5] * this.frame[10] +
-			this.frame[3] * this.frame[9] * this.frame[6]
-
-		r[4] =
-			-this.frame[4] * this.frame[10] * this.frame[15] +
-			this.frame[4] * this.frame[14] * this.frame[11] +
-			this.frame[6] * this.frame[8] * this.frame[15] -
-			this.frame[6] * this.frame[12] * this.frame[11] -
-			this.frame[7] * this.frame[8] * this.frame[14] +
-			this.frame[7] * this.frame[12] * this.frame[10]
-		r[5] =
-			this.frame[0] * this.frame[10] * this.frame[15] -
-			this.frame[0] * this.frame[14] * this.frame[11] -
-			this.frame[2] * this.frame[8] * this.frame[15] +
-			this.frame[2] * this.frame[12] * this.frame[11] +
-			this.frame[3] * this.frame[8] * this.frame[14] -
-			this.frame[3] * this.frame[12] * this.frame[10]
-		r[6] =
-			-this.frame[0] * this.frame[6] * this.frame[15] +
-			this.frame[0] * this.frame[14] * this.frame[7] +
-			this.frame[2] * this.frame[4] * this.frame[15] -
-			this.frame[2] * this.frame[12] * this.frame[7] -
-			this.frame[3] * this.frame[4] * this.frame[14] +
-			this.frame[3] * this.frame[12] * this.frame[6]
-		r[7] =
-			this.frame[0] * this.frame[6] * this.frame[11] -
-			this.frame[0] * this.frame[10] * this.frame[7] -
-			this.frame[2] * this.frame[4] * this.frame[11] +
-			this.frame[2] * this.frame[8] * this.frame[7] +
-			this.frame[3] * this.frame[4] * this.frame[10] -
-			this.frame[3] * this.frame[8] * this.frame[6]
-
-		r[8] =
-			this.frame[4] * this.frame[9] * this.frame[15] -
-			this.frame[4] * this.frame[13] * this.frame[11] -
-			this.frame[5] * this.frame[8] * this.frame[15] +
-			this.frame[5] * this.frame[12] * this.frame[11] +
-			this.frame[7] * this.frame[8] * this.frame[13] -
-			this.frame[7] * this.frame[12] * this.frame[9]
-		r[9] =
-			-this.frame[0] * this.frame[9] * this.frame[15] +
-			this.frame[0] * this.frame[13] * this.frame[11] +
-			this.frame[1] * this.frame[8] * this.frame[15] -
-			this.frame[1] * this.frame[12] * this.frame[11] -
-			this.frame[3] * this.frame[8] * this.frame[13] +
-			this.frame[3] * this.frame[12] * this.frame[9]
-		r[10] =
-			this.frame[0] * this.frame[5] * this.frame[15] -
-			this.frame[0] * this.frame[13] * this.frame[7] -
-			this.frame[1] * this.frame[4] * this.frame[15] +
-			this.frame[1] * this.frame[12] * this.frame[7] +
-			this.frame[3] * this.frame[4] * this.frame[13] -
-			this.frame[3] * this.frame[12] * this.frame[5]
-		r[11] =
-			-this.frame[0] * this.frame[5] * this.frame[11] +
-			this.frame[0] * this.frame[9] * this.frame[7] +
-			this.frame[1] * this.frame[4] * this.frame[11] -
-			this.frame[1] * this.frame[8] * this.frame[7] -
-			this.frame[3] * this.frame[4] * this.frame[9] +
-			this.frame[3] * this.frame[8] * this.frame[5]
-
-		r[12] =
-			-this.frame[4] * this.frame[9] * this.frame[14] +
-			this.frame[4] * this.frame[13] * this.frame[10] +
-			this.frame[5] * this.frame[8] * this.frame[14] -
-			this.frame[5] * this.frame[12] * this.frame[10] -
-			this.frame[6] * this.frame[8] * this.frame[13] +
-			this.frame[6] * this.frame[12] * this.frame[9]
-		r[13] =
-			this.frame[0] * this.frame[9] * this.frame[14] -
-			this.frame[0] * this.frame[13] * this.frame[10] -
-			this.frame[1] * this.frame[8] * this.frame[14] +
-			this.frame[1] * this.frame[12] * this.frame[10] +
-			this.frame[2] * this.frame[8] * this.frame[13] -
-			this.frame[2] * this.frame[12] * this.frame[9]
-		r[14] =
-			-this.frame[0] * this.frame[5] * this.frame[14] +
-			this.frame[0] * this.frame[13] * this.frame[6] +
-			this.frame[1] * this.frame[4] * this.frame[14] -
-			this.frame[1] * this.frame[12] * this.frame[6] -
-			this.frame[2] * this.frame[4] * this.frame[13] +
-			this.frame[2] * this.frame[12] * this.frame[5]
-		r[15] =
-			this.frame[0] * this.frame[5] * this.frame[10] -
-			this.frame[0] * this.frame[9] * this.frame[6] -
-			this.frame[1] * this.frame[4] * this.frame[10] +
-			this.frame[1] * this.frame[8] * this.frame[6] +
-			this.frame[2] * this.frame[4] * this.frame[9] -
-			this.frame[2] * this.frame[8] * this.frame[5]
-		return r
+		return this.frame.inverse()
 	}
 
 	render(gl: WebGL2RenderingContext, model: Model, shader: Shader, objectMat: Matrix4) {
 		shader.bind()
-		// if (material.currentCamera !== this.uid || this.frameChanged || this.perspectiveChanged) {
 		shader.loadPerspective(this.perspective)
 		shader.loadView(this.viewMatrix())
-		// material.currentCamera = this.uid
-		// this.frameChanged = false
-		// this.perspectiveChanged = false
-		// }
+		if (this.frameChanged || this.perspectiveChanged) {
+			this.frameChanged = false
+			this.perspectiveChanged = false
+		}
 
 		glCall(
 			gl,

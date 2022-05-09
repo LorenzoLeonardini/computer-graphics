@@ -1,0 +1,70 @@
+---
+import FullscreenCanvas from '../components/FullscreenCanvas.svelte'
+import '../styles/global.css';
+const { content } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#1f2937">
+	<title>Computer Graphics - A.A. 2021/2022</title>
+
+	<style is:global>
+		.katex .katex-mathml {
+			display: none;
+		}
+
+		.menu ul ul li a {
+			@apply font-normal text-gray-300;
+		}
+
+		.menu a {
+			@apply block hover:underline;
+		}
+
+		.menu li {
+			@apply font-semibold tracking-wide ml-6 before:[content:'-'] relative before:absolute before:-left-3 leading-5 my-1;
+		}
+
+		.modal-backdrop {
+			@apply fixed inset-0 backdrop-blur-md [background:rgba(0,0,0,0.6)] z-50;
+		}
+
+		.modal {
+			@apply fixed z-50 w-[90vw] max-w-3xl h-[90vh] max-h-96 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md bg-gray-700 py-5 px-6 text-gray-100;
+		}
+
+		.modal h3 {
+			@apply text-2xl font-bold mb-3;
+		}
+
+		.modal > div {
+			@apply relative;
+		}
+
+		.code-container {
+			@apply border border-gray-500 rounded bg-gray-600 absolute left-0 right-0 bottom-0 top-10 overflow-y-auto flex;
+		}
+
+		.modal pre {
+			@apply w-10 py-1 px-2 h-fit;
+		}
+		.modal pre + pre {
+			@apply flex-grow border-l-gray-500 border-l;
+		}
+
+		.modal pre span {
+			@apply bg-red-600 font-semibold;
+		}
+	</style>
+</head>
+<body class="bg-gray-800 antialiased">
+<main>
+	<FullscreenCanvas example='project/main' client:only />
+</main>
+</body>
+</html>
