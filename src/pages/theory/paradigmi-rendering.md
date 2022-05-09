@@ -26,7 +26,9 @@ Sebbene l'idea del ray tracing sia quindi estremamente semplice e intuitiva, è 
 
 Dati un numero di "rimbalzi" $N$, una scena $S$ composta da oggetti $o$, e indicando il costo dell'intersione tra un raggio $r$ e un oggetto $o$ come $Int(r, o)$, il costo per il calcolo del ray tracing per un raggio $r$ si calcola come
 
-$$RTCost(r) = N\cdot\sum_{'\forall o \in S'} Int(r, o)$$
+```
+$$RTCost(r) = N\cdot\sum\_{\forall o \in S} Int(r, o)$$
+```
 
 Quali sono le primitive possibili? In sostanza tutto ciò che può intersecare un raggio: poligoni, solidi, tutto quello che si vuole.
 
@@ -48,7 +50,9 @@ In maniera molto semplificata e schematizzata, la pipeline di render in un siste
 
 Il costo degli algoritmi basati su rasterizzazione si può approssimare in questo modo:
 
-$$CostR = K\cdot\#vertex + \sum_{'\forall p \in S'} R(p)$$
+```
+$$CostR = K\cdot\#vertex + \sum_{\forall p \in S} R(p)$$
+```
 
 dove $K$ è il costo per trasformare un singolo vertice, $R(p)$ è il costo per rasterizzare la primitiva $p$.
 
