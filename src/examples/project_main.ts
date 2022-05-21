@@ -1,31 +1,34 @@
 import { Camera } from './lib/Camera'
 import { Cube } from './lib/Cube'
 import { Cylinder } from './lib/Cylinder'
+import { Entity, EntityTree } from './lib/Entity'
 import { FlatShader } from './lib/FlatShader'
 import { Matrix4 } from './lib/Matrix'
 import { NormalsShader } from './lib/NormalsShader'
 import { loadObjModel } from './lib/ObjectLoader'
 import { OBJModel } from './lib/OBJModel'
 import { Quad } from './lib/Quad'
+import { Renderer } from './lib/Renderer'
 import { TerrainShader } from './lib/TerrainShader'
 import { Texture } from './lib/Texture'
 import { Vector2, Vector3 } from './lib/Vector'
+import { Car } from './project/Car'
 
 let gl: WebGL2RenderingContext = null
 let shader: NormalsShader
-let carBodyMaterial: FlatShader
 let carTiresMaterial: FlatShader
 let lineMaterial: FlatShader
-let rotation = 0.1
 
-let terrain: Quad
+let terrain: Entity
 let terrainShader: TerrainShader
 
-let cube: Cube
 let cylinder: Cylinder
 let sphere: OBJModel
 
+let car: Car
+
 let camera: Camera
+let renderer: Renderer
 
 let canvasWidth, canvasHeight
 
@@ -35,9 +38,24 @@ export function setupWebGL(canvas: HTMLCanvasElement) {
 }
 
 export async function setupWhatToDraw() {
-	terrain = new Quad(gl)
+	const blendMapTexture = new Texture(gl, '/assets/project/terrainBlendMap.png')
+	const grassTexture = new Texture(gl, '/assets/grass.jpg')
+	const asphaltTexture = new Texture(gl, '/assets/asphalt.jpg')
+	terrainShader = new TerrainShader(
+		gl,
+		blendMapTexture,
+		grassTexture,
+		asphaltTexture,
+		blendMapTexture,
+		blendMapTexture
+	)
 
-	cube = new Cube(gl)
+	terrain = new Entity(new Quad(gl), terrainShader)
+	terrain.rotateX(-Math.PI / 2)
+	terrain.setScale(3)
+
+	car = new Car(gl)
+
 	cylinder = new Cylinder(gl)
 
 	const obj = await (await fetch('/assets/sphere.obj')).text()
@@ -56,21 +74,12 @@ export async function changeAspectRatio(width: number, height: number) {
 export async function setupHowToDraw() {
 	// material = new NormalsShader(gl)
 
-	carBodyMaterial = new FlatShader(gl, new Vector3(0.84, 0, 0))
 	carTiresMaterial = new FlatShader(gl, new Vector3(0.133, 0.133, 0.133))
 	lineMaterial = new FlatShader(gl, new Vector3(1, 1, 0))
 
-	const blendMapTexture = new Texture(gl, '/assets/project/terrainBlendMap.png')
-	const grassTexture = new Texture(gl, '/assets/grass.jpg')
-	const asphaltTexture = new Texture(gl, '/assets/asphalt.jpg')
-	terrainShader = new TerrainShader(
-		gl,
-		blendMapTexture,
-		grassTexture,
-		asphaltTexture,
-		blendMapTexture,
-		blendMapTexture
-	)
+	renderer = new Renderer(gl)
+	renderer.addEntity(terrain)
+	renderer.addEntity(car)
 }
 
 let stack: Matrix4[] = [new Matrix4()]
@@ -93,47 +102,41 @@ function top(): Matrix4 {
 }
 
 function drawCar() {
-	push(
-		Matrix4.translate(new Vector3(0, 0.45, 0))
-			.scale(0.1)
-			.rotate(new Vector3(0, Math.PI / 2, 0)),
-		() => {
-			Cube.bind(gl)
-			push(Matrix4.translate(new Vector3(0, 0, 0)).scale(new Vector3(0.8, 0.25, 0.5)), () => {
-				camera.render(gl, cube, carBodyMaterial, top())
-			})
-
-			const wheelTransformation: Matrix4 = Matrix4.rotate(new Vector3(Math.PI / 2, 0, 0)).scale(
-				new Vector3(0.2, 0.2, 0.1)
-			)
-
-			push(
-				Matrix4.translate(new Vector3(0, 1, 0))
-					.scale(new Vector3(0.625, 0.15, 0.5))
-					.translate(new Vector3(0.175, 0.25, 0)),
-				() => {
-					camera.render(gl, cube, carBodyMaterial, top())
-				}
-			)
-
-			Cylinder.bind(gl)
-			push(wheelTransformation.copy().translate(new Vector3(0.5, -0.25, 0.5)), () => {
-				camera.render(gl, cylinder, carTiresMaterial, top())
-			})
-
-			push(wheelTransformation.copy().translate(new Vector3(0.5, -0.25, -0.5)), () => {
-				camera.render(gl, cylinder, carTiresMaterial, top())
-			})
-
-			push(wheelTransformation.copy().translate(new Vector3(-0.5, -0.25, 0.5)), () => {
-				camera.render(gl, cylinder, carTiresMaterial, top())
-			})
-
-			push(wheelTransformation.copy().translate(new Vector3(-0.5, -0.25, -0.5)), () => {
-				camera.render(gl, cylinder, carTiresMaterial, top())
-			})
-		}
-	)
+	// push(
+	// 	Matrix4.translate(new Vector3(0, 0.45, 0))
+	// 		.scale(0.1)
+	// 		.rotate(new Vector3(0, Math.PI / 2, 0)),
+	// 	() => {
+	// 		Cube.bind(gl)
+	// 		push(Matrix4.translate(new Vector3(0, 0, 0)).scale(new Vector3(0.8, 0.25, 0.5)), () => {
+	// 			camera.render(gl, cube, carBodyMaterial, top())
+	// 		})
+	// 		const wheelTransformation: Matrix4 = Matrix4.rotate(new Vector3(Math.PI / 2, 0, 0)).scale(
+	// 			new Vector3(0.2, 0.2, 0.1)
+	// 		)
+	// 		push(
+	// 			Matrix4.translate(new Vector3(0, 1, 0))
+	// 				.scale(new Vector3(0.625, 0.15, 0.5))
+	// 				.translate(new Vector3(0.175, 0.25, 0)),
+	// 			() => {
+	// 				camera.render(gl, cube, carBodyMaterial, top())
+	// 			}
+	// 		)
+	// 		Cylinder.bind(gl)
+	// 		push(wheelTransformation.copy().translate(new Vector3(0.5, -0.25, 0.5)), () => {
+	// 			camera.render(gl, cylinder, carTiresMaterial, top())
+	// 		})
+	// 		push(wheelTransformation.copy().translate(new Vector3(0.5, -0.25, -0.5)), () => {
+	// 			camera.render(gl, cylinder, carTiresMaterial, top())
+	// 		})
+	// 		push(wheelTransformation.copy().translate(new Vector3(-0.5, -0.25, 0.5)), () => {
+	// 			camera.render(gl, cylinder, carTiresMaterial, top())
+	// 		})
+	// 		push(wheelTransformation.copy().translate(new Vector3(-0.5, -0.25, -0.5)), () => {
+	// 			camera.render(gl, cylinder, carTiresMaterial, top())
+	// 		})
+	// 	}
+	// )
 }
 
 const FRAME_DURATION = 1000 / 60
@@ -142,11 +145,6 @@ let lastTime: number = window.performance.now()
 let spherePosition = new Vector3(0, 0, 0)
 
 export function draw(time: number = window.performance.now()) {
-	gl.enable(gl.DEPTH_TEST)
-	gl.enable(gl.CULL_FACE)
-	gl.enable(gl.BLEND)
-	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-
 	const delta = (time - lastTime) / FRAME_DURATION
 	lastTime = time
 
@@ -177,14 +175,8 @@ export function draw(time: number = window.performance.now()) {
 	}
 	camera.lookAt(spherePosition)
 
-	gl.clearColor(0.2, 0.3, 0.4, 1)
-	gl.clear(gl.COLOR_BUFFER_BIT)
-
-	// draw quad
-	push(Matrix4.rotate(new Vector3(-Math.PI / 2, 0, 0)).scale(3), () => {
-		Quad.bind(gl)
-		camera.render(gl, terrain, terrainShader, top())
-	})
+	// draw terrain
+	renderer.render(camera)
 
 	push(Matrix4.translate(spherePosition), () => {
 		sphere.bind(gl)
