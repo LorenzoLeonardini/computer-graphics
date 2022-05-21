@@ -3,6 +3,7 @@ import { Cube } from './lib/Cube'
 import { Cylinder } from './lib/Cylinder'
 import { Entity, EntityTree } from './lib/Entity'
 import { FlatShader } from './lib/FlatShader'
+import { InputHandler, MouseButton } from './lib/InputHandler'
 import { Matrix4 } from './lib/Matrix'
 import { NormalsShader } from './lib/NormalsShader'
 import { loadObjModel } from './lib/ObjectLoader'
@@ -26,6 +27,7 @@ let car: Car
 
 let camera: Camera
 let renderer: Renderer
+let inputHandler: InputHandler
 
 let canvasWidth, canvasHeight
 
@@ -72,6 +74,9 @@ export async function setupHowToDraw() {
 	renderer = new Renderer(gl)
 	renderer.addEntity(terrain)
 	renderer.addEntity(car)
+
+	inputHandler = new InputHandler()
+	inputHandler.registerAllHandlers()
 }
 
 const FRAME_DURATION = 1000 / 60
@@ -83,114 +88,35 @@ export function draw(time: number = window.performance.now()) {
 	const delta = (time - lastTime) / FRAME_DURATION
 	lastTime = time
 
-	if (mouseWheel.deltaY !== 0) {
-		camera.zoom(2 * delta * (mouseWheel.deltaY / canvasHeight))
+	if (inputHandler.mouseWheelY() !== 0) {
+		camera.zoom(2 * delta * (inputHandler.mouseWheelY() / canvasHeight))
 	}
-	if (keyStatus.KeyW) {
+	if (inputHandler.isKeyPressed('KeyW')) {
 		spherePosition[2] -= 0.05 * delta
 	}
-	if (keyStatus.KeyA) {
+	if (inputHandler.isKeyPressed('KeyA')) {
 		spherePosition[0] -= 0.05 * delta
 	}
-	if (keyStatus.KeyS) {
+	if (inputHandler.isKeyPressed('KeyS')) {
 		spherePosition[2] += 0.05 * delta
 	}
-	if (keyStatus.KeyD) {
+	if (inputHandler.isKeyPressed('KeyD')) {
 		spherePosition[0] += 0.05 * delta
 	}
 
-	if (mouseButtonStatus.Left) {
-		const move = (mousePosition.current.x - mousePosition.last.x) / canvasWidth
-		camera.rotateYAround(new Vector3(0, 0, 0), move * delta * 2)
-	}
+	if (inputHandler.isMouseButtonClicked(MouseButton.LEFT)) {
+		const [xMouse, yMouse] = inputHandler.getMousePositionDelta()
 
-	if (mouseButtonStatus.Left) {
-		const move = (mousePosition.current.y - mousePosition.last.y) / canvasHeight
-		camera.rotateXAround(new Vector3(0, 0, 0), -move * delta * 2)
+		const xMove = xMouse / canvasWidth
+		camera.rotateYAround(new Vector3(0, 0, 0), xMove * delta * 2)
+		const yMove = yMouse / canvasHeight
+		camera.rotateXAround(new Vector3(0, 0, 0), -yMove * delta * 2)
 	}
 	camera.lookAt(spherePosition)
 
 	// draw terrain
 	renderer.render(camera)
 
-	mouseWheel.deltaX = 0
-	mouseWheel.deltaY = 0
+	inputHandler.reset()
 	window.requestAnimationFrame(draw)
-}
-
-const keyStatus = {
-	KeyW: false,
-	KeyA: false,
-	KeyS: false,
-	KeyD: false
-}
-
-const mouseButtonStatus = {
-	Left: false,
-	Middle: false,
-	Right: false
-}
-
-const mousePosition = {
-	last: {
-		x: 0,
-		y: 0
-	},
-	current: {
-		x: 0,
-		y: 0
-	}
-}
-
-const mouseWheel = {
-	deltaX: 0,
-	deltaY: 0
-}
-
-document.body.onkeydown = function (e: KeyboardEvent) {
-	if (e.code in keyStatus) {
-		keyStatus[e.code] = true
-	}
-}
-
-document.body.onkeyup = function (e: KeyboardEvent) {
-	if (e.code in keyStatus) {
-		keyStatus[e.code] = false
-	}
-}
-
-document.body.oncontextmenu = () => false
-
-document.body.onmousedown = function (e: MouseEvent) {
-	if (e.button === 0) {
-		mouseButtonStatus.Left = true
-	} else if (e.button === 1) {
-		mouseButtonStatus.Middle = true
-	} else if (e.button === 2) {
-		mouseButtonStatus.Right = true
-	}
-	e.preventDefault()
-}
-
-document.body.onmouseup = function (e: MouseEvent) {
-	if (e.button === 0) {
-		mouseButtonStatus.Left = false
-	} else if (e.button === 1) {
-		mouseButtonStatus.Middle = false
-	} else if (e.button === 2) {
-		mouseButtonStatus.Right = false
-	}
-	e.preventDefault()
-}
-
-document.body.onmousemove = function (e: MouseEvent) {
-	mousePosition.last.x = mousePosition.current.x
-	mousePosition.last.y = mousePosition.current.y
-	mousePosition.current.x = e.clientX
-	mousePosition.current.y = e.clientY
-}
-
-document.body.onwheel = function (e: WheelEvent) {
-	mouseWheel.deltaX = e.deltaX
-	mouseWheel.deltaY = e.deltaY
 }
