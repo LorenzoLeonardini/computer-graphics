@@ -14,6 +14,9 @@ export class Shader {
 
 	projectionMatUniformLocation: WebGLUniformLocation
 	viewMatUniformLocation: WebGLUniformLocation
+	objMatUniformLocation: WebGLUniformLocation
+
+	lastFrameUniformLoaded: number = 0
 
 	static shaderPromises = []
 
@@ -74,6 +77,12 @@ export class Shader {
 			this.program,
 			'uViewMat'
 		)
+		this.objMatUniformLocation = glCall(
+			this.gl,
+			this.gl.getUniformLocation,
+			this.program,
+			'uObjectMat'
+		)
 	}
 
 	bind() {
@@ -89,6 +98,10 @@ export class Shader {
 
 	loadView(viewMatrix: Matrix4) {
 		glCall(this.gl, this.gl.uniformMatrix4fv, this.viewMatUniformLocation, false, viewMatrix)
+	}
+
+	loadObjectMatrix(objectMatrix: Matrix4) {
+		glCall(this.gl, this.gl.uniformMatrix4fv, this.objMatUniformLocation, false, objectMatrix)
 	}
 
 	static async loadAll() {

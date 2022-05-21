@@ -51,12 +51,12 @@ export class Quad implements Model {
 		}
 	}
 
-	static bind(gl: WebGL2RenderingContext): void {
+	bind(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.bindVertexArray, Quad.vao)
 		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, Quad.ibo)
 	}
 
-	static unbind(gl: WebGL2RenderingContext): void {}
+	unbind(gl: WebGL2RenderingContext): void {}
 
 	render(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.drawElements, gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)

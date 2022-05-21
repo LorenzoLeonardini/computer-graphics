@@ -1,7 +1,5 @@
+import { EntityInterface } from './Entity'
 import { Matrix4 } from './Matrix'
-import { Model } from './Model'
-import { Shader } from './Shader'
-import { glCall } from './Utils'
 import { Vector3, Vector4 } from './Vector'
 
 export class Camera {
@@ -9,6 +7,7 @@ export class Camera {
 	static IDS: number = 0
 
 	perspective: Matrix4
+	view: Matrix4
 	perspectiveChanged: boolean = false
 	frame: Matrix4 = new Matrix4()
 	frameChanged: boolean = false
@@ -17,7 +16,7 @@ export class Camera {
 		this.uid = Camera.IDS++
 
 		this.perspective = Matrix4.perspective(yfov, aspectRatio, nearPlane, farPlane)
-		this.perspectiveChanged = true
+		this.perspectiveChanged = false
 	}
 
 	position(x: number, y: number, z: number) {
@@ -83,7 +82,6 @@ export class Camera {
 		const position: Vector4 = Matrix4.rotate(new Vector3(0, angle, 0)).mul(
 			new Vector4(0, 0, distance, 1)
 		)
-		console.log(position)
 		const newPosition: Vector4 = this.frame.mul(position.sub(new Vector4(0, 0, distance, 0)))
 
 		this.frame[12] = newPosition[0]
@@ -102,7 +100,6 @@ export class Camera {
 		const position: Vector4 = Matrix4.rotate(new Vector3(angle, 0, 0)).mul(
 			new Vector4(0, 0, distance, 1)
 		)
-		console.log(position)
 		const newPosition: Vector4 = this.frame.mul(position.sub(new Vector4(0, 0, distance, 0)))
 
 		this.frame[12] = newPosition[0]
@@ -115,22 +112,20 @@ export class Camera {
 		return this.frame.inverse()
 	}
 
-	render(gl: WebGL2RenderingContext, model: Model, shader: Shader, objectMat: Matrix4) {
-		shader.bind()
-		shader.loadPerspective(this.perspective)
-		shader.loadView(this.viewMatrix())
-		if (this.frameChanged || this.perspectiveChanged) {
+	getPerspectiveMatrix(): Matrix4 {
+		return this.perspective
+	}
+	getViewMatrix(): Matrix4 {
+		if (this.frameChanged) {
 			this.frameChanged = false
-			this.perspectiveChanged = false
+			this.view = this.viewMatrix()
 		}
+		return this.view
+	}
 
-		glCall(
-			gl,
-			gl.uniformMatrix4fv,
-			glCall(gl, gl.getUniformLocation, shader.program, 'uObjectMat'),
-			false,
-			objectMat
-		)
-		model.render(gl)
+	update() {}
+
+	render(gl: WebGL2RenderingContext, entity: EntityInterface) {
+		entity.render(gl)
 	}
 }

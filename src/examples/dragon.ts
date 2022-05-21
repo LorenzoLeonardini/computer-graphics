@@ -1,14 +1,16 @@
 import { Camera } from './lib/Camera'
+import { Entity } from './lib/Entity'
 import { Matrix4 } from './lib/Matrix'
 import { NormalsShader } from './lib/NormalsShader'
 import { loadObjModel } from './lib/ObjectLoader'
 import { OBJModel } from './lib/OBJModel'
+import { Renderer } from './lib/Renderer'
 import { Vector3 } from './lib/Vector'
 
 let gl: WebGL2RenderingContext = null
 let shader: NormalsShader
-let dragon: OBJModel = null
-let rotation = 0.1
+let dragon: Entity = null
+let renderer: Renderer
 
 let camera: Camera
 
@@ -19,7 +21,9 @@ export function setupWebGL(canvas: HTMLCanvasElement) {
 export async function setupWhatToDraw() {
 	const obj = await (await fetch('/assets/dragon.obj')).text()
 	const model = await loadObjModel(obj)
-	dragon = new OBJModel(gl, model)
+
+	shader = new NormalsShader(gl)
+	dragon = new Entity(new OBJModel(gl, model), shader)
 }
 
 export async function changeAspectRatio(width: number, height: number) {
@@ -30,21 +34,13 @@ export async function changeAspectRatio(width: number, height: number) {
 }
 
 export async function setupHowToDraw() {
-	shader = new NormalsShader(gl)
+	renderer = new Renderer(gl)
+	renderer.addEntity(dragon)
 }
 
 export function draw() {
-	gl.enable(gl.DEPTH_TEST)
+	dragon.rotateY(0.01)
+	renderer.render(camera)
 
-	const mat = new Matrix4().translate(new Vector3(0, 0, 0)).rotate(new Vector3(0, rotation, 0))
-
-	gl.clearColor(0.2, 0.3, 0.4, 1)
-	gl.clear(gl.COLOR_BUFFER_BIT)
-
-	dragon.bind(gl)
-	camera.render(gl, dragon, shader, mat)
-	dragon.unbind(gl)
-
-	rotation += 0.01
 	window.requestAnimationFrame(draw)
 }

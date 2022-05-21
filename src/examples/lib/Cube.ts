@@ -53,12 +53,12 @@ export class Cube implements Model {
 		}
 	}
 
-	static bind(gl: WebGL2RenderingContext): void {
+	bind(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.bindVertexArray, Cube.vao)
 		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, Cube.ibo)
 	}
 
-	static unbind(gl: WebGL2RenderingContext): void {}
+	unbind(gl: WebGL2RenderingContext): void {}
 
 	render(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.drawElements, gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0)

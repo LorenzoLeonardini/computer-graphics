@@ -78,12 +78,12 @@ export class Cylinder implements Model {
 		}
 	}
 
-	static bind(gl: WebGL2RenderingContext): void {
+	bind(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.bindVertexArray, Cylinder.vao)
 		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, Cylinder.ibo)
 	}
 
-	static unbind(gl: WebGL2RenderingContext): void {}
+	unbind(gl: WebGL2RenderingContext): void {}
 
 	render(gl: WebGL2RenderingContext): void {
 		glCall(gl, gl.drawElements, gl.TRIANGLES, this.indicesCount, gl.UNSIGNED_SHORT, 0)
