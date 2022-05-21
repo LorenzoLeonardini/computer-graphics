@@ -16,13 +16,10 @@ import { Car } from './project/Car'
 
 let gl: WebGL2RenderingContext = null
 let shader: NormalsShader
-let carTiresMaterial: FlatShader
-let lineMaterial: FlatShader
 
 let terrain: Entity
 let terrainShader: TerrainShader
 
-let cylinder: Cylinder
 let sphere: OBJModel
 
 let car: Car
@@ -56,8 +53,6 @@ export async function setupWhatToDraw() {
 
 	car = new Car(gl)
 
-	cylinder = new Cylinder(gl)
-
 	const obj = await (await fetch('/assets/sphere.obj')).text()
 	sphere = new OBJModel(gl, loadObjModel(obj))
 }
@@ -74,69 +69,9 @@ export async function changeAspectRatio(width: number, height: number) {
 export async function setupHowToDraw() {
 	// material = new NormalsShader(gl)
 
-	carTiresMaterial = new FlatShader(gl, new Vector3(0.133, 0.133, 0.133))
-	lineMaterial = new FlatShader(gl, new Vector3(1, 1, 0))
-
 	renderer = new Renderer(gl)
 	renderer.addEntity(terrain)
 	renderer.addEntity(car)
-}
-
-let stack: Matrix4[] = [new Matrix4()]
-
-function push(mat: Matrix4, foo: () => void = null) {
-	const current = stack[stack.length - 1].mul(mat)
-	stack.push(current)
-	if (foo) {
-		foo()
-		stack.pop()
-	}
-}
-
-function pop(): void {
-	stack.pop()
-}
-
-function top(): Matrix4 {
-	return stack[stack.length - 1]
-}
-
-function drawCar() {
-	// push(
-	// 	Matrix4.translate(new Vector3(0, 0.45, 0))
-	// 		.scale(0.1)
-	// 		.rotate(new Vector3(0, Math.PI / 2, 0)),
-	// 	() => {
-	// 		Cube.bind(gl)
-	// 		push(Matrix4.translate(new Vector3(0, 0, 0)).scale(new Vector3(0.8, 0.25, 0.5)), () => {
-	// 			camera.render(gl, cube, carBodyMaterial, top())
-	// 		})
-	// 		const wheelTransformation: Matrix4 = Matrix4.rotate(new Vector3(Math.PI / 2, 0, 0)).scale(
-	// 			new Vector3(0.2, 0.2, 0.1)
-	// 		)
-	// 		push(
-	// 			Matrix4.translate(new Vector3(0, 1, 0))
-	// 				.scale(new Vector3(0.625, 0.15, 0.5))
-	// 				.translate(new Vector3(0.175, 0.25, 0)),
-	// 			() => {
-	// 				camera.render(gl, cube, carBodyMaterial, top())
-	// 			}
-	// 		)
-	// 		Cylinder.bind(gl)
-	// 		push(wheelTransformation.copy().translate(new Vector3(0.5, -0.25, 0.5)), () => {
-	// 			camera.render(gl, cylinder, carTiresMaterial, top())
-	// 		})
-	// 		push(wheelTransformation.copy().translate(new Vector3(0.5, -0.25, -0.5)), () => {
-	// 			camera.render(gl, cylinder, carTiresMaterial, top())
-	// 		})
-	// 		push(wheelTransformation.copy().translate(new Vector3(-0.5, -0.25, 0.5)), () => {
-	// 			camera.render(gl, cylinder, carTiresMaterial, top())
-	// 		})
-	// 		push(wheelTransformation.copy().translate(new Vector3(-0.5, -0.25, -0.5)), () => {
-	// 			camera.render(gl, cylinder, carTiresMaterial, top())
-	// 		})
-	// 	}
-	// )
 }
 
 const FRAME_DURATION = 1000 / 60
@@ -177,11 +112,6 @@ export function draw(time: number = window.performance.now()) {
 
 	// draw terrain
 	renderer.render(camera)
-
-	push(Matrix4.translate(spherePosition), () => {
-		sphere.bind(gl)
-		drawCar()
-	})
 
 	mouseWheel.deltaX = 0
 	mouseWheel.deltaY = 0
