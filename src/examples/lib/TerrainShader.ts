@@ -59,7 +59,9 @@ export class TerrainShader extends Shader {
 		glCall(this.gl, this.gl.uniform1i, this.redTexLocation, 2)
 		glCall(this.gl, this.gl.uniform1i, this.greenTexLocation, 3)
 		glCall(this.gl, this.gl.uniform1i, this.blueTexLocation, 4)
+	}
 
+	loadParameters(): void {
 		this.blendMapTexture.bind(this.gl, 0)
 		this.baseTexture.bind(this.gl, 1)
 		this.redTexture.bind(this.gl, 2)

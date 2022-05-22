@@ -15,6 +15,9 @@ export class FlatShader extends Shader {
 		await super._init()
 
 		this.colorUniformLocation = glCall(this.gl, this.gl.getUniformLocation, this.program, 'uColor')
+	}
+
+	loadParameters(): void {
 		glCall(this.gl, this.gl.uniform3fv, this.colorUniformLocation, this.color)
 	}
 }

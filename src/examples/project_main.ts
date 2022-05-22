@@ -1,10 +1,6 @@
 import { Camera } from './lib/Camera'
-import { Cube } from './lib/Cube'
-import { Cylinder } from './lib/Cylinder'
-import { Entity, EntityTree } from './lib/Entity'
-import { FlatShader } from './lib/FlatShader'
+import { Entity } from './lib/Entity'
 import { InputHandler, MouseButton } from './lib/InputHandler'
-import { Matrix4 } from './lib/Matrix'
 import { NormalsShader } from './lib/NormalsShader'
 import { loadObjModel } from './lib/ObjectLoader'
 import { OBJModel } from './lib/OBJModel'
@@ -12,7 +8,7 @@ import { Quad } from './lib/Quad'
 import { Renderer } from './lib/Renderer'
 import { TerrainShader } from './lib/TerrainShader'
 import { Texture } from './lib/Texture'
-import { Vector2, Vector3 } from './lib/Vector'
+import { Vector3 } from './lib/Vector'
 import { Car } from './project/Car'
 
 let gl: WebGL2RenderingContext = null
@@ -106,7 +102,6 @@ export function draw(time: number = window.performance.now()) {
 
 	if (inputHandler.isMouseButtonClicked(MouseButton.LEFT)) {
 		const [xMouse, yMouse] = inputHandler.getMousePositionDelta()
-
 		const xMove = xMouse / canvasWidth
 		camera.rotateYAround(new Vector3(0, 0, 0), xMove * delta * 2)
 		const yMove = yMouse / canvasHeight

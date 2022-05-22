@@ -158,6 +158,7 @@ export class Entity extends EntityKernel implements EntityInterface {
 			this.shader.loadView(Renderer.getViewMatrix())
 		}
 
+		this.shader.loadParameters()
 		if (transformation) {
 			this.shader.loadObjectMatrix(transformation.mul(this.matrix))
 		} else {

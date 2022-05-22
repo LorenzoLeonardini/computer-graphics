@@ -26,6 +26,9 @@ export class TexturedShader extends Shader {
 	bind() {
 		super.bind()
 		glCall(this.gl, this.gl.uniform1i, this.textureSamplerLocation, 0)
+	}
+
+	loadParameters(): void {
 		this.texture.bind(this.gl)
 	}
 }

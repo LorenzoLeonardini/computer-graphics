@@ -19,6 +19,7 @@ export class Shader {
 	lastFrameUniformLoaded: number = 0
 
 	static shaderPromises = []
+	static programCache: Map<string, Promise<WebGLProgram>> = new Map()
 
 	protected constructor(gl: WebGL2RenderingContext, vertexPath: string, fragmentPath: string) {
 		this.gl = gl
@@ -29,41 +30,52 @@ export class Shader {
 	}
 
 	protected async _init() {
-		const gl = this.gl
-		this.vertexSrc = await (await fetch(this.vertexPath)).text()
-		this.fragmentSrc = await (await fetch(this.fragmentPath)).text()
+		const shaderName = this.constructor.name
+		if (!Shader.programCache.has(shaderName)) {
+			const promise = new Promise<WebGLProgram>(async (resolve) => {
+				const gl = this.gl
+				this.vertexSrc = await (await fetch(this.vertexPath)).text()
+				this.fragmentSrc = await (await fetch(this.fragmentPath)).text()
 
-		this.vertexShader = glCall(gl, gl.createShader, gl.VERTEX_SHADER)
-		glCall(gl, gl.shaderSource, this.vertexShader, this.vertexSrc)
-		glCall(gl, gl.compileShader, this.vertexShader)
+				this.vertexShader = glCall(gl, gl.createShader, gl.VERTEX_SHADER)
+				glCall(gl, gl.shaderSource, this.vertexShader, this.vertexSrc)
+				glCall(gl, gl.compileShader, this.vertexShader)
 
-		this.fragmentShader = glCall(gl, gl.createShader, gl.FRAGMENT_SHADER)
-		glCall(gl, gl.shaderSource, this.fragmentShader, this.fragmentSrc)
-		glCall(gl, gl.compileShader, this.fragmentShader)
+				this.fragmentShader = glCall(gl, gl.createShader, gl.FRAGMENT_SHADER)
+				glCall(gl, gl.shaderSource, this.fragmentShader, this.fragmentSrc)
+				glCall(gl, gl.compileShader, this.fragmentShader)
 
-		const message_vs = glCall(gl, gl.getShaderInfoLog, this.vertexShader)
-		const message_fs = glCall(gl, gl.getShaderInfoLog, this.fragmentShader)
+				const message_vs = glCall(gl, gl.getShaderInfoLog, this.vertexShader)
+				const message_fs = glCall(gl, gl.getShaderInfoLog, this.fragmentShader)
 
-		if (message_vs.length > 0) {
-			console.error('%cERROR COMPILING VERTEX SHADER', 'font-weight: bold;')
-			console.log(this.vertexSrc)
-			console.error(message_vs)
-			const errorLine = parseInt(message_vs.split('ERROR: ')[1].split(':')[1])
-			showErrorModal('Error compiling vertex shader', this.vertexSrc, errorLine)
+				if (message_vs.length > 0) {
+					console.error('%cERROR COMPILING VERTEX SHADER', 'font-weight: bold;')
+					console.log(this.vertexSrc)
+					console.error(message_vs)
+					const errorLine = parseInt(message_vs.split('ERROR: ')[1].split(':')[1])
+					showErrorModal('Error compiling vertex shader', this.vertexSrc, errorLine)
+				}
+				if (message_fs.length > 0) {
+					console.error('%cERROR COMPILING FRAGMENT SHADER', 'font-weight: bold;')
+					console.log(this.fragmentSrc)
+					console.error(message_fs)
+					const errorLine = parseInt(message_fs.split('ERROR: ')[1].split(':')[1])
+					showErrorModal('Error compiling fragment shader', this.fragmentSrc, errorLine)
+				}
+
+				console.log(`Compiling ${shaderName}...`)
+
+				const program = glCall(gl, gl.createProgram)
+				glCall(gl, gl.attachShader, program, this.vertexShader)
+				glCall(gl, gl.attachShader, program, this.fragmentShader)
+				glCall(gl, gl.linkProgram, program)
+				glCall(gl, gl.useProgram, program)
+
+				resolve(program)
+			})
+			Shader.programCache.set(shaderName, promise)
 		}
-		if (message_fs.length > 0) {
-			console.error('%cERROR COMPILING FRAGMENT SHADER', 'font-weight: bold;')
-			console.log(this.fragmentSrc)
-			console.error(message_fs)
-			const errorLine = parseInt(message_fs.split('ERROR: ')[1].split(':')[1])
-			showErrorModal('Error compiling fragment shader', this.fragmentSrc, errorLine)
-		}
-
-		this.program = glCall(gl, gl.createProgram)
-		glCall(gl, gl.attachShader, this.program, this.vertexShader)
-		glCall(gl, gl.attachShader, this.program, this.fragmentShader)
-		glCall(gl, gl.linkProgram, this.program)
-		glCall(gl, gl.useProgram, this.program)
+		this.program = await Shader.programCache.get(shaderName)
 
 		this.projectionMatUniformLocation = glCall(
 			this.gl,
@@ -86,11 +98,13 @@ export class Shader {
 	}
 
 	bind() {
-		if (!this.vertexShader) {
+		if (!this.program) {
 			throw new Error("Don't forget to init the shader")
 		}
 		glCall(this.gl, this.gl.useProgram, this.program)
 	}
+
+	loadParameters() {}
 
 	loadPerspective(perspective: Matrix4) {
 		glCall(this.gl, this.gl.uniformMatrix4fv, this.projectionMatUniformLocation, false, perspective)
