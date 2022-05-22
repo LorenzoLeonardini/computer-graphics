@@ -1,6 +1,5 @@
 import { Shader } from './Shader'
 import { Texture } from './Texture'
-import { glCall } from './Utils'
 
 export class TerrainShader extends Shader {
 	blendMapTexture: Texture
@@ -34,31 +33,21 @@ export class TerrainShader extends Shader {
 	protected async _init() {
 		await super._init()
 
-		this.blendMapTexLocation = glCall(
-			this.gl,
-			this.gl.getUniformLocation,
-			this.program,
-			'uBlendMapTexture'
-		)
-		this.baseTexLocation = glCall(this.gl, this.gl.getUniformLocation, this.program, 'uBaseTexture')
-		this.redTexLocation = glCall(this.gl, this.gl.getUniformLocation, this.program, 'uRedTexture')
-		this.greenTexLocation = glCall(
-			this.gl,
-			this.gl.getUniformLocation,
-			this.program,
-			'uGreenTexture'
-		)
-		this.blueTexLocation = glCall(this.gl, this.gl.getUniformLocation, this.program, 'uBlueTexture')
+		this.blendMapTexLocation = this.gl.getUniformLocation(this.program, 'uBlendMapTexture')
+		this.baseTexLocation = this.gl.getUniformLocation(this.program, 'uBaseTexture')
+		this.redTexLocation = this.gl.getUniformLocation(this.program, 'uRedTexture')
+		this.greenTexLocation = this.gl.getUniformLocation(this.program, 'uGreenTexture')
+		this.blueTexLocation = this.gl.getUniformLocation(this.program, 'uBlueTexture')
 	}
 
 	bind() {
 		super.bind()
 
-		glCall(this.gl, this.gl.uniform1i, this.blendMapTexLocation, 0)
-		glCall(this.gl, this.gl.uniform1i, this.baseTexLocation, 1)
-		glCall(this.gl, this.gl.uniform1i, this.redTexLocation, 2)
-		glCall(this.gl, this.gl.uniform1i, this.greenTexLocation, 3)
-		glCall(this.gl, this.gl.uniform1i, this.blueTexLocation, 4)
+		this.gl.uniform1i(this.blendMapTexLocation, 0)
+		this.gl.uniform1i(this.baseTexLocation, 1)
+		this.gl.uniform1i(this.redTexLocation, 2)
+		this.gl.uniform1i(this.greenTexLocation, 3)
+		this.gl.uniform1i(this.blueTexLocation, 4)
 	}
 
 	loadParameters(): void {

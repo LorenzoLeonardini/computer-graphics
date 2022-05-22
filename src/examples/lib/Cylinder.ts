@@ -1,5 +1,4 @@
 import { Model } from './Model'
-import { glCall } from './Utils'
 
 const SUBDIVISIONS: number = 32
 
@@ -53,39 +52,39 @@ export class Cylinder implements Model {
 		this.indicesCount = indices.length
 		const typedIndices = new Uint16Array(indices)
 
-		Cylinder.vao = glCall(gl, gl.createVertexArray)
-		glCall(gl, gl.bindVertexArray, Cylinder.vao)
+		Cylinder.vao = gl.createVertexArray()
+		gl.bindVertexArray(Cylinder.vao)
 
-		Cylinder.buffer = glCall(gl, gl.createBuffer)
-		glCall(gl, gl.bindBuffer, gl.ARRAY_BUFFER, Cylinder.buffer)
+		Cylinder.buffer = gl.createBuffer()
+		gl.bindBuffer(gl.ARRAY_BUFFER, Cylinder.buffer)
 
-		Cylinder.ibo = glCall(gl, gl.createBuffer)
-		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, Cylinder.ibo)
+		Cylinder.ibo = gl.createBuffer()
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Cylinder.ibo)
 
 		gl.bufferData(gl.ARRAY_BUFFER, typedVertices, gl.STATIC_DRAW)
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, typedIndices, gl.STATIC_DRAW)
 
-		glCall(gl, gl.enableVertexAttribArray, 0)
-		glCall(gl, gl.vertexAttribPointer, 0, 3, gl.FLOAT, false, 4 * 3, 0)
+		gl.enableVertexAttribArray(0)
+		gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 4 * 3, 0)
 	}
 
 	destroy(gl: WebGL2RenderingContext): void {
 		Cylinder.count -= 1
 		if (Cylinder.count === 0) {
-			glCall(gl, gl.deleteBuffer, Cylinder.buffer)
-			glCall(gl, gl.deleteBuffer, Cylinder.ibo)
-			glCall(gl, gl.deleteVertexArray, Cylinder.vao)
+			gl.deleteBuffer(Cylinder.buffer)
+			gl.deleteBuffer(Cylinder.ibo)
+			gl.deleteVertexArray(Cylinder.vao)
 		}
 	}
 
 	bind(gl: WebGL2RenderingContext): void {
-		glCall(gl, gl.bindVertexArray, Cylinder.vao)
-		glCall(gl, gl.bindBuffer, gl.ELEMENT_ARRAY_BUFFER, Cylinder.ibo)
+		gl.bindVertexArray(Cylinder.vao)
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Cylinder.ibo)
 	}
 
 	unbind(gl: WebGL2RenderingContext): void {}
 
 	render(gl: WebGL2RenderingContext): void {
-		glCall(gl, gl.drawElements, gl.TRIANGLES, this.indicesCount, gl.UNSIGNED_SHORT, 0)
+		gl.drawElements(gl.TRIANGLES, this.indicesCount, gl.UNSIGNED_SHORT, 0)
 	}
 }

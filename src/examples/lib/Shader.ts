@@ -1,6 +1,5 @@
 import { showErrorModal } from './ErrorModal'
 import { Matrix4 } from './Matrix'
-import { glCall } from './Utils'
 
 export class Shader {
 	vertexShader: WebGLShader
@@ -31,22 +30,23 @@ export class Shader {
 
 	protected async _init() {
 		const shaderName = this.constructor.name
+		const gl = this.gl
+
 		if (!Shader.programCache.has(shaderName)) {
 			const promise = new Promise<WebGLProgram>(async (resolve) => {
-				const gl = this.gl
 				this.vertexSrc = await (await fetch(this.vertexPath)).text()
 				this.fragmentSrc = await (await fetch(this.fragmentPath)).text()
 
-				this.vertexShader = glCall(gl, gl.createShader, gl.VERTEX_SHADER)
-				glCall(gl, gl.shaderSource, this.vertexShader, this.vertexSrc)
-				glCall(gl, gl.compileShader, this.vertexShader)
+				this.vertexShader = gl.createShader(gl.VERTEX_SHADER)
+				gl.shaderSource(this.vertexShader, this.vertexSrc)
+				gl.compileShader(this.vertexShader)
 
-				this.fragmentShader = glCall(gl, gl.createShader, gl.FRAGMENT_SHADER)
-				glCall(gl, gl.shaderSource, this.fragmentShader, this.fragmentSrc)
-				glCall(gl, gl.compileShader, this.fragmentShader)
+				this.fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)
+				gl.shaderSource(this.fragmentShader, this.fragmentSrc)
+				gl.compileShader(this.fragmentShader)
 
-				const message_vs = glCall(gl, gl.getShaderInfoLog, this.vertexShader)
-				const message_fs = glCall(gl, gl.getShaderInfoLog, this.fragmentShader)
+				const message_vs = gl.getShaderInfoLog(this.vertexShader)
+				const message_fs = gl.getShaderInfoLog(this.fragmentShader)
 
 				if (message_vs.length > 0) {
 					console.error('%cERROR COMPILING VERTEX SHADER', 'font-weight: bold;')
@@ -65,11 +65,11 @@ export class Shader {
 
 				console.log(`Compiling ${shaderName}...`)
 
-				const program = glCall(gl, gl.createProgram)
-				glCall(gl, gl.attachShader, program, this.vertexShader)
-				glCall(gl, gl.attachShader, program, this.fragmentShader)
-				glCall(gl, gl.linkProgram, program)
-				glCall(gl, gl.useProgram, program)
+				const program = gl.createProgram()
+				gl.attachShader(program, this.vertexShader)
+				gl.attachShader(program, this.fragmentShader)
+				gl.linkProgram(program)
+				gl.useProgram(program)
 
 				resolve(program)
 			})
@@ -77,45 +77,30 @@ export class Shader {
 		}
 		this.program = await Shader.programCache.get(shaderName)
 
-		this.projectionMatUniformLocation = glCall(
-			this.gl,
-			this.gl.getUniformLocation,
-			this.program,
-			'uProjectionMat'
-		)
-		this.viewMatUniformLocation = glCall(
-			this.gl,
-			this.gl.getUniformLocation,
-			this.program,
-			'uViewMat'
-		)
-		this.objMatUniformLocation = glCall(
-			this.gl,
-			this.gl.getUniformLocation,
-			this.program,
-			'uObjectMat'
-		)
+		this.projectionMatUniformLocation = gl.getUniformLocation(this.program, 'uProjectionMat')
+		this.viewMatUniformLocation = gl.getUniformLocation(this.program, 'uViewMat')
+		this.objMatUniformLocation = gl.getUniformLocation(this.program, 'uObjectMat')
 	}
 
 	bind() {
 		if (!this.program) {
 			throw new Error("Don't forget to init the shader")
 		}
-		glCall(this.gl, this.gl.useProgram, this.program)
+		this.gl.useProgram(this.program)
 	}
 
 	loadParameters() {}
 
 	loadPerspective(perspective: Matrix4) {
-		glCall(this.gl, this.gl.uniformMatrix4fv, this.projectionMatUniformLocation, false, perspective)
+		this.gl.uniformMatrix4fv(this.projectionMatUniformLocation, false, perspective)
 	}
 
 	loadView(viewMatrix: Matrix4) {
-		glCall(this.gl, this.gl.uniformMatrix4fv, this.viewMatUniformLocation, false, viewMatrix)
+		this.gl.uniformMatrix4fv(this.viewMatUniformLocation, false, viewMatrix)
 	}
 
 	loadObjectMatrix(objectMatrix: Matrix4) {
-		glCall(this.gl, this.gl.uniformMatrix4fv, this.objMatUniformLocation, false, objectMatrix)
+		this.gl.uniformMatrix4fv(this.objMatUniformLocation, false, objectMatrix)
 	}
 
 	static async loadAll() {

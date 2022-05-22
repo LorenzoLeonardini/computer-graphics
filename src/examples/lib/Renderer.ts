@@ -1,7 +1,6 @@
 import { Camera } from './Camera'
 import { EntityInterface } from './Entity'
 import { Matrix4 } from './Matrix'
-import { glCall } from './Utils'
 
 export class Renderer {
 	private gl: WebGL2RenderingContext
@@ -12,6 +11,10 @@ export class Renderer {
 
 	public constructor(gl: WebGL2RenderingContext) {
 		this.gl = gl
+		this.gl.enable(this.gl.DEPTH_TEST)
+		this.gl.enable(this.gl.CULL_FACE)
+		this.gl.enable(this.gl.BLEND)
+		this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA)
 	}
 
 	public addEntity(e: EntityInterface) {
@@ -31,13 +34,8 @@ export class Renderer {
 	}
 
 	public render(camera: Camera) {
-		glCall(this.gl, this.gl.enable, this.gl.DEPTH_TEST)
-		glCall(this.gl, this.gl.enable, this.gl.CULL_FACE)
-		glCall(this.gl, this.gl.enable, this.gl.BLEND)
-		glCall(this.gl, this.gl.blendFunc, this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA)
-
-		glCall(this.gl, this.gl.clearColor, 0.2, 0.3, 0.4, 1)
-		glCall(this.gl, this.gl.clear, this.gl.COLOR_BUFFER_BIT)
+		this.gl.clearColor(0.2, 0.3, 0.4, 1)
+		this.gl.clear(this.gl.COLOR_BUFFER_BIT)
 
 		Renderer.frameCounter++
 		Renderer.perspectiveMatrix = camera.getPerspectiveMatrix()

@@ -1,5 +1,4 @@
 import { Shader } from './Shader'
-import { glCall } from './Utils'
 import { Vector3 } from './Vector'
 
 export class FlatShader extends Shader {
@@ -14,10 +13,10 @@ export class FlatShader extends Shader {
 	protected async _init() {
 		await super._init()
 
-		this.colorUniformLocation = glCall(this.gl, this.gl.getUniformLocation, this.program, 'uColor')
+		this.colorUniformLocation = this.gl.getUniformLocation(this.program, 'uColor')
 	}
 
 	loadParameters(): void {
-		glCall(this.gl, this.gl.uniform3fv, this.colorUniformLocation, this.color)
+		this.gl.uniform3fv(this.colorUniformLocation, this.color)
 	}
 }
