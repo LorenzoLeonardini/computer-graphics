@@ -1,3 +1,4 @@
+import { InputHandler } from './InputHandler'
 import { Matrix4 } from './Matrix'
 import { Model } from './Model'
 import { Renderer } from './Renderer'
@@ -6,49 +7,73 @@ import { Vector3 } from './Vector'
 
 export interface EntityInterface {
 	rotateX(angle: number): void
-	rotateY(angle: number): void
-	rotateZ(angle: number): void
-	setRotationX(angle: number): void
 	setRotationY(angle: number): void
 	setRotationZ(angle: number): void
+	scaleX(amount: number): void
+	scaleY(amount: number): void
+	scaleZ(amount: number): void
+	setScaleX(amount: number): void
+	setScaleY(amount: number): void
+	setScaleZ(amount: number): void
+	setScale(amount: number): void
+	moveX(amount: number): void
+	moveY(amount: number): void
+	moveZ(amount: number): void
+	setPositionX(amount: number): void
+	setPositionY(amount: number): void
+	setPositionZ(amount: number): void
+	setPosition(x: number, y: number, z: number): void
+	getPosition(): Vector3
+	update(delta: number, inputHandler: InputHandler): void
 	render(gl: WebGL2RenderingContext, transformation?: Matrix4): void
 }
 
 class EntityKernel {
-	protected position: Vector3 = new Vector3(0, 0, 0)
-	protected rotation: Vector3 = new Vector3(0, 0, 0)
 	protected scale: Vector3 = new Vector3(1, 1, 1)
 
+	protected positionMatrix: Matrix4 = new Matrix4()
 	protected matrix: Matrix4
 	protected needsUpdating: boolean = true
 
 	rotateX(angle: number) {
-		this.rotation[0] += angle
+		this.positionMatrix = Matrix4.rotate(new Vector3(angle, 0, 0)).mul(this.positionMatrix)
 		this.needsUpdating = true
 	}
 
 	rotateY(angle: number) {
-		this.rotation[1] += angle
+		this.positionMatrix = Matrix4.rotate(new Vector3(0, angle, 0)).mul(this.positionMatrix)
 		this.needsUpdating = true
 	}
 
 	rotateZ(angle: number) {
-		this.rotation[2] += angle
+		this.positionMatrix = Matrix4.rotate(new Vector3(0, 0, angle)).mul(this.positionMatrix)
 		this.needsUpdating = true
 	}
 
 	setRotationX(angle: number) {
-		this.rotation[0] = angle
+		const rotationMatrix = Matrix4.rotate(new Vector3(angle, 0, 0))
+		rotationMatrix[12] = this.positionMatrix[12]
+		rotationMatrix[13] = this.positionMatrix[13]
+		rotationMatrix[14] = this.positionMatrix[14]
+		this.positionMatrix = rotationMatrix
 		this.needsUpdating = true
 	}
 
 	setRotationY(angle: number) {
-		this.rotation[1] = angle
+		const rotationMatrix = Matrix4.rotate(new Vector3(0, angle, 0))
+		rotationMatrix[12] = this.positionMatrix[12]
+		rotationMatrix[13] = this.positionMatrix[13]
+		rotationMatrix[14] = this.positionMatrix[14]
+		this.positionMatrix = rotationMatrix
 		this.needsUpdating = true
 	}
 
 	setRotationZ(angle: number) {
-		this.rotation[2] = angle
+		const rotationMatrix = Matrix4.rotate(new Vector3(0, 0, angle))
+		rotationMatrix[12] = this.positionMatrix[12]
+		rotationMatrix[13] = this.positionMatrix[13]
+		rotationMatrix[14] = this.positionMatrix[14]
+		this.positionMatrix = rotationMatrix
 		this.needsUpdating = true
 	}
 
@@ -90,48 +115,48 @@ class EntityKernel {
 	}
 
 	moveX(amount: number): void {
-		this.position[0] += amount
+		this.positionMatrix = this.positionMatrix.mul(Matrix4.translate(new Vector3(amount, 0, 0)))
 		this.needsUpdating = true
 	}
 
 	moveY(amount: number): void {
-		this.position[1] += amount
+		this.positionMatrix = this.positionMatrix.mul(Matrix4.translate(new Vector3(0, amount, 0)))
 		this.needsUpdating = true
 	}
 
 	moveZ(amount: number): void {
-		this.position[2] += amount
+		this.positionMatrix = this.positionMatrix.mul(Matrix4.translate(new Vector3(0, 0, amount)))
 		this.needsUpdating = true
 	}
 
 	setPositionX(amount: number): void {
-		this.position[0] = amount
+		this.positionMatrix[12] = amount
 		this.needsUpdating = true
 	}
 
 	setPositionY(amount: number): void {
-		this.position[1] = amount
+		this.positionMatrix[13] = amount
 		this.needsUpdating = true
 	}
 
 	setPositionZ(amount: number): void {
-		this.position[2] = amount
+		this.positionMatrix[14] = amount
 		this.needsUpdating = true
 	}
 
 	setPosition(x: number, y: number, z: number): void {
-		this.position[0] = x
-		this.position[1] = y
-		this.position[2] = z
+		this.positionMatrix[12] = x
+		this.positionMatrix[13] = y
+		this.positionMatrix[14] = z
 		this.needsUpdating = true
 	}
 
+	getPosition() {
+		return new Vector3(this.positionMatrix[12], this.positionMatrix[13], this.positionMatrix[14])
+	}
+
 	protected updateMatrix(): Matrix4 {
-		return Matrix4.rotate(new Vector3(0, this.rotation[1], 0))
-			.rotate(new Vector3(this.rotation[0], 0, 0))
-			.rotate(new Vector3(0, 0, this.rotation[2]))
-			.scale(this.scale)
-			.translate(this.position)
+		return this.positionMatrix.mul(Matrix4.scale(this.scale))
 	}
 }
 
@@ -144,6 +169,8 @@ export class Entity extends EntityKernel implements EntityInterface {
 		this.model = model
 		this.shader = shader
 	}
+
+	public update(delta: number, inputHandler: InputHandler) {}
 
 	public render(gl: WebGL2RenderingContext, transformation?: Matrix4): void {
 		if (this.needsUpdating) {
@@ -176,6 +203,8 @@ export class EntityTree extends EntityKernel implements EntityInterface {
 		super()
 		this.entities = entities
 	}
+
+	public update(delta: number, inputHandler: InputHandler) {}
 
 	public render(gl: WebGL2RenderingContext, transformation?: Matrix4): void {
 		if (this.needsUpdating) {

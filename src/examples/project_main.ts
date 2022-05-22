@@ -10,6 +10,7 @@ import { TerrainShader } from './lib/TerrainShader'
 import { Texture } from './lib/Texture'
 import { Vector3 } from './lib/Vector'
 import { Car } from './project/Car'
+import { TopDownCamera } from './project/TopDownCamera'
 
 let gl: WebGL2RenderingContext = null
 let shader: NormalsShader
@@ -22,6 +23,7 @@ let sphere: OBJModel
 let car: Car
 
 let camera: Camera
+let topDownCamera: TopDownCamera
 let renderer: Renderer
 let inputHandler: InputHandler
 
@@ -59,9 +61,18 @@ export async function changeAspectRatio(width: number, height: number) {
 	camera = new Camera(3.14 / 4, height / width, 0.01, 30)
 	camera.position(0, 1.5, 2)
 	camera.lookAt(new Vector3(0, 0, 0))
+
+	topDownCamera = new TopDownCamera(3.14 / 4, height / width, 0.01, 30)
+	topDownCamera.attachTo(car)
+
 	gl.viewport(0, 0, width, height)
 	canvasWidth = width
 	canvasHeight = height
+
+	if (inputHandler) {
+		inputHandler.canvasWidth = width
+		inputHandler.canvasHeight = height
+	}
 }
 
 export async function setupHowToDraw() {
@@ -73,6 +84,8 @@ export async function setupHowToDraw() {
 
 	inputHandler = new InputHandler()
 	inputHandler.registerAllHandlers()
+	inputHandler.canvasWidth = canvasWidth
+	inputHandler.canvasHeight = canvasHeight
 }
 
 const FRAME_DURATION = 1000 / 60
@@ -107,10 +120,14 @@ export function draw(time: number = window.performance.now()) {
 		const yMove = yMouse / canvasHeight
 		camera.rotateXAround(new Vector3(0, 0, 0), -yMove * delta * 2)
 	}
-	camera.lookAt(spherePosition)
+
+	car.update(delta, inputHandler)
+	camera.lookAt(car.getPosition())
+
+	topDownCamera.update(delta, inputHandler)
 
 	// draw terrain
-	renderer.render(camera)
+	renderer.render(topDownCamera)
 
 	inputHandler.reset()
 	window.requestAnimationFrame(draw)

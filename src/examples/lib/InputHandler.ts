@@ -5,6 +5,9 @@ export enum MouseButton {
 }
 
 export class InputHandler {
+	public canvasWidth: number = 500
+	public canvasHeight: number = 500
+
 	private keyStatus: { [keyCode: string]: boolean } = {}
 	private mouseButtonStatus: { [key in MouseButton]: boolean } = {
 		0: false,

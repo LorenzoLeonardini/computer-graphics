@@ -1,4 +1,5 @@
 import { EntityInterface } from './Entity'
+import { InputHandler } from './InputHandler'
 import { Matrix4 } from './Matrix'
 import { Vector3, Vector4 } from './Vector'
 
@@ -8,7 +9,6 @@ export class Camera {
 
 	perspective: Matrix4
 	view: Matrix4
-	perspectiveChanged: boolean = false
 	frame: Matrix4 = new Matrix4()
 	frameChanged: boolean = false
 
@@ -16,7 +16,6 @@ export class Camera {
 		this.uid = Camera.IDS++
 
 		this.perspective = Matrix4.perspective(yfov, aspectRatio, nearPlane, farPlane)
-		this.perspectiveChanged = false
 	}
 
 	position(x: number, y: number, z: number) {
@@ -123,7 +122,7 @@ export class Camera {
 		return this.view
 	}
 
-	update() {}
+	update(delta: number, inputHandler: InputHandler) {}
 
 	render(gl: WebGL2RenderingContext, entity: EntityInterface) {
 		entity.render(gl)

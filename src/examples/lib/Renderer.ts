@@ -39,8 +39,6 @@ export class Renderer {
 		glCall(this.gl, this.gl.clearColor, 0.2, 0.3, 0.4, 1)
 		glCall(this.gl, this.gl.clear, this.gl.COLOR_BUFFER_BIT)
 
-		camera.update()
-
 		Renderer.frameCounter++
 		Renderer.perspectiveMatrix = camera.getPerspectiveMatrix()
 		Renderer.viewMatrix = camera.getViewMatrix()
