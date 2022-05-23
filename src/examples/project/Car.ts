@@ -3,6 +3,8 @@ import { Cylinder } from '../lib/Cylinder'
 import { Entity, EntityTree } from '../lib/Entity'
 import { FlatShader } from '../lib/FlatShader'
 import { InputHandler } from '../lib/InputHandler'
+import { OBJModel } from '../lib/OBJModel'
+import { TexturedShader } from '../lib/TexturedShader'
 import { Vector3, Vector4 } from '../lib/Vector'
 
 const ENGINE_POWER: number = 0.005
@@ -14,19 +16,21 @@ const DRAG: number = -0.0002
 const WHEELS_DISTANCE = 0.9
 const WHEELS_WIDTH = 1
 
-const ROTATION_SPEED: number = 0.1
-
 export class Car extends EntityTree {
 	private wheelTurning: number = 0
-	private desiredWheelTurning: number = 0
 	private rotationPoint: Vector4 = new Vector4(0, 0, 0, 1)
+	private wheelRotation: number = 0
 
 	private acceleration: number = 0
 	private velocity: number = 0
 
 	private wheels: Entity[]
 
-	public constructor(gl: WebGL2RenderingContext) {
+	public constructor(
+		gl: WebGL2RenderingContext,
+		wheelModel: OBJModel,
+		wheelShader: TexturedShader
+	) {
 		let cube = new Cube(gl)
 		let carBodyMaterial = new FlatShader(gl, new Vector3(0.8, 0.15, 0.15))
 
@@ -49,11 +53,9 @@ export class Car extends EntityTree {
 		let wheels = Array(4)
 			.fill(0)
 			.map((_) => {
-				let wheel = new Entity(cylinder, carTiresMaterial)
+				let wheel = new Entity(wheelModel, wheelShader)
 				wheel.setRotationZ(Math.PI / 2)
-				wheel.setScaleX(0.2)
-				wheel.setScaleY(0.1)
-				wheel.setScaleZ(0.2)
+				wheel.setScale(0.8)
 				wheel.setPositionY(0.2)
 				return wheel
 			})
@@ -63,12 +65,14 @@ export class Car extends EntityTree {
 
 		wheels[1].setPositionX(WHEELS_WIDTH / 2)
 		wheels[1].setPositionZ(-WHEELS_DISTANCE / 2)
+		wheels[1].rotateYAroundOrigin(Math.PI)
 
 		wheels[2].setPositionX(-WHEELS_WIDTH / 2)
 		wheels[2].setPositionZ(WHEELS_DISTANCE / 2)
 
 		wheels[3].setPositionX(WHEELS_WIDTH / 2)
 		wheels[3].setPositionZ(WHEELS_DISTANCE / 2)
+		wheels[3].rotateYAroundOrigin(Math.PI)
 
 		super([carBottomBody, carTopBody, ...wheels])
 		this.setScale(0.15)
@@ -79,7 +83,12 @@ export class Car extends EntityTree {
 		return this.velocity
 	}
 
+	getTurningAngle(): number {
+		return this.wheelTurning
+	}
+
 	update(delta: number, inputHandler: InputHandler) {
+		// BEGIN ACCELERATION CALCULATION
 		if (inputHandler.isKeyPressed('KeyW') || inputHandler.isKeyPressed('ArrowUp')) {
 			if (this.velocity >= 0) {
 				this.acceleration = ENGINE_POWER * (1 - Math.abs(this.wheelTurning) / (Math.PI * 0.3))
@@ -108,54 +117,62 @@ export class Car extends EntityTree {
 			friction *= 3
 		}
 		this.acceleration += drag + friction
+		// END ACCELERATION CALCULATION
 
+		// BEGIN VELOCITY AND SPACE CALCULATION
+		this.velocity += this.acceleration * delta
+		let displacement = this.velocity * delta + this.acceleration * delta * delta * 0.5
+		// END VELOCITY AND SPACE CALCULATION
+
+		// BEGIN TURNING CALCULATION
 		let maximumCurve = Math.PI * 0.25
 		if (Math.abs(this.velocity) > 0.04) {
 			maximumCurve = Math.PI * 0.1
 		}
-		console.log(maximumCurve)
 		if (inputHandler.isKeyPressed('KeyA') || inputHandler.isKeyPressed('ArrowLeft')) {
 			if (this.wheelTurning <= 0.01) {
-				this.desiredWheelTurning =
-					this.wheelTurning + (-maximumCurve - this.wheelTurning) * delta * 0.01
+				this.wheelTurning = this.wheelTurning + (-maximumCurve - this.wheelTurning) * delta * 0.01
 			} else {
-				this.desiredWheelTurning = this.wheelTurning + (0 - this.wheelTurning) * delta * 0.15
+				this.wheelTurning = this.wheelTurning + (0 - this.wheelTurning) * delta * 0.15
 			}
 		} else if (inputHandler.isKeyPressed('KeyD') || inputHandler.isKeyPressed('ArrowRight')) {
 			if (this.wheelTurning >= -0.01) {
-				this.desiredWheelTurning =
-					this.wheelTurning + (maximumCurve - this.wheelTurning) * delta * 0.01
+				this.wheelTurning = this.wheelTurning + (maximumCurve - this.wheelTurning) * delta * 0.01
 			} else {
-				this.desiredWheelTurning = this.wheelTurning + (0 - this.wheelTurning) * delta * 0.15
+				this.wheelTurning = this.wheelTurning + (0 - this.wheelTurning) * delta * 0.15
 			}
 		} else if (this.velocity !== 0) {
-			this.desiredWheelTurning = this.wheelTurning + (0 - this.wheelTurning) * delta * 0.1
-			if (Math.abs(this.desiredWheelTurning) < 0.01) {
-				this.desiredWheelTurning = 0
+			this.wheelTurning = this.wheelTurning + (0 - this.wheelTurning) * delta * 0.1
+			if (Math.abs(this.wheelTurning) < 0.01) {
+				this.wheelTurning = 0
 			}
 		}
 
-		if (this.desiredWheelTurning !== this.wheelTurning) {
-			let turningDifference = this.desiredWheelTurning - this.wheelTurning
-			this.wheelTurning = this.desiredWheelTurning
-			this.wheels[0].rotateYAroundOrigin(turningDifference)
-			this.wheels[1].rotateYAroundOrigin(turningDifference)
-
-			const rotationX = (WHEELS_DISTANCE * 0.15) / Math.tan(this.wheelTurning)
-			if (this.wheelTurning > 0) {
-				this.rotationPoint = this.positionMatrix.mul(
-					new Vector4(rotationX + (WHEELS_WIDTH * 0.15) / 2, 0, (WHEELS_DISTANCE * 0.15) / 2, 1)
-				)
-			} else {
-				this.rotationPoint = this.positionMatrix.mul(
-					new Vector4(rotationX - (WHEELS_WIDTH * 0.15) / 2, 0, (WHEELS_DISTANCE * 0.15) / 2, 1)
-				)
-			}
+		const rotationX = (WHEELS_DISTANCE * 0.15) / Math.tan(this.wheelTurning)
+		if (this.wheelTurning > 0) {
+			this.rotationPoint = this.positionMatrix.mul(
+				new Vector4(rotationX + (WHEELS_WIDTH * 0.15) / 2, 0, (WHEELS_DISTANCE * 0.15) / 2, 1)
+			)
+		} else {
+			this.rotationPoint = this.positionMatrix.mul(
+				new Vector4(rotationX - (WHEELS_WIDTH * 0.15) / 2, 0, (WHEELS_DISTANCE * 0.15) / 2, 1)
+			)
 		}
+		// END TURNING CALCULATION
 
-		this.velocity += this.acceleration * delta
-		let displacement = this.velocity * delta + this.acceleration * delta * delta * 0.5
+		// BEGIN WHEEL ANIMATION
+		this.wheelRotation += -displacement * (2 * (1 / 0.8)) * (2 * (1 / 0.8))
+		this.wheels.forEach((wheel) => {
+			wheel.setRotationY(this.wheelRotation)
+			wheel.rotateZAroundOrigin(Math.PI / 2)
+		})
+		this.wheels[1].rotateYAroundOrigin(Math.PI)
+		this.wheels[3].rotateYAroundOrigin(Math.PI)
+		this.wheels[0].rotateYAroundOrigin(this.wheelTurning)
+		this.wheels[1].rotateYAroundOrigin(this.wheelTurning)
+		// END WHEEL ANIMATION
 
+		// BEGIN MOVE
 		if (this.wheelTurning === 0) {
 			// move straight
 			this.moveZ(-displacement)

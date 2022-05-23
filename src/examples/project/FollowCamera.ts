@@ -54,9 +54,9 @@ export class FollowCamera extends Camera {
 		this.cameraPosition = this.cameraPosition.normalize().mul(this.zoomLevel)
 
 		if (this.car.getSpeed() >= 0) {
-			this.desiredRotation = 0
+			this.desiredRotation = -this.car.getTurningAngle()
 		} else {
-			this.desiredRotation = Math.PI
+			this.desiredRotation = Math.PI - this.car.getTurningAngle()
 		}
 
 		if (this.xMove) {
@@ -64,7 +64,7 @@ export class FollowCamera extends Camera {
 			this.xMove = 0
 		} else if (this.car.getSpeed() != 0) {
 			this.cameraYRotation[1] +=
-				(this.desiredRotation - this.cameraYRotation[1]) * delta * 5 * Math.abs(this.car.getSpeed())
+				(this.desiredRotation - this.cameraYRotation[1]) * delta * 3 * Math.abs(this.car.getSpeed())
 		}
 
 		const entityPosition = this.car.getPosition()

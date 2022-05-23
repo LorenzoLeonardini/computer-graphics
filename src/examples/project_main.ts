@@ -1,3 +1,5 @@
+import { Cube } from './lib/Cube'
+import { Cylinder } from './lib/Cylinder'
 import { Entity } from './lib/Entity'
 import { FlatShader } from './lib/FlatShader'
 import { InputHandler } from './lib/InputHandler'
@@ -8,6 +10,7 @@ import { Quad } from './lib/Quad'
 import { Renderer } from './lib/Renderer'
 import { TerrainShader } from './lib/TerrainShader'
 import { Texture } from './lib/Texture'
+import { TexturedShader } from './lib/TexturedShader'
 import { Vector3 } from './lib/Vector'
 import { CameraSwitcher } from './project/CameraSwitcher'
 import { Car } from './project/Car'
@@ -57,7 +60,11 @@ export async function setupWhatToDraw() {
 	terrain.rotateX(-Math.PI / 2)
 	terrain.setScale(8)
 
-	car = new Car(gl)
+	car = new Car(
+		gl,
+		new OBJModel(gl, loadObjModel(await (await fetch('/assets/wheel.obj')).text())),
+		new TexturedShader(gl, new Texture(gl, '/assets/wheel.png'))
+	)
 
 	const obj = await (await fetch('/assets/sphere.obj')).text()
 	sphere = new Entity(new OBJModel(gl, loadObjModel(obj)), new FlatShader(gl, new Vector3(0, 1, 0)))
