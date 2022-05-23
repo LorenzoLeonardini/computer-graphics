@@ -24,6 +24,7 @@ export interface EntityInterface {
 	setPositionZ(amount: number): void
 	setPosition(x: number, y: number, z: number): void
 	getPosition(): Vector3
+	getFrame(): Matrix4
 	update(delta: number, inputHandler: InputHandler): void
 	render(gl: WebGL2RenderingContext, transformation?: Matrix4): void
 }
@@ -34,6 +35,42 @@ class EntityKernel {
 	protected positionMatrix: Matrix4 = new Matrix4()
 	protected matrix: Matrix4
 	protected needsUpdating: boolean = true
+
+	rotateXAroundOrigin(angle: number) {
+		let position = [this.positionMatrix[12], this.positionMatrix[13], this.positionMatrix[14]]
+		this.positionMatrix[12] = 0
+		this.positionMatrix[13] = 0
+		this.positionMatrix[14] = 0
+		this.positionMatrix = Matrix4.rotate(new Vector3(angle, 0, 0)).mul(this.positionMatrix)
+		this.positionMatrix[12] = position[0]
+		this.positionMatrix[13] = position[1]
+		this.positionMatrix[14] = position[2]
+		this.needsUpdating = true
+	}
+
+	rotateYAroundOrigin(angle: number) {
+		let position = [this.positionMatrix[12], this.positionMatrix[13], this.positionMatrix[14]]
+		this.positionMatrix[12] = 0
+		this.positionMatrix[13] = 0
+		this.positionMatrix[14] = 0
+		this.positionMatrix = Matrix4.rotate(new Vector3(0, angle, 0)).mul(this.positionMatrix)
+		this.positionMatrix[12] = position[0]
+		this.positionMatrix[13] = position[1]
+		this.positionMatrix[14] = position[2]
+		this.needsUpdating = true
+	}
+
+	rotateZAroundOrigin(angle: number) {
+		let position = [this.positionMatrix[12], this.positionMatrix[13], this.positionMatrix[14]]
+		this.positionMatrix[12] = 0
+		this.positionMatrix[13] = 0
+		this.positionMatrix[14] = 0
+		this.positionMatrix = Matrix4.rotate(new Vector3(0, 0, angle)).mul(this.positionMatrix)
+		this.positionMatrix[12] = position[0]
+		this.positionMatrix[13] = position[1]
+		this.positionMatrix[14] = position[2]
+		this.needsUpdating = true
+	}
 
 	rotateX(angle: number) {
 		this.positionMatrix = Matrix4.rotate(new Vector3(angle, 0, 0)).mul(this.positionMatrix)
@@ -153,6 +190,10 @@ class EntityKernel {
 
 	getPosition() {
 		return new Vector3(this.positionMatrix[12], this.positionMatrix[13], this.positionMatrix[14])
+	}
+
+	getFrame(): Matrix4 {
+		return this.positionMatrix.copy()
 	}
 
 	protected updateMatrix(): Matrix4 {

@@ -13,13 +13,21 @@ export class TopDownCamera extends Camera {
 		this.frame = new Matrix4([1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, this.zoomLevel, 0, 1])
 	}
 
-	update(delta: number, inputHandler: InputHandler) {
-		if (!this.entity) {
-			throw new Error('Camera is not attached to an entity')
-		}
-
+	handleInput(inputHandler: InputHandler): void {
 		if (inputHandler.mouseWheelY() !== 0) {
 			this.desiredZoomLevel += 10 * (inputHandler.mouseWheelY() / inputHandler.canvasHeight)
+			if (this.desiredZoomLevel < 1) {
+				this.desiredZoomLevel = 1
+			}
+			if (this.desiredZoomLevel > 10) {
+				this.desiredZoomLevel = 10
+			}
+		}
+	}
+
+	update(delta: number) {
+		if (!this.entity) {
+			throw new Error('Camera is not attached to an entity')
 		}
 
 		this.zoomLevel += (this.desiredZoomLevel - this.zoomLevel) * delta * 0.1

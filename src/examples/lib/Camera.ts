@@ -122,7 +122,8 @@ export class Camera {
 		return this.view
 	}
 
-	update(delta: number, inputHandler: InputHandler) {}
+	handleInput(inputHandler: InputHandler) {}
+	update(delta: number) {}
 
 	render(gl: WebGL2RenderingContext, entity: EntityInterface) {
 		entity.render(gl)
