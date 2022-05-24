@@ -15,7 +15,7 @@ export class FreeCamera extends Camera {
 
 	handleInput(inputHandler: InputHandler): void {
 		if (inputHandler.mouseWheelY() !== 0) {
-			this.desiredZoom += 3 * (inputHandler.mouseWheelY() / inputHandler.canvasHeight)
+			this.desiredZoom += 10 * (inputHandler.mouseWheelY() / inputHandler.canvasHeight)
 		}
 		if (inputHandler.isMouseButtonClicked(MouseButton.LEFT)) {
 			const [xMouse, yMouse] = inputHandler.getMousePositionDelta()
