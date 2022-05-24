@@ -114,9 +114,14 @@ export async function setupHowToDraw() {
 }
 
 const FRAME_DURATION = 1000 / 60
-let lastTime: number = window.performance.now()
+let lastTime: number
 
 export function draw(time: number = window.performance.now()) {
+	if (!lastTime || time - lastTime < 0) {
+		lastTime = time
+		window.requestAnimationFrame(draw)
+		return
+	}
 	const delta = (time - lastTime) / FRAME_DURATION
 	lastTime = time
 
