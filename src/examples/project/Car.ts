@@ -162,8 +162,8 @@ export class Car extends EntityTree {
 
 		// BEGIN WHEEL ANIMATION
 		this.wheelRotation += -displacement * (2 * (1 / 0.8)) * (2 * (1 / 0.8))
-		this.wheels.forEach((wheel) => {
-			wheel.setRotationY(this.wheelRotation)
+		this.wheels.forEach((wheel, i) => {
+			wheel.setRotationY(this.wheelRotation * (1 - (i % 2) * 2))
 			wheel.rotateZAroundOrigin(Math.PI / 2)
 		})
 		this.wheels[1].rotateYAroundOrigin(Math.PI)
