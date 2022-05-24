@@ -51,6 +51,12 @@ export class FollowCamera extends Camera {
 		}
 
 		this.zoomLevel += (this.desiredZoomLevel - this.zoomLevel) * delta * 0.1
+		if (this.zoomLevel < 1) {
+			this.zoomLevel = 1
+		}
+		if (this.zoomLevel > 6) {
+			this.zoomLevel = 6
+		}
 		this.cameraPosition = this.cameraPosition.normalize().mul(this.zoomLevel)
 
 		if (this.car.getSpeed() >= 0) {
