@@ -47,25 +47,28 @@ export function setupWebGL(canvas: HTMLCanvasElement) {
 export async function setupWhatToDraw() {
 	const blendMapTexture = new Texture(gl, '/assets/project/terrainBlendMap.png')
 	const grassTexture = new Texture(gl, '/assets/grass.jpg')
-	const asphaltTexture = new Texture(gl, '/assets/asphalt.jpg')
 	const grassNormal = new Texture(gl, '/assets/grass_normal.jpg')
-	const asphaltNormal = new Texture(gl, '/assets/asphalt_normal.jpg')
 	const grassRoughness = new Texture(gl, '/assets/grass_roughness.jpg')
+	const asphaltTexture = new Texture(gl, '/assets/asphalt.jpg')
+	const asphaltNormal = new Texture(gl, '/assets/asphalt_normal.jpg')
 	const asphaltRoughness = new Texture(gl, '/assets/asphalt_roughness.jpg')
+	const sandTexture = new Texture(gl, '/assets/sand.jpg')
+	const sandNormal = new Texture(gl, '/assets/sand_normal.jpg')
+	const sandRoughness = new Texture(gl, '/assets/sand_roughness.jpg')
 	terrainShader = new TerrainShader(
 		gl,
 		blendMapTexture,
 		grassTexture,
 		asphaltTexture,
-		blendMapTexture,
+		sandTexture,
 		blendMapTexture,
 		grassNormal,
 		asphaltNormal,
-		blendMapTexture,
+		sandNormal,
 		blendMapTexture,
 		grassRoughness,
 		asphaltRoughness,
-		blendMapTexture,
+		sandRoughness,
 		blendMapTexture
 	)
 
