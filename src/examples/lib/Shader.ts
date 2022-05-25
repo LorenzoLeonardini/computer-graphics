@@ -1,5 +1,7 @@
+import { DirectionalLight } from './DirectionalLight'
 import { showErrorModal } from './ErrorModal'
 import { Matrix4 } from './Matrix'
+import { Vector4 } from './Vector'
 
 export class Shader {
 	vertexShader: WebGLShader
@@ -14,6 +16,10 @@ export class Shader {
 	projectionMatUniformLocation: WebGLUniformLocation
 	viewMatUniformLocation: WebGLUniformLocation
 	objMatUniformLocation: WebGLUniformLocation
+
+	directionalLightsCountLocation: WebGLUniformLocation
+	directionalLightsDirectionLocation: WebGLUniformLocation
+	directionalLightsColorLocation: WebGLUniformLocation
 
 	lastFrameUniformLoaded: number = 0
 
@@ -35,7 +41,9 @@ export class Shader {
 		if (!Shader.programCache.has(shaderName)) {
 			const promise = new Promise<WebGLProgram>(async (resolve) => {
 				this.vertexSrc = await (await fetch(this.vertexPath)).text()
+				this.vertexSrc = await parseShaderInclude(this.vertexSrc)
 				this.fragmentSrc = await (await fetch(this.fragmentPath)).text()
+				this.fragmentSrc = await parseShaderInclude(this.fragmentSrc)
 
 				this.vertexShader = gl.createShader(gl.VERTEX_SHADER)
 				gl.shaderSource(this.vertexShader, this.vertexSrc)
@@ -77,9 +85,19 @@ export class Shader {
 		}
 		this.program = await Shader.programCache.get(shaderName)
 
-		this.projectionMatUniformLocation = gl.getUniformLocation(this.program, 'uProjectionMat')
-		this.viewMatUniformLocation = gl.getUniformLocation(this.program, 'uViewMat')
-		this.objMatUniformLocation = gl.getUniformLocation(this.program, 'uObjectMat')
+		this.projectionMatUniformLocation = this.getLocation('uProjectionMat')
+		this.viewMatUniformLocation = this.getLocation('uViewMat')
+		this.objMatUniformLocation = this.getLocation('uObjectMat')
+		this.directionalLightsCountLocation = this.getLocation('uDirectionalLightsCount')
+		this.directionalLightsDirectionLocation = this.getLocation('uDirectionalLightsDirection')
+		this.directionalLightsColorLocation = this.getLocation('uDirectionalLightsColor')
+		if (this.directionalLightsCountLocation) {
+			this.gl.uniform1i(this.directionalLightsCountLocation, 0)
+		}
+	}
+
+	getLocation(name: string): WebGLUniformLocation {
+		return this.gl.getUniformLocation(this.program, name)
 	}
 
 	bind() {
@@ -103,7 +121,39 @@ export class Shader {
 		this.gl.uniformMatrix4fv(this.objMatUniformLocation, false, objectMatrix)
 	}
 
+	loadDirectionalLights(lights: DirectionalLight[]) {
+		if (this.directionalLightsCountLocation === null) {
+			return
+		}
+		this.gl.uniform1i(this.directionalLightsCountLocation, lights.length)
+		const directions = []
+		const colors = []
+		lights.forEach((light) => {
+			directions.push(...light.direction)
+			colors.push(...light.color)
+		})
+		this.gl.uniform3fv(this.directionalLightsDirectionLocation, new Float32Array(directions))
+		this.gl.uniform4fv(this.directionalLightsColorLocation, new Float32Array(colors))
+	}
+
 	static async loadAll() {
 		await Promise.all(Shader.shaderPromises)
 	}
+}
+
+const includeCache: Map<string, string> = new Map()
+
+async function parseShaderInclude(shaderSrc: string): Promise<string> {
+	const lines = shaderSrc.split('\n')
+	for (let i in lines) {
+		let line = lines[i].trim()
+		if (line.startsWith('#include')) {
+			const fileName = line.match(/#include "([(A-Za-z0-9-_\.)]+)"/)[1]
+			if (!includeCache.has(fileName)) {
+				includeCache.set(fileName, await (await fetch(`/assets/shaders/${fileName}`)).text())
+			}
+			lines[i] = includeCache.get(fileName)
+		}
+	}
+	return lines.join('\n')
 }

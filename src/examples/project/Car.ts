@@ -28,22 +28,19 @@ export class Car extends EntityTree {
 
 	public constructor(
 		gl: WebGL2RenderingContext,
+		cubeModel: OBJModel,
 		wheelModel: OBJModel,
 		wheelShader: TexturedShader
 	) {
-		let cube = new Cube(gl)
 		let carBodyMaterial = new FlatShader(gl, new Vector3(0.8, 0.15, 0.15))
 
-		let cylinder = new Cylinder(gl)
-		let carTiresMaterial = new FlatShader(gl, new Vector3(0.133, 0.133, 0.133))
-
-		let carBottomBody = new Entity(cube, carBodyMaterial)
+		let carBottomBody = new Entity(cubeModel, carBodyMaterial)
 		carBottomBody.setScaleX(0.5)
 		carBottomBody.setScaleY(0.25)
 		carBottomBody.setScaleZ(0.8)
 		carBottomBody.moveY(0.45)
 
-		let carTopBody = new Entity(cube, carBodyMaterial)
+		let carTopBody = new Entity(cubeModel, carBodyMaterial)
 		carTopBody.setScaleX(0.5)
 		carTopBody.setScaleY(0.15)
 		carTopBody.setScaleZ(0.625)

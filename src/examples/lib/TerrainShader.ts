@@ -8,6 +8,16 @@ export class TerrainShader extends Shader {
 	greenTexture: Texture
 	blueTexture: Texture
 
+	baseNormalTexture: Texture
+	redNormalTexture: Texture
+	greenNormalTexture: Texture
+	blueNormalTexture: Texture
+
+	baseRoughnessTexture: Texture
+	redRoughnessTexture: Texture
+	greenRoughnessTexture: Texture
+	blueRoughnessTexture: Texture
+
 	blendMapTexLocation: WebGLUniformLocation
 	baseTexLocation: WebGLUniformLocation
 	redTexLocation: WebGLUniformLocation
@@ -20,7 +30,15 @@ export class TerrainShader extends Shader {
 		baseTexture: Texture,
 		redTexture: Texture,
 		greenTexture: Texture,
-		blueTexture: Texture
+		blueTexture: Texture,
+		baseNormalTexture: Texture,
+		redNormalTexture: Texture,
+		greenNormalTexture: Texture,
+		blueNormalTexture: Texture,
+		baseRoughnessTexture: Texture,
+		redRoughnessTexture: Texture,
+		greenRoughnessTexture: Texture,
+		blueRoughnessTexture: Texture
 	) {
 		super(gl, '/assets/shaders/terrainVertex.glsl', '/assets/shaders/terrainFragment.glsl')
 		this.blendMapTexture = blendMapTexture
@@ -28,6 +46,16 @@ export class TerrainShader extends Shader {
 		this.redTexture = redTexture
 		this.greenTexture = greenTexture
 		this.blueTexture = blueTexture
+
+		this.baseNormalTexture = baseNormalTexture
+		this.redNormalTexture = redNormalTexture
+		this.greenNormalTexture = greenNormalTexture
+		this.blueNormalTexture = blueNormalTexture
+
+		this.baseRoughnessTexture = baseRoughnessTexture
+		this.redRoughnessTexture = redRoughnessTexture
+		this.greenRoughnessTexture = greenRoughnessTexture
+		this.blueRoughnessTexture = blueRoughnessTexture
 	}
 
 	protected async _init() {
@@ -44,10 +72,10 @@ export class TerrainShader extends Shader {
 		super.bind()
 
 		this.gl.uniform1i(this.blendMapTexLocation, 0)
-		this.gl.uniform1i(this.baseTexLocation, 1)
-		this.gl.uniform1i(this.redTexLocation, 2)
-		this.gl.uniform1i(this.greenTexLocation, 3)
-		this.gl.uniform1i(this.blueTexLocation, 4)
+		this.gl.uniform1iv(this.baseTexLocation, [1, 5, 9])
+		this.gl.uniform1iv(this.redTexLocation, [2, 6, 10])
+		this.gl.uniform1iv(this.greenTexLocation, [3, 7, 11])
+		this.gl.uniform1iv(this.blueTexLocation, [4, 8, 12])
 	}
 
 	loadParameters(): void {
@@ -56,5 +84,13 @@ export class TerrainShader extends Shader {
 		this.redTexture.bind(this.gl, 2)
 		this.greenTexture.bind(this.gl, 3)
 		this.blueTexture.bind(this.gl, 4)
+		this.baseNormalTexture.bind(this.gl, 5)
+		this.redNormalTexture.bind(this.gl, 6)
+		this.greenNormalTexture.bind(this.gl, 7)
+		this.blueNormalTexture.bind(this.gl, 8)
+		this.baseRoughnessTexture.bind(this.gl, 9)
+		this.redRoughnessTexture.bind(this.gl, 10)
+		this.greenRoughnessTexture.bind(this.gl, 11)
+		this.blueRoughnessTexture.bind(this.gl, 12)
 	}
 }

@@ -1,4 +1,5 @@
 import { Camera } from './Camera'
+import { DirectionalLight } from './DirectionalLight'
 import { EntityInterface } from './Entity'
 import { Matrix4 } from './Matrix'
 
@@ -8,6 +9,7 @@ export class Renderer {
 	private static frameCounter: number = 0
 	private static perspectiveMatrix: Matrix4
 	private static viewMatrix: Matrix4
+	private static directionalLights: DirectionalLight[] = []
 
 	public constructor(gl: WebGL2RenderingContext) {
 		this.gl = gl
@@ -21,6 +23,10 @@ export class Renderer {
 		this.entities.push(e)
 	}
 
+	public addDirectionalLight(l: DirectionalLight) {
+		Renderer.directionalLights.push(l)
+	}
+
 	public static getFrameCounter() {
 		return Renderer.frameCounter
 	}
@@ -31,6 +37,10 @@ export class Renderer {
 
 	public static getViewMatrix() {
 		return Renderer.viewMatrix
+	}
+
+	public static getDirectionalLights() {
+		return Renderer.directionalLights
 	}
 
 	public render(camera: Camera) {

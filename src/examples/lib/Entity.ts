@@ -224,6 +224,7 @@ export class Entity extends EntityKernel implements EntityInterface {
 			this.shader.lastFrameUniformLoaded = Renderer.getFrameCounter()
 			this.shader.loadPerspective(Renderer.getPerspectiveMatrix())
 			this.shader.loadView(Renderer.getViewMatrix())
+			this.shader.loadDirectionalLights(Renderer.getDirectionalLights())
 		}
 
 		this.shader.loadParameters()

@@ -36,9 +36,11 @@ export class OBJModel implements Model {
 		gl.enableVertexAttribArray(0)
 		gl.enableVertexAttribArray(1)
 		gl.enableVertexAttribArray(2)
-		gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 4 * 8, 0)
-		gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 4 * 8, 4 * 3)
-		gl.vertexAttribPointer(2, 3, gl.FLOAT, false, 4 * 8, 4 * 5)
+		gl.enableVertexAttribArray(3)
+		gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 4 * 11, 0)
+		gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 4 * 11, 4 * 3)
+		gl.vertexAttribPointer(2, 3, gl.FLOAT, false, 4 * 11, 4 * 5)
+		gl.vertexAttribPointer(3, 3, gl.FLOAT, false, 4 * 11, 4 * 8)
 	}
 
 	destroy(gl: WebGL2RenderingContext): void {

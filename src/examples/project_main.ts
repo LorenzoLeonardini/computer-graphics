@@ -1,5 +1,4 @@
-import { Cube } from './lib/Cube'
-import { Cylinder } from './lib/Cylinder'
+import { DirectionalLight } from './lib/DirectionalLight'
 import { Entity } from './lib/Entity'
 import { FlatShader } from './lib/FlatShader'
 import { InputHandler } from './lib/InputHandler'
@@ -47,21 +46,37 @@ export async function setupWhatToDraw() {
 	const blendMapTexture = new Texture(gl, '/assets/project/terrainBlendMap.png')
 	const grassTexture = new Texture(gl, '/assets/grass.jpg')
 	const asphaltTexture = new Texture(gl, '/assets/asphalt.jpg')
+	const grassNormal = new Texture(gl, '/assets/grass_normal.jpg')
+	const asphaltNormal = new Texture(gl, '/assets/asphalt_normal.jpg')
+	const grassRoughness = new Texture(gl, '/assets/grass_roughness.jpg')
+	const asphaltRoughness = new Texture(gl, '/assets/asphalt_roughness.jpg')
 	terrainShader = new TerrainShader(
 		gl,
 		blendMapTexture,
 		grassTexture,
 		asphaltTexture,
 		blendMapTexture,
+		blendMapTexture,
+		grassNormal,
+		asphaltNormal,
+		blendMapTexture,
+		blendMapTexture,
+		grassRoughness,
+		asphaltRoughness,
+		blendMapTexture,
 		blendMapTexture
 	)
 
-	terrain = new Entity(new Quad(gl), terrainShader)
+	terrain = new Entity(
+		new OBJModel(gl, loadObjModel(await (await fetch('/assets/plane.obj')).text())),
+		terrainShader
+	)
 	terrain.rotateX(-Math.PI / 2)
 	terrain.setScale(8)
 
 	car = new Car(
 		gl,
+		new OBJModel(gl, loadObjModel(await (await fetch('/assets/cube.obj')).text())),
 		new OBJModel(gl, loadObjModel(await (await fetch('/assets/wheel.obj')).text())),
 		new TexturedShader(gl, new Texture(gl, '/assets/wheel.png'))
 	)
@@ -106,6 +121,7 @@ export async function setupHowToDraw() {
 	renderer.addEntity(terrain)
 	renderer.addEntity(car)
 	renderer.addEntity(sphere)
+	renderer.addDirectionalLight(new DirectionalLight([-1, -1, 1], [1, 1, 1, 1]))
 
 	inputHandler = new InputHandler()
 	inputHandler.registerAllHandlers()

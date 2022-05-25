@@ -1,6 +1,6 @@
 #version 300 es
-
 precision lowp float;
+#include "lightingFragment.glsl"
 
 in vec2 vTexCoords;
 in vec3 vNormal;

@@ -1,6 +1,6 @@
 #version 300 es
-
 precision lowp float;
+#include "lightingFragment.glsl"
 
 uniform sampler2D uTexture;
 
