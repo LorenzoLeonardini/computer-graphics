@@ -68,10 +68,21 @@
 		height: 100px;
 		border-width: 10px;
 		border-style: solid;
-		border-color: #f0f0f0;
+		border-color: #d0d0ff;
 		border-radius: 100%;
 		border-top-color: transparent;
 		animation: rotating 1s linear infinite;
+	}
+
+	:global(div.container.loading::before) {
+		content: 'Loading assets...';
+		position: absolute;
+		color: #d0d0ff;
+		font-weight: 600;
+
+		top: calc(50% + 70px);
+		left: 50%;
+		transform: translateX(-50%);
 	}
 
 	canvas {
