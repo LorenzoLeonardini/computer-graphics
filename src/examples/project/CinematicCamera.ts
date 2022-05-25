@@ -3,13 +3,15 @@ import { EntityInterface } from '../lib/Entity'
 import { InputHandler, MouseButton } from '../lib/InputHandler'
 import { Vector3 } from '../lib/Vector'
 
-export class FreeCamera extends Camera {
+export class CinematicCamera extends Camera {
+	private entity: EntityInterface
 	private desiredZoom: number = 0
 	private xMove: number = 0
 	private yMove: number = 0
 
-	private lookAtPosition: Vector3 = new Vector3(0, 0, 0)
-	private movement: Vector3 = new Vector3(0, 0, 0)
+	attachTo(entity: EntityInterface) {
+		this.entity = entity
+	}
 
 	handleInput(inputHandler: InputHandler): void {
 		if (inputHandler.mouseWheelY() !== 0) {
@@ -20,32 +22,16 @@ export class FreeCamera extends Camera {
 			this.xMove = xMouse / inputHandler.canvasWidth
 			this.yMove = yMouse / inputHandler.canvasHeight
 		}
-		this.movement[0] = 0
-		this.movement[2] = 0
-		if (inputHandler.isKeyPressed('KeyW') || inputHandler.isKeyPressed('ArrowUp')) {
-			this.movement[2] = -1
-		} else if (inputHandler.isKeyPressed('KeyS') || inputHandler.isKeyPressed('ArrowDown')) {
-			this.movement[2] = 1
-		}
-		if (inputHandler.isKeyPressed('KeyA') || inputHandler.isKeyPressed('ArrowLeft')) {
-			this.movement[0] = -1
-		} else if (inputHandler.isKeyPressed('KeyD') || inputHandler.isKeyPressed('ArrowRight')) {
-			this.movement[0] = 1
-		}
 	}
 
 	update(delta: number): void {
+		if (!this.entity) {
+			throw new Error('Camera is not attached to an entity')
+		}
+
 		const zoomLevel = this.desiredZoom * delta * 0.1
 		this.desiredZoom -= zoomLevel
 		this.zoom(zoomLevel)
-
-		if (this.movement.getLength() !== 0) {
-			this.movement.normalize().mul(delta * 0.1)
-			this.frame[12] += this.movement[0]
-			this.frame[13] += this.movement[1]
-			this.frame[14] += this.movement[2]
-			this.lookAtPosition.add(this.movement)
-		}
 
 		if (this.xMove) {
 			this.rotateYAround(new Vector3(0, 0, 0), this.xMove * delta * 2)
@@ -57,10 +43,6 @@ export class FreeCamera extends Camera {
 			this.yMove = 0
 		}
 
-		this.lookAt(this.lookAtPosition)
-	}
-
-	consumesInput(): boolean {
-		return true
+		this.lookAt(this.entity.getPosition())
 	}
 }

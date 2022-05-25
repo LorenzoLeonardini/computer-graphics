@@ -124,6 +124,9 @@ export class Camera {
 
 	handleInput(inputHandler: InputHandler) {}
 	update(delta: number) {}
+	consumesInput(): boolean {
+		return false
+	}
 
 	render(gl: WebGL2RenderingContext, entity: EntityInterface) {
 		entity.render(gl)

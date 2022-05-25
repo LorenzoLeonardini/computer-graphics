@@ -4,6 +4,9 @@ import { Matrix4 } from '../lib/Matrix'
 import { Vector3 } from '../lib/Vector'
 import { Car } from './Car'
 
+const MIN_ZOOM_LEVEL = 0.3
+const MAX_ZOOM_LEVEL = 6
+
 export class FollowCamera extends Camera {
 	private car: Car
 	private zoomLevel: number = 0
@@ -14,6 +17,8 @@ export class FollowCamera extends Camera {
 	private cameraYRotation: Vector3 = new Vector3(0, 0, 0)
 	private xMove: number = 0
 	private yMove: number = 0
+
+	private holdingMouse: boolean = false
 
 	attachTo(car: Car) {
 		this.car = car
@@ -31,14 +36,14 @@ export class FollowCamera extends Camera {
 	handleInput(inputHandler: InputHandler): void {
 		if (inputHandler.mouseWheelY() !== 0) {
 			this.desiredZoomLevel += 4 * (inputHandler.mouseWheelY() / inputHandler.canvasHeight)
-			if (this.desiredZoomLevel < 1) {
-				this.desiredZoomLevel = 1
+			if (this.desiredZoomLevel < MIN_ZOOM_LEVEL) {
+				this.desiredZoomLevel = MIN_ZOOM_LEVEL
 			}
-			if (this.desiredZoomLevel > 6) {
-				this.desiredZoomLevel = 6
+			if (this.desiredZoomLevel > MAX_ZOOM_LEVEL) {
+				this.desiredZoomLevel = MAX_ZOOM_LEVEL
 			}
 		}
-		if (inputHandler.isMouseButtonClicked(MouseButton.LEFT)) {
+		if ((this.holdingMouse = inputHandler.isMouseButtonClicked(MouseButton.LEFT))) {
 			const [xMouse, yMouse] = inputHandler.getMousePositionDelta()
 			this.xMove = xMouse / inputHandler.canvasWidth
 			this.yMove = yMouse / inputHandler.canvasHeight
@@ -51,11 +56,11 @@ export class FollowCamera extends Camera {
 		}
 
 		this.zoomLevel += (this.desiredZoomLevel - this.zoomLevel) * delta * 0.1
-		if (this.zoomLevel < 1) {
-			this.zoomLevel = 1
+		if (this.zoomLevel < MIN_ZOOM_LEVEL) {
+			this.zoomLevel = MIN_ZOOM_LEVEL
 		}
-		if (this.zoomLevel > 6) {
-			this.zoomLevel = 6
+		if (this.zoomLevel > MAX_ZOOM_LEVEL) {
+			this.zoomLevel = MAX_ZOOM_LEVEL
 		}
 		this.cameraPosition = this.cameraPosition.normalize().mul(this.zoomLevel)
 
@@ -68,7 +73,7 @@ export class FollowCamera extends Camera {
 		if (this.xMove) {
 			this.cameraYRotation[1] += this.xMove * delta * 2
 			this.xMove = 0
-		} else if (this.car.getSpeed() != 0) {
+		} else if (this.car.getSpeed() != 0 && !this.holdingMouse) {
 			this.cameraYRotation[1] +=
 				(this.desiredRotation - this.cameraYRotation[1]) * delta * 3 * Math.abs(this.car.getSpeed())
 		}
