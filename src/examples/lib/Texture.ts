@@ -24,9 +24,23 @@ export class Texture {
 
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 
+		var anisotropicFiltering =
+			gl.getExtension('EXT_texture_filter_anisotropic') ||
+			gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
+			gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
+		if (anisotropicFiltering) {
+			console.log('Making use of anisotropic filtering')
+			var max = gl.getParameter(anisotropicFiltering.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
+			gl.texParameterf(
+				gl.TEXTURE_2D,
+				anisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT,
+				Math.min(4, max)
+			)
+		}
+
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
 		gl.generateMipmap(gl.TEXTURE_2D)
 	}
 
