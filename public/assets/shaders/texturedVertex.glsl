@@ -15,7 +15,7 @@ out vec3 vNormal;
 
 void main(void) {
 	vTexCoords = aTexCoords;
-	vNormal = (uViewMat * uObjectMat * vec4(aNormal, 0.0)).xyz;
+	calculateTangentFrame(uViewMat, uObjectMat);
 
 	gl_Position = uProjectionMat * uViewMat * uObjectMat * vec4(aPosition, 1.0);
 }

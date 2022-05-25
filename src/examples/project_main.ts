@@ -78,7 +78,12 @@ export async function setupWhatToDraw() {
 		gl,
 		new OBJModel(gl, loadObjModel(await (await fetch('/assets/cube.obj')).text())),
 		new OBJModel(gl, loadObjModel(await (await fetch('/assets/wheel.obj')).text())),
-		new TexturedShader(gl, new Texture(gl, '/assets/wheel.png'))
+		new TexturedShader(
+			gl,
+			new Texture(gl, '/assets/wheel.jpg'),
+			new Texture(gl, '/assets/wheel_normal.jpg'),
+			new Texture(gl, '/assets/wheel_roughness.jpg')
+		)
 	)
 
 	const obj = await (await fetch('/assets/sphere.obj')).text()

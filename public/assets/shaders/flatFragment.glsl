@@ -11,5 +11,5 @@ out vec4 outColor;
 
 void main(void) {
 	vec3 normal = normalize(vNormal);
-	outColor = vec4(phongLighting(vec3(0.0, 1.0, 0.0), uColor, 0.0), 1.0);
+	outColor = vec4(phongLighting(vec3(0.0, 0.0, 1.0), uColor, 0.0), 1.0);
 }
