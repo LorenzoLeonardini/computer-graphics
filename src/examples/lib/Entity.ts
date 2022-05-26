@@ -225,6 +225,7 @@ export class Entity extends EntityKernel implements EntityInterface {
 			this.shader.loadPerspective(Renderer.getPerspectiveMatrix())
 			this.shader.loadView(Renderer.getViewMatrix())
 			this.shader.loadDirectionalLights(Renderer.getDirectionalLights())
+			this.shader.loadSpotlights(Renderer.getSpotights())
 		}
 
 		this.shader.loadParameters()

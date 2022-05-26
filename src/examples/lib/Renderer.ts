@@ -2,6 +2,7 @@ import { Camera } from './Camera'
 import { DirectionalLight } from './DirectionalLight'
 import { EntityInterface } from './Entity'
 import { Matrix4 } from './Matrix'
+import { Spotlight } from './Spotlight'
 
 export class Renderer {
 	private gl: WebGL2RenderingContext
@@ -10,6 +11,7 @@ export class Renderer {
 	private static perspectiveMatrix: Matrix4
 	private static viewMatrix: Matrix4
 	private static directionalLights: DirectionalLight[] = []
+	private static spotlights: Spotlight[] = []
 
 	public constructor(gl: WebGL2RenderingContext) {
 		this.gl = gl
@@ -28,6 +30,10 @@ export class Renderer {
 		Renderer.directionalLights.push(l)
 	}
 
+	public addSpotlight(l: Spotlight) {
+		Renderer.spotlights.push(l)
+	}
+
 	public static getFrameCounter() {
 		return Renderer.frameCounter
 	}
@@ -42,6 +48,10 @@ export class Renderer {
 
 	public static getDirectionalLights() {
 		return Renderer.directionalLights
+	}
+
+	public static getSpotights() {
+		return Renderer.spotlights
 	}
 
 	public render(camera: Camera) {

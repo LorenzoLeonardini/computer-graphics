@@ -1,5 +1,11 @@
 in vec3 vDirectionalLightsDirection[10];
+in vec3 vToSpotlightsVector[10];
+in vec3 vSpotlightsDirection[10];
 in vec3 toCameraVector;
+
+uniform vec4 uSpotlightsColor[10]; // 4th component is the intensity
+uniform int uSpotlightsCount;
+
 uniform vec4 uDirectionalLightsColor[10]; // 4th component is the intensity
 uniform int uDirectionalLightsCount;
 
@@ -8,6 +14,12 @@ vec3 normalToColor(vec3 normal) {
 }
 
 float AMBIENT_CONTRIBUTION = 0.4;
+float SPOTLIGHT_INNER = 0.4;
+float SPOTLIGHT_OUTER = 0.8;
+
+float c1 = 0.0;
+float c2 = 1.0;
+float c3 = 0.4;
 
 vec3 phongLighting(vec3 normal, vec3 color, float roughness) {
 	if(uDirectionalLightsCount == 0) {
@@ -27,6 +39,25 @@ vec3 phongLighting(vec3 normal, vec3 color, float roughness) {
 	}
 	diffuse /= float(uDirectionalLightsCount);
 	specular /= float(uDirectionalLightsCount);
+
+	for(int i = 0; i < uSpotlightsCount; i++) {
+		float angle = dot(normalize(vToSpotlightsVector[i]), normalize(vSpotlightsDirection[i]));
+		float fs = pow(angle, 6.0);
+		if(angle > cos(SPOTLIGHT_INNER)) {
+			fs = 1.0;
+		} else if(angle < cos(SPOTLIGHT_OUTER)) {
+			fs = 0.0;
+		}
+
+		float dist = length(vToSpotlightsVector[i]);
+		float attenuation = min(1.0 / (c1 + c2 * dist + c3 * dist * dist), 1.0);
+
+		ambient += uSpotlightsColor[i].xyz * attenuation;
+		diffuse += (uSpotlightsColor[i].xyz * max(dot(-vSpotlightsDirection[i], normal), 0.0)) * fs * attenuation;
+
+		vec3 H = (-vSpotlightsDirection[i] + toCameraVector) / length(-vSpotlightsDirection[i] + toCameraVector);
+		specular += (uSpotlightsColor[i].xyz * roughness * pow(max(dot(H, normal), 0.0), 10.0)) * fs * attenuation;
+	}
 
 	return ambient * color * AMBIENT_CONTRIBUTION + (color * diffuse + specular) * (1.0 - AMBIENT_CONTRIBUTION);
 }

@@ -1,6 +1,7 @@
 import { DirectionalLight } from './DirectionalLight'
 import { showErrorModal } from './ErrorModal'
 import { Matrix4 } from './Matrix'
+import { Spotlight } from './Spotlight'
 import { Vector4 } from './Vector'
 
 export class Shader {
@@ -20,6 +21,11 @@ export class Shader {
 	directionalLightsCountLocation: WebGLUniformLocation
 	directionalLightsDirectionLocation: WebGLUniformLocation
 	directionalLightsColorLocation: WebGLUniformLocation
+
+	spotlightsCountLocation: WebGLUniformLocation
+	spotlightsPositionLocation: WebGLUniformLocation
+	spotlightsDirectionLocation: WebGLUniformLocation
+	spotlightsColorLocation: WebGLUniformLocation
 
 	lastFrameUniformLoaded: number = 0
 
@@ -88,11 +94,20 @@ export class Shader {
 		this.projectionMatUniformLocation = this.getLocation('uProjectionMat')
 		this.viewMatUniformLocation = this.getLocation('uViewMat')
 		this.objMatUniformLocation = this.getLocation('uObjectMat')
+
 		this.directionalLightsCountLocation = this.getLocation('uDirectionalLightsCount')
 		this.directionalLightsDirectionLocation = this.getLocation('uDirectionalLightsDirection')
 		this.directionalLightsColorLocation = this.getLocation('uDirectionalLightsColor')
 		if (this.directionalLightsCountLocation) {
 			this.gl.uniform1i(this.directionalLightsCountLocation, 0)
+		}
+
+		this.spotlightsCountLocation = this.getLocation('uSpotlightsCount')
+		this.spotlightsPositionLocation = this.getLocation('uSpotlightsPosition')
+		this.spotlightsDirectionLocation = this.getLocation('uSpotlightsDirection')
+		this.spotlightsColorLocation = this.getLocation('uSpotlightsColor')
+		if (this.spotlightsCountLocation) {
+			this.gl.uniform1i(this.spotlightsCountLocation, 0)
 		}
 	}
 
@@ -126,6 +141,9 @@ export class Shader {
 			return
 		}
 		this.gl.uniform1i(this.directionalLightsCountLocation, lights.length)
+		if (lights.length === 0) {
+			return
+		}
 		const directions = []
 		const colors = []
 		lights.forEach((light) => {
@@ -134,6 +152,27 @@ export class Shader {
 		})
 		this.gl.uniform3fv(this.directionalLightsDirectionLocation, new Float32Array(directions))
 		this.gl.uniform4fv(this.directionalLightsColorLocation, new Float32Array(colors))
+	}
+
+	loadSpotlights(lights: Spotlight[]) {
+		if (this.spotlightsCountLocation === null) {
+			return
+		}
+		this.gl.uniform1i(this.spotlightsCountLocation, lights.length)
+		if (lights.length === 0) {
+			return
+		}
+		const positions = []
+		const directions = []
+		const colors = []
+		lights.forEach((light) => {
+			positions.push(...light.position)
+			directions.push(...light.direction)
+			colors.push(...light.color)
+		})
+		this.gl.uniform3fv(this.spotlightsPositionLocation, new Float32Array(positions))
+		this.gl.uniform3fv(this.spotlightsDirectionLocation, new Float32Array(directions))
+		this.gl.uniform4fv(this.spotlightsColorLocation, new Float32Array(colors))
 	}
 
 	static async loadAll() {

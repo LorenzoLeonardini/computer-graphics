@@ -17,6 +17,7 @@ import { FollowCamera } from './project/FollowCamera'
 import { CinematicCamera } from './project/CinematicCamera'
 import { TopDownCamera } from './project/TopDownCamera'
 import { FreeCamera } from './project/FreeCamera'
+import { Spotlight } from './lib/Spotlight'
 
 let gl: WebGL2RenderingContext = null
 let shader: NormalsShader
@@ -135,7 +136,10 @@ export async function setupHowToDraw() {
 	renderer.addEntity(terrain)
 	renderer.addEntity(car)
 	renderer.addEntity(sphere)
+	// SUN
 	renderer.addDirectionalLight(new DirectionalLight([-1, -1, 1], [1, 1, 1, 1]))
+
+	renderer.addSpotlight(new Spotlight([0, 1, 0], [0, -1, 0], [0, 1, 0, 1]))
 
 	inputHandler = new InputHandler()
 	inputHandler.registerAllHandlers()

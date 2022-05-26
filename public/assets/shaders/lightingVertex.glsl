@@ -1,7 +1,13 @@
 uniform vec3 uDirectionalLightsDirection[10];
+uniform vec3 uSpotlightsPosition[10];
+uniform vec3 uSpotlightsDirection[10];
 
 out vec3 vDirectionalLightsDirection[10];
+out vec3 vToSpotlightsVector[10];
+out vec3 vSpotlightsDirection[10];
 out vec3 toCameraVector;
+
+out vec4 positionInTangentSpace;
 
 vec4 positionRelativeToCamera;
 mat3 toTangentSpace;
@@ -23,5 +29,11 @@ void calculateTangentFrame(mat4 uViewMat, mat4 uObjectMat) {
 
 	for(int i = 0; i < 10; i++) {
 		vDirectionalLightsDirection[i] = toTangentSpace * (uViewMat * vec4(uDirectionalLightsDirection[i], 0.0)).xyz;
+	}
+
+	for(int i = 0; i < 10; i++) {
+		vToSpotlightsVector[i] = toTangentSpace * (uViewMat * vec4(uSpotlightsPosition[i], 0.0)).xyz;
+		vToSpotlightsVector[i] = toTangentSpace * (positionRelativeToCamera - (uViewMat * vec4(uSpotlightsPosition[i], 1.0))).xyz;
+		vSpotlightsDirection[i] = toTangentSpace * (uViewMat * vec4(uSpotlightsDirection[i], 0.0)).xyz;
 	}
 }
