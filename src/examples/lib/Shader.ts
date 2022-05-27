@@ -2,6 +2,7 @@ import { DirectionalLight } from './DirectionalLight'
 import { showErrorModal } from './ErrorModal'
 import { Matrix4 } from './Matrix'
 import { Spotlight } from './Spotlight'
+import { Texture } from './Texture'
 
 export class Shader {
 	vertexShader: WebGLShader
@@ -26,7 +27,12 @@ export class Shader {
 	spotlightsDirectionLocation: WebGLUniformLocation
 	spotlightsColorLocation: WebGLUniformLocation
 
+	projectingLightsMatLocation: WebGLUniformLocation
+	projectingLightTextureLocation: WebGLUniformLocation
+
 	lastFrameUniformLoaded: number = 0
+
+	textureCount: number = 0
 
 	static shaderPromises = []
 	static programCache: Map<string, Promise<WebGLProgram>> = new Map()
@@ -84,7 +90,7 @@ export class Shader {
 				gl.linkProgram(program)
 
 				const message_link = gl.getProgramInfoLog(program)
-				if (message_link.length > 0) {
+				if (message_link.length > 0 && message_vs.length == 0 && message_fs.length == 0) {
 					console.error('%cERROR LINKING PROGRAM', 'font-weight: bold;')
 					console.log(message_link)
 					showErrorModal('Error linking program', message_link, -1)
@@ -116,6 +122,9 @@ export class Shader {
 		if (this.spotlightsCountLocation) {
 			this.gl.uniform1i(this.spotlightsCountLocation, 0)
 		}
+
+		this.projectingLightsMatLocation = this.getLocation('uProjectingLightsMat')
+		this.projectingLightTextureLocation = this.getLocation('uProjectingLightTexture')
 	}
 
 	getLocation(name: string): WebGLUniformLocation {
@@ -180,6 +189,26 @@ export class Shader {
 		this.gl.uniform3fv(this.spotlightsPositionLocation, new Float32Array(positions))
 		this.gl.uniform3fv(this.spotlightsDirectionLocation, new Float32Array(directions))
 		this.gl.uniform4fv(this.spotlightsColorLocation, new Float32Array(colors))
+	}
+
+	loadProjectingLights(matrices: Matrix4[], texture: Texture) {
+		if (
+			this.projectingLightsMatLocation === null ||
+			this.projectingLightTextureLocation === null ||
+			!texture
+		) {
+			return
+		}
+		if (matrices.length > 2) {
+			throw new Error('Maximum two projecting lights')
+		}
+		const m = []
+		matrices.forEach((mat) => {
+			m.push(...mat)
+		})
+		this.gl.uniformMatrix4fv(this.projectingLightsMatLocation, false, m)
+		this.gl.uniform1i(this.projectingLightTextureLocation, this.textureCount)
+		texture.bind(this.gl, this.textureCount)
 	}
 
 	static async loadAll() {

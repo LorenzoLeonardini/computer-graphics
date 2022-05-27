@@ -12,10 +12,15 @@ out vec3 toCameraVector;
 
 out vec4 positionInTangentSpace;
 
+out vec3 vPosition;
+out mat4 vObjectMat;
+
 vec4 positionRelativeToCamera;
 mat3 toTangentSpace;
 
 void calculateTangentFrame(mat4 uViewMat, mat4 uObjectMat) {
+	vPosition = aPosition;
+	vObjectMat = uObjectMat;
 	vNormal = normalize((uViewMat * uObjectMat * vec4(aNormal, 0.0)).xyz);
 
 	vec3 tangent = normalize((uViewMat * uObjectMat * vec4(aTangent, 0.0)).xyz);

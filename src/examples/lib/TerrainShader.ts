@@ -66,16 +66,13 @@ export class TerrainShader extends Shader {
 		this.redTexLocation = this.gl.getUniformLocation(this.program, 'uRedTexture')
 		this.greenTexLocation = this.gl.getUniformLocation(this.program, 'uGreenTexture')
 		this.blueTexLocation = this.gl.getUniformLocation(this.program, 'uBlueTexture')
-	}
-
-	bind() {
-		super.bind()
 
 		this.gl.uniform1i(this.blendMapTexLocation, 0)
 		this.gl.uniform1iv(this.baseTexLocation, [1, 5, 9])
 		this.gl.uniform1iv(this.redTexLocation, [2, 6, 10])
 		this.gl.uniform1iv(this.greenTexLocation, [3, 7, 11])
 		this.gl.uniform1iv(this.blueTexLocation, [4, 8, 12])
+		this.textureCount = 13
 	}
 
 	loadParameters(): void {

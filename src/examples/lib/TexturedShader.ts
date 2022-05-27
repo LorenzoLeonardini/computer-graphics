@@ -37,16 +37,16 @@ export class TexturedShader extends Shader {
 
 		this.gl.uniform1i(this.hasNormalMap, this.normalMap !== undefined ? 1 : 0)
 		this.gl.uniform1i(this.hasRoughnessMap, this.roughnessMap !== undefined ? 1 : 0)
-	}
 
-	bind() {
-		super.bind()
 		this.gl.uniform1i(this.textureSamplerLocation, 0)
+		this.textureCount++
 		if (this.normalMap) {
 			this.gl.uniform1i(this.normalSamplerLocation, 1)
+			this.textureCount++
 		}
 		if (this.roughnessMap) {
-			this.gl.uniform1i(this.roughnessSamplerLocation, 1)
+			this.gl.uniform1i(this.roughnessSamplerLocation, 2)
+			this.textureCount++
 		}
 	}
 

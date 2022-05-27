@@ -24,9 +24,11 @@ let shader: NormalsShader
 let terrain: Entity
 let terrainShader: TerrainShader
 
-let sphere: Entity
+let carHeadlightTexture: Texture
 
+let sphere: Entity
 let car: Car
+let building: Entity
 
 let cameraSwitcher: CameraSwitcher
 let camera: CinematicCamera
@@ -98,6 +100,17 @@ export async function setupWhatToDraw() {
 	const lampObj = new OBJModel(gl, loadObjModel(await (await fetch('/assets/lamp.obj')).text()))
 	const lampShader = new FlatShader(gl, new Vector3(0.4, 0.4, 0.4))
 	StreetLamp.setUpModel(lampObj, lampShader, new Vector3(0.65, 1, 0))
+
+	building = new Entity(
+		new OBJModel(gl, loadObjModel(await (await fetch('/assets/cube.obj')).text())),
+		new FlatShader(gl, new Vector3(0.5, 0.5, 0.5))
+	)
+	building.setPosition(0, 0.5, -8)
+	// building.rotateY(0.1)
+	building.setScale(0.5)
+
+	carHeadlightTexture = new Texture(gl, '/assets/car_headlight.png')
+	Renderer.setLightProjectorTexture(carHeadlightTexture)
 }
 
 export async function changeAspectRatio(width: number, height: number) {
@@ -139,6 +152,7 @@ export async function setupHowToDraw() {
 	renderer.addEntity(terrain)
 	renderer.addEntity(car)
 	renderer.addEntity(sphere)
+	renderer.addEntity(building)
 
 	const lamp = new StreetLamp()
 	renderer.addEntity(lamp)
@@ -181,6 +195,7 @@ export function draw(time: number = window.performance.now()) {
 	cameraSwitcher.handleInput(inputHandler)
 	cameraSwitcher.updateAllCameras(delta)
 
+	Renderer.setLightProjectors(car.getProjectorsMatrix())
 	renderer.render(cameraSwitcher.getCurrentCamera())
 
 	inputHandler.reset()

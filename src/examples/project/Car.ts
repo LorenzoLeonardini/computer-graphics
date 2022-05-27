@@ -1,9 +1,12 @@
+import { Camera } from '../lib/Camera'
 import { Cube } from '../lib/Cube'
 import { Cylinder } from '../lib/Cylinder'
 import { Entity, EntityTree } from '../lib/Entity'
 import { FlatShader } from '../lib/FlatShader'
 import { InputHandler } from '../lib/InputHandler'
+import { Matrix4 } from '../lib/Matrix'
 import { OBJModel } from '../lib/OBJModel'
+import { Texture } from '../lib/Texture'
 import { TexturedShader } from '../lib/TexturedShader'
 import { Vector3, Vector4 } from '../lib/Vector'
 
@@ -23,6 +26,8 @@ export class Car extends EntityTree {
 
 	private acceleration: number = 0
 	private velocity: number = 0
+
+	private headlightProjectors: [Camera, Camera]
 
 	private wheels: Entity[]
 
@@ -74,6 +79,10 @@ export class Car extends EntityTree {
 		super([carBottomBody, carTopBody, ...wheels])
 		this.setScale(0.15)
 		this.wheels = wheels
+
+		this.headlightProjectors = [new Camera(0.3, 1, 0.1, 10), new Camera(0.3, 1, 0.1, 10)]
+		this.headlightProjectors[0].position(0.4, 0.52, 0.8)
+		this.headlightProjectors[0].position(-0.4, 0.52, 0.8)
 	}
 
 	getSpeed(): number {
@@ -189,5 +198,24 @@ export class Car extends EntityTree {
 
 	getSpherePosition() {
 		return this.rotationPoint
+	}
+
+	getProjectorsMatrix = () => {
+		this.headlightProjectors[0].frame = this.updateMatrix().mul(
+			Matrix4.translate(new Vector3(-0.35, 0.45, -0.8))
+		)
+		this.headlightProjectors[0].frameChanged = true
+		this.headlightProjectors[1].frame = this.updateMatrix().mul(
+			Matrix4.translate(new Vector3(0.35, 0.45, -0.8))
+		)
+		this.headlightProjectors[1].frameChanged = true
+		return [
+			this.headlightProjectors[0]
+				.getPerspectiveMatrix()
+				.mul(this.headlightProjectors[0].viewMatrix()),
+			this.headlightProjectors[1]
+				.getPerspectiveMatrix()
+				.mul(this.headlightProjectors[1].viewMatrix())
+		]
 	}
 }

@@ -3,6 +3,7 @@ import { DirectionalLight } from './DirectionalLight'
 import { EntityInterface } from './Entity'
 import { Matrix4 } from './Matrix'
 import { Spotlight } from './Spotlight'
+import { Texture } from './Texture'
 
 export class Renderer {
 	private gl: WebGL2RenderingContext
@@ -12,6 +13,8 @@ export class Renderer {
 	private static viewMatrix: Matrix4
 	private static directionalLights: DirectionalLight[] = []
 	private static spotlights: Spotlight[] = []
+	private static lightProjectors: Matrix4[]
+	private static lightProjectorTexture: Texture
 
 	public constructor(gl: WebGL2RenderingContext) {
 		this.gl = gl
@@ -52,6 +55,22 @@ export class Renderer {
 
 	public static getSpotights() {
 		return Renderer.spotlights
+	}
+
+	public static setLightProjectors(lightProjectors: Matrix4[]) {
+		Renderer.lightProjectors = lightProjectors
+	}
+
+	public static getLightProjectors() {
+		return Renderer.lightProjectors
+	}
+
+	public static setLightProjectorTexture(lightProjectorTexture: Texture) {
+		Renderer.lightProjectorTexture = lightProjectorTexture
+	}
+
+	public static getLightProjectorTexture() {
+		return Renderer.lightProjectorTexture
 	}
 
 	public render(camera: Camera) {
