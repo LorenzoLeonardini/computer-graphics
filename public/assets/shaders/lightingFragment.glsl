@@ -1,12 +1,15 @@
-in vec3 vDirectionalLightsDirection[10];
-in vec3 vToSpotlightsVector[10];
-in vec3 vSpotlightsDirection[10];
+#define MAX_DIRECTIONAL_LIGHTS 4
+#define MAX_SPOTLIGHTS 10
+
+in vec3 vDirectionalLightsDirection[MAX_DIRECTIONAL_LIGHTS];
+in vec3 vToSpotlightsVector[MAX_SPOTLIGHTS];
+in vec3 vSpotlightsDirection[MAX_SPOTLIGHTS];
 in vec3 toCameraVector;
 
-uniform vec4 uSpotlightsColor[10]; // 4th component is the intensity
+uniform vec4 uSpotlightsColor[MAX_SPOTLIGHTS]; // 4th component is the intensity
 uniform int uSpotlightsCount;
 
-uniform vec4 uDirectionalLightsColor[10]; // 4th component is the intensity
+uniform vec4 uDirectionalLightsColor[MAX_DIRECTIONAL_LIGHTS]; // 4th component is the intensity
 uniform int uDirectionalLightsCount;
 
 vec3 normalToColor(vec3 normal) {
