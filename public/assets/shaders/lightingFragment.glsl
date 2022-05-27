@@ -89,8 +89,6 @@ vec3 phongLighting(vec3 normal, vec3 color, float roughness) {
 		specular += (uSpotlightsColor[i].xyz * roughness * pow(max(dot(H, normal), 0.0), 10.0)) * fs * attenuation;
 	}
 
-	calculateCarHeadlights();
-
 	vec3 finalColor = ambient * color * AMBIENT_CONTRIBUTION + (color * diffuse + specular) * (1.0 - AMBIENT_CONTRIBUTION);
 	return applyCarHeadlights(finalColor);
 }
