@@ -30,16 +30,16 @@ void main(void) {
 	vec4 greenTextureNormal = texture(uGreenTexture[1], texCoords);
 	vec4 blueTextureNormal = texture(uBlueTexture[1], texCoords);
 
-	vec4 baseTextureRoughness = texture(uBaseTexture[2], texCoords);
-	vec4 redTextureRoughness = texture(uRedTexture[2], texCoords);
-	vec4 greenTextureRoughness = texture(uGreenTexture[2], texCoords);
-	vec4 blueTextureRoughness = texture(uBlueTexture[2], texCoords);
+	float baseTextureRoughness = texture(uBaseTexture[2], texCoords).x;
+	float redTextureRoughness = texture(uRedTexture[2], texCoords).x;
+	float greenTextureRoughness = texture(uGreenTexture[2], texCoords).x;
+	float blueTextureRoughness = texture(uBlueTexture[2], texCoords).x;
 
 	vec3 normalMap = ((baseTextureNormal * baseAlpha + redTextureNormal * blendMap.r + greenTextureNormal * blendMap.g + blueTextureNormal * blendMap.b).xyz);
-	normalMap = 2.0 * normalMap - 1.0;
+	normalMap = normalize(2.0 * normalMap - 1.0);
 
-	vec4 roughness = baseTextureRoughness * baseAlpha + redTextureRoughness * blendMap.r + greenTextureRoughness * blendMap.g + blueTextureRoughness * blendMap.b;
+	float roughness = baseTextureRoughness * baseAlpha + redTextureRoughness * blendMap.r + greenTextureRoughness * blendMap.g + blueTextureRoughness * blendMap.b;
 
 	outColor = baseTextureColor * baseAlpha + redTextureColor * blendMap.r + greenTextureColor * blendMap.g + blueTextureColor * blendMap.b;
-	outColor = vec4(phongLighting(normalMap, outColor.xyz, 1.0 - roughness.x), 1.0);
+	outColor = vec4(phongLighting(normalMap, outColor.xyz, 1.0 - roughness), 1.0);
 }

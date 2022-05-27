@@ -52,23 +52,23 @@ export async function setupWhatToDraw() {
 	const asphaltTexture = new Texture(gl, '/assets/asphalt.jpg')
 	const asphaltNormal = new Texture(gl, '/assets/asphalt_normal.jpg')
 	const asphaltRoughness = new Texture(gl, '/assets/asphalt_roughness.jpg')
-	const sandTexture = new Texture(gl, '/assets/sand.jpg')
-	const sandNormal = new Texture(gl, '/assets/sand_normal.jpg')
-	const sandRoughness = new Texture(gl, '/assets/sand_roughness.jpg')
+	const groundTexture = new Texture(gl, '/assets/ground.png')
+	const groundNormal = new Texture(gl, '/assets/ground_normal.png')
+	const groundRoughness = new Texture(gl, '/assets/ground_roughness.png')
 	terrainShader = new TerrainShader(
 		gl,
 		blendMapTexture,
 		grassTexture,
 		asphaltTexture,
-		sandTexture,
+		groundTexture,
 		blendMapTexture,
 		grassNormal,
 		asphaltNormal,
-		sandNormal,
+		groundNormal,
 		blendMapTexture,
 		grassRoughness,
 		asphaltRoughness,
-		sandRoughness,
+		groundRoughness,
 		blendMapTexture
 	)
 
