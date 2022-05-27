@@ -2,7 +2,6 @@ import { DirectionalLight } from './DirectionalLight'
 import { showErrorModal } from './ErrorModal'
 import { Matrix4 } from './Matrix'
 import { Spotlight } from './Spotlight'
-import { Vector4 } from './Vector'
 
 export class Shader {
 	vertexShader: WebGLShader
@@ -83,6 +82,14 @@ export class Shader {
 				gl.attachShader(program, this.vertexShader)
 				gl.attachShader(program, this.fragmentShader)
 				gl.linkProgram(program)
+
+				const message_link = gl.getProgramInfoLog(program)
+				if (message_link.length > 0) {
+					console.error('%cERROR LINKING PROGRAM', 'font-weight: bold;')
+					console.log(message_link)
+					showErrorModal('Error linking program', message_link, -1)
+				}
+
 				gl.useProgram(program)
 
 				resolve(program)
