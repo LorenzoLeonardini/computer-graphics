@@ -28,7 +28,7 @@
 
 		document.body.onresize = resize
 
-		functions = (await import(`../examples/${example}.ts`)) as any
+		functions = (await import(`../examples/project/${example}.ts`)) as any
 
 		await functions.setupWebGL(canvas)
 		await functions.setupWhatToDraw()
@@ -114,7 +114,7 @@
 	<div class="container">
 		<canvas id="{example.replaceAll('/', '_')}" width="500" height="500"></canvas>
 		<a
-			href="{`https://github.com/LorenzoLeonardini/computer-graphics/blob/main/src/examples/${example}.ts`}"
+			href="{`https://github.com/LorenzoLeonardini/computer-graphics/blob/main/src/examples/project/${example}.ts`}"
 			target="_blank"
 			rel="noreferrer noopener"><button class="bg-gray-800">&lt;/&gt;</button></a>
 	</div>

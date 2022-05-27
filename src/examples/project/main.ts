@@ -1,23 +1,22 @@
-import { DirectionalLight } from './lib/DirectionalLight'
-import { Entity } from './lib/Entity'
-import { FlatShader } from './lib/FlatShader'
-import { InputHandler } from './lib/InputHandler'
-import { NormalsShader } from './lib/NormalsShader'
-import { loadObjModel } from './lib/ObjectLoader'
-import { OBJModel } from './lib/OBJModel'
-import { Quad } from './lib/Quad'
-import { Renderer } from './lib/Renderer'
-import { TerrainShader } from './lib/TerrainShader'
-import { Texture } from './lib/Texture'
-import { TexturedShader } from './lib/TexturedShader'
-import { Vector3 } from './lib/Vector'
-import { CameraSwitcher } from './project/CameraSwitcher'
-import { Car } from './project/Car'
-import { FollowCamera } from './project/FollowCamera'
-import { CinematicCamera } from './project/CinematicCamera'
-import { TopDownCamera } from './project/TopDownCamera'
-import { FreeCamera } from './project/FreeCamera'
-import { Spotlight } from './lib/Spotlight'
+import { DirectionalLight } from '../lib/DirectionalLight'
+import { Entity } from '../lib/Entity'
+import { FlatShader } from '../lib/FlatShader'
+import { InputHandler } from '../lib/InputHandler'
+import { NormalsShader } from '../lib/NormalsShader'
+import { loadObjModel } from '../lib/ObjectLoader'
+import { OBJModel } from '../lib/OBJModel'
+import { Renderer } from '../lib/Renderer'
+import { TerrainShader } from '../lib/TerrainShader'
+import { Texture } from '../lib/Texture'
+import { TexturedShader } from '../lib/TexturedShader'
+import { Vector3, Vector4 } from '../lib/Vector'
+import { CameraSwitcher } from './CameraSwitcher'
+import { Car } from './Car'
+import { FollowCamera } from './FollowCamera'
+import { CinematicCamera } from './CinematicCamera'
+import { TopDownCamera } from './TopDownCamera'
+import { FreeCamera } from './FreeCamera'
+import { Spotlight } from '../lib/Spotlight'
 
 let gl: WebGL2RenderingContext = null
 let shader: NormalsShader
@@ -47,9 +46,9 @@ export function setupWebGL(canvas: HTMLCanvasElement) {
 
 export async function setupWhatToDraw() {
 	const blendMapTexture = new Texture(gl, '/assets/project/terrainBlendMap.png')
-	const grassTexture = new Texture(gl, '/assets/grass.jpg')
-	const grassNormal = new Texture(gl, '/assets/grass_normal.jpg')
-	const grassRoughness = new Texture(gl, '/assets/grass_roughness.jpg')
+	const grassTexture = new Texture(gl, '/assets/grass.png')
+	const grassNormal = new Texture(gl, '/assets/grass_normal.png')
+	const grassRoughness = new Texture(gl, '/assets/grass_roughness.png')
 	const asphaltTexture = new Texture(gl, '/assets/asphalt.jpg')
 	const asphaltNormal = new Texture(gl, '/assets/asphalt_normal.jpg')
 	const asphaltRoughness = new Texture(gl, '/assets/asphalt_roughness.jpg')
@@ -78,7 +77,7 @@ export async function setupWhatToDraw() {
 		terrainShader
 	)
 	terrain.rotateX(-Math.PI / 2)
-	terrain.setScale(8)
+	terrain.setScale(32)
 
 	car = new Car(
 		gl,
@@ -98,17 +97,17 @@ export async function setupWhatToDraw() {
 }
 
 export async function changeAspectRatio(width: number, height: number) {
-	camera = new CinematicCamera(3.14 / 4, height / width, 0.01, 30)
+	camera = new CinematicCamera(3.14 / 4, height / width, 0.01, 60)
 	camera.position(0, 1.5, 2)
 	camera.attachTo(car)
 
-	topDownCamera = new TopDownCamera(3.14 / 4, height / width, 0.01, 30)
+	topDownCamera = new TopDownCamera(3.14 / 4, height / width, 0.01, 60)
 	topDownCamera.attachTo(car)
 
-	followCamera = new FollowCamera(3.14 / 4, height / width, 0.01, 30)
+	followCamera = new FollowCamera(3.14 / 4, height / width, 0.01, 60)
 	followCamera.attachTo(car)
 
-	freeCamera = new FreeCamera(3.14 / 4, height / width, 0.01, 30)
+	freeCamera = new FreeCamera(3.14 / 4, height / width, 0.01, 60)
 	freeCamera.position(0, 1.5, 2)
 
 	cameraSwitcher = new CameraSwitcher([
@@ -137,9 +136,13 @@ export async function setupHowToDraw() {
 	renderer.addEntity(car)
 	renderer.addEntity(sphere)
 	// SUN
-	renderer.addDirectionalLight(new DirectionalLight([-1, -1, 1], [1, 1, 1, 1]))
+	renderer.addDirectionalLight(
+		new DirectionalLight(new Vector3(-1, -1, 1), new Vector4(1, 1, 1, 1))
+	)
 
-	renderer.addSpotlight(new Spotlight([0, 1, 0], [0, -1, 0], [0, 1, 0, 1]))
+	renderer.addSpotlight(
+		new Spotlight(new Vector3(0, 1, 0), new Vector3(0, -1, 0), new Vector4(0, 1, 0, 1))
+	)
 
 	inputHandler = new InputHandler()
 	inputHandler.registerAllHandlers()
@@ -167,7 +170,6 @@ export function draw(time: number = window.performance.now()) {
 	cameraSwitcher.handleInput(inputHandler)
 	cameraSwitcher.updateAllCameras(delta)
 
-	// draw terrain
 	renderer.render(cameraSwitcher.getCurrentCamera())
 
 	inputHandler.reset()

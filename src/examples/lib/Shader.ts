@@ -147,8 +147,8 @@ export class Shader {
 		const directions = []
 		const colors = []
 		lights.forEach((light) => {
-			directions.push(...light.direction)
-			colors.push(...light.color)
+			directions.push(...light.getDirection())
+			colors.push(...light.getColor())
 		})
 		this.gl.uniform3fv(this.directionalLightsDirectionLocation, new Float32Array(directions))
 		this.gl.uniform4fv(this.directionalLightsColorLocation, new Float32Array(colors))
@@ -166,9 +166,9 @@ export class Shader {
 		const directions = []
 		const colors = []
 		lights.forEach((light) => {
-			positions.push(...light.position)
-			directions.push(...light.direction)
-			colors.push(...light.color)
+			positions.push(...light.getPosition())
+			directions.push(...light.getDirection())
+			colors.push(...light.getColor())
 		})
 		this.gl.uniform3fv(this.spotlightsPositionLocation, new Float32Array(positions))
 		this.gl.uniform3fv(this.spotlightsDirectionLocation, new Float32Array(directions))

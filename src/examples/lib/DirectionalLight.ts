@@ -1,9 +1,27 @@
-export class DirectionalLight {
-	public readonly direction: [number, number, number]
-	public readonly color: [number, number, number, number]
+import { Vector3, Vector4 } from './Vector'
 
-	public constructor(direction, color) {
+export class DirectionalLight {
+	private direction: Vector3
+	private color: Vector4
+
+	public constructor(direction: Vector3, color: Vector4) {
 		this.direction = direction
+		this.color = color
+	}
+
+	public getDirection() {
+		return this.direction
+	}
+
+	public getColor() {
+		return this.color
+	}
+
+	public setDirection(direction: Vector3) {
+		this.direction = direction
+	}
+
+	public setColor(color: Vector4) {
 		this.color = color
 	}
 }
