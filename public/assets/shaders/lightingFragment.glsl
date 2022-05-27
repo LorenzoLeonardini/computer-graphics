@@ -39,15 +39,12 @@ vec3 applyCarHeadlights(vec3 color) {
 	tmp = (uProjectingLightsMat[1] * vObjectMat * vec4(vPosition, 1.0));
 	projectingLightsUV[1] = ((tmp/tmp.w).xy + 1.0) * 0.5;
 
-	if(projectingLightsUV[0].x >= 0.0 && projectingLightsUV[0].x <= 1.0 && projectingLightsUV[0].y >= 0.0 && projectingLightsUV[0].y <= 1.0) {
-		vec4 headlight = texture(uProjectingLightTexture, projectingLightsUV[0].xy);
-		color = headlight.rgb * headlight.a + color * (1.0 - headlight.a);
+	for(int i = 0; i < 2; i++) {
+		if(projectingLightsUV[i].x >= 0.0 && projectingLightsUV[i].x <= 1.0 && projectingLightsUV[i].y >= 0.0 && projectingLightsUV[i].y <= 1.0) {
+			vec4 headlight = texture(uProjectingLightTexture, projectingLightsUV[i].xy);
+			color = mix(color, headlight.rgb, headlight.a);
+		}
 	}
-	if(projectingLightsUV[1].x >= 0.0 && projectingLightsUV[1].x <= 1.0 && projectingLightsUV[1].y >= 0.0 && projectingLightsUV[1].y <= 1.0) {
-		vec4 headlight = texture(uProjectingLightTexture, projectingLightsUV[1].xy);
-		color = headlight.rgb * headlight.a + color * (1.0 - headlight.a);
-	}
-
 	return color;
 }
 
