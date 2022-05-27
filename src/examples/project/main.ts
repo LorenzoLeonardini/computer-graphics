@@ -16,7 +16,7 @@ import { FollowCamera } from './FollowCamera'
 import { CinematicCamera } from './CinematicCamera'
 import { TopDownCamera } from './TopDownCamera'
 import { FreeCamera } from './FreeCamera'
-import { Spotlight } from '../lib/Spotlight'
+import { StreetLamp } from './StreetLamp'
 
 let gl: WebGL2RenderingContext = null
 let shader: NormalsShader
@@ -94,6 +94,10 @@ export async function setupWhatToDraw() {
 	const obj = await (await fetch('/assets/sphere.obj')).text()
 	sphere = new Entity(new OBJModel(gl, loadObjModel(obj)), new FlatShader(gl, new Vector3(0, 1, 0)))
 	sphere.setScale(0.05)
+
+	const lampObj = new OBJModel(gl, loadObjModel(await (await fetch('/assets/lamp.obj')).text()))
+	const lampShader = new FlatShader(gl, new Vector3(0.4, 0.4, 0.4))
+	StreetLamp.setUpModel(lampObj, lampShader, new Vector3(0.65, 1, 0))
 }
 
 export async function changeAspectRatio(width: number, height: number) {
@@ -135,13 +139,20 @@ export async function setupHowToDraw() {
 	renderer.addEntity(terrain)
 	renderer.addEntity(car)
 	renderer.addEntity(sphere)
+
+	const lamp = new StreetLamp()
+	renderer.addEntity(lamp)
+	renderer.addSpotlight(lamp.getLight())
+
+	const lamp2 = new StreetLamp()
+	lamp2.setPosition(4, 0, 0)
+	lamp2.rotateY(Math.PI / 4)
+	renderer.addEntity(lamp2)
+	renderer.addSpotlight(lamp2.getLight())
+
 	// SUN
 	renderer.addDirectionalLight(
 		new DirectionalLight(new Vector3(-1, -1, 1), new Vector4(1, 1, 1, 1))
-	)
-
-	renderer.addSpotlight(
-		new Spotlight(new Vector3(0, 1, 0), new Vector3(0, -1, 0), new Vector4(0, 1, 0, 1))
 	)
 
 	inputHandler = new InputHandler()
