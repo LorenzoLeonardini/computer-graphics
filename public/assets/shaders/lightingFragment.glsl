@@ -12,8 +12,8 @@ uniform int uSpotlightsCount;
 uniform vec4 uDirectionalLightsColor[MAX_DIRECTIONAL_LIGHTS]; // 4th component is the intensity
 uniform int uDirectionalLightsCount;
 
-uniform mat4 uProjectingLightsMat[2];
 uniform sampler2D uProjectingLightTexture;
+uniform sampler2D uProjectingLightDepthTexture[2];
 in vec3 vPosition;
 in mat4 vObjectMat;
 
@@ -29,15 +29,12 @@ float c1 = 0.0;
 float c2 = 1.0;
 float c3 = 0.4;
 
+in vec4 vProjectingLightsUV[2];
 vec2 projectingLightsUV[2];
 
 vec3 applyCarHeadlights(vec3 color) {
-	vec4 tmp;
-	tmp = uProjectingLightsMat[0] * vObjectMat * vec4(vPosition, 1.0);//(uProjectingLightsMat[0] * uObjectMat * vec4(vPosition, 1.0));
-	projectingLightsUV[0] = ((tmp/tmp.w).xy + 1.0) * 0.5;
-
-	tmp = (uProjectingLightsMat[1] * vObjectMat * vec4(vPosition, 1.0));
-	projectingLightsUV[1] = ((tmp/tmp.w).xy + 1.0) * 0.5;
+	projectingLightsUV[0] = ((vProjectingLightsUV[0]/vProjectingLightsUV[0].w).xy + 1.0) * 0.5;
+	projectingLightsUV[1] = ((vProjectingLightsUV[1]/vProjectingLightsUV[1].w).xy + 1.0) * 0.5;
 
 	for(int i = 0; i < 2; i++) {
 		if(projectingLightsUV[i].x >= 0.0 && projectingLightsUV[i].x <= 1.0 && projectingLightsUV[i].y >= 0.0 && projectingLightsUV[i].y <= 1.0) {

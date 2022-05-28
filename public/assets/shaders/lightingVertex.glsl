@@ -18,6 +18,14 @@ out mat4 vObjectMat;
 vec4 positionRelativeToCamera;
 mat3 toTangentSpace;
 
+uniform mat4 uProjectingLightsMat[2];
+out vec4 vProjectingLightsUV[2];
+
+void calculatePorjectingLightsUV() {
+	vProjectingLightsUV[0] = uProjectingLightsMat[0] * vObjectMat * vec4(aPosition, 1.0);
+	vProjectingLightsUV[1] = uProjectingLightsMat[1] * vObjectMat * vec4(aPosition, 1.0);
+}
+
 void calculateTangentFrame(mat4 uViewMat, mat4 uObjectMat) {
 	vPosition = aPosition;
 	vObjectMat = uObjectMat;

@@ -16,6 +16,7 @@ out vec3 vNormal;
 void main(void) {
 	vTexCoords = aTexCoords;
 	calculateTangentFrame(uViewMat, uObjectMat);
+	calculatePorjectingLightsUV();
 
 	gl_Position = uProjectionMat * uViewMat * uObjectMat * vec4(aPosition, 1.0);
 }
