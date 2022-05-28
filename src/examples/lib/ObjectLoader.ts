@@ -21,12 +21,6 @@ export function loadObjModel(file: string): {
 			normals.push([parseFloat(parts[1]), parseFloat(parts[2]), parseFloat(parts[3])])
 		} else if (line.startsWith('f ')) {
 			if (data === null) {
-				if (vertices.length !== textures.length || vertices.length !== normals.length) {
-					// throw new Error('Weird sizes')
-					console.warn(
-						`Object loaded with ${vertices.length} vertices, ${textures.length} texture coordinates and ${normals.length} normals`
-					)
-				}
 				if (vertices.length > Math.pow(2, 16)) {
 					throw new Error('16 bit indices are not enough for this model')
 				}

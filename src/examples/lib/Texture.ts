@@ -31,7 +31,6 @@ export class Texture {
 			gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
 			gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
 		if (anisotropicFiltering) {
-			console.log('Making use of anisotropic filtering')
 			var max = gl.getParameter(anisotropicFiltering.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
 			gl.texParameterf(
 				gl.TEXTURE_2D,
