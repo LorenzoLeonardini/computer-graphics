@@ -26,7 +26,12 @@ export interface EntityInterface {
 	getPosition(): Vector3
 	getFrame(): Matrix4
 	update(delta: number, inputHandler: InputHandler): void
-	render(gl: WebGL2RenderingContext, transformation?: Matrix4): void
+	render(
+		gl: WebGL2RenderingContext,
+		renderer: Renderer,
+		transformation?: Matrix4,
+		shader?: Shader
+	): void
 }
 
 class EntityKernel {
@@ -213,30 +218,39 @@ export class Entity extends EntityKernel implements EntityInterface {
 
 	public update(delta: number, inputHandler: InputHandler) {}
 
-	public render(gl: WebGL2RenderingContext, transformation?: Matrix4): void {
+	public render(
+		gl: WebGL2RenderingContext,
+		renderer: Renderer,
+		transformation?: Matrix4,
+		shader?: Shader
+	): void {
 		if (this.needsUpdating) {
 			this.matrix = this.updateMatrix()
 			this.needsUpdating = false
 		}
 
-		this.shader.bind()
-		if (this.shader.lastFrameUniformLoaded !== Renderer.getFrameCounter()) {
-			this.shader.lastFrameUniformLoaded = Renderer.getFrameCounter()
-			this.shader.loadPerspective(Renderer.getPerspectiveMatrix())
-			this.shader.loadView(Renderer.getViewMatrix())
-			this.shader.loadDirectionalLights(Renderer.getDirectionalLights())
-			this.shader.loadSpotlights(Renderer.getSpotights())
-			this.shader.loadProjectingLights(
-				Renderer.getLightProjectors(),
-				Renderer.getLightProjectorTexture()
+		if (!shader) {
+			shader = this.shader
+		}
+
+		shader.bind()
+		if (shader.lastFrameUniformLoaded !== renderer.getFrameCounter()) {
+			shader.lastFrameUniformLoaded = renderer.getFrameCounter()
+			shader.loadPerspective(renderer.getPerspectiveMatrix())
+			shader.loadView(renderer.getViewMatrix())
+			shader.loadDirectionalLights(renderer.getDirectionalLights())
+			shader.loadSpotlights(renderer.getSpotights())
+			shader.loadProjectingLights(
+				renderer.getLightProjectors(),
+				renderer.getLightProjectorTexture()
 			)
 		}
 
-		this.shader.loadParameters()
+		shader.loadParameters()
 		if (transformation) {
-			this.shader.loadObjectMatrix(transformation.mul(this.matrix))
+			shader.loadObjectMatrix(transformation.mul(this.matrix))
 		} else {
-			this.shader.loadObjectMatrix(this.matrix)
+			shader.loadObjectMatrix(this.matrix)
 		}
 		this.model.bind(gl)
 		this.model.render(gl)
@@ -253,7 +267,12 @@ export class EntityTree extends EntityKernel implements EntityInterface {
 
 	public update(delta: number, inputHandler: InputHandler) {}
 
-	public render(gl: WebGL2RenderingContext, transformation?: Matrix4): void {
+	public render(
+		gl: WebGL2RenderingContext,
+		renderer: Renderer,
+		transformation?: Matrix4,
+		shader?: Shader
+	): void {
 		if (this.needsUpdating) {
 			this.matrix = this.updateMatrix()
 			this.needsUpdating = false
@@ -267,7 +286,17 @@ export class EntityTree extends EntityKernel implements EntityInterface {
 				matrix = this.matrix
 			}
 
-			entity.render(gl, matrix)
+			entity.render(gl, renderer, matrix, shader)
 		})
 	}
+}
+
+export class DummyEntity extends EntityKernel implements EntityInterface {
+	update(delta: number, inputHandler: InputHandler): void {}
+	render(
+		gl: WebGL2RenderingContext,
+		renderer: Renderer,
+		transformation?: Matrix4,
+		shader?: Shader
+	): void {}
 }

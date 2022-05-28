@@ -107,7 +107,7 @@ export class Camera {
 		this.frameChanged = true
 	}
 
-	viewMatrix(): Matrix4 {
+	private viewMatrix(): Matrix4 {
 		return this.frame.inverse()
 	}
 
@@ -117,6 +117,22 @@ export class Camera {
 	getViewMatrix(): Matrix4 {
 		if (this.frameChanged) {
 			this.frameChanged = false
+
+			let axis = new Vector3(this.frame[0], this.frame[1], this.frame[2]).normalize()
+			this.frame[0] = axis[0]
+			this.frame[1] = axis[1]
+			this.frame[2] = axis[2]
+
+			axis = new Vector3(this.frame[4], this.frame[5], this.frame[6]).normalize()
+			this.frame[4] = axis[0]
+			this.frame[5] = axis[1]
+			this.frame[6] = axis[2]
+
+			axis = new Vector3(this.frame[8], this.frame[9], this.frame[10]).normalize()
+			this.frame[8] = axis[0]
+			this.frame[9] = axis[1]
+			this.frame[10] = axis[2]
+
 			this.view = this.viewMatrix()
 		}
 		return this.view
@@ -126,9 +142,5 @@ export class Camera {
 	update(delta: number) {}
 	consumesInput(): boolean {
 		return false
-	}
-
-	render(gl: WebGL2RenderingContext, entity: EntityInterface) {
-		entity.render(gl)
 	}
 }

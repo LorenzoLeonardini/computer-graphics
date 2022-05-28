@@ -8,13 +8,13 @@ import { Texture } from './Texture'
 export class Renderer {
 	private gl: WebGL2RenderingContext
 	private entities: EntityInterface[] = []
-	private static frameCounter: number = 0
-	private static perspectiveMatrix: Matrix4
-	private static viewMatrix: Matrix4
-	private static directionalLights: DirectionalLight[] = []
-	private static spotlights: Spotlight[] = []
-	private static lightProjectors: Matrix4[]
-	private static lightProjectorTexture: Texture
+	private frameCounter: number = 0
+	private perspectiveMatrix: Matrix4
+	private viewMatrix: Matrix4
+	private directionalLights: DirectionalLight[] = []
+	private spotlights: Spotlight[] = []
+	private lightProjectors: Matrix4[]
+	private lightProjectorTexture: Texture
 
 	public constructor(gl: WebGL2RenderingContext) {
 		this.gl = gl
@@ -30,59 +30,59 @@ export class Renderer {
 	}
 
 	public addDirectionalLight(l: DirectionalLight) {
-		Renderer.directionalLights.push(l)
+		this.directionalLights.push(l)
 	}
 
 	public addSpotlight(l: Spotlight) {
-		Renderer.spotlights.push(l)
+		this.spotlights.push(l)
 	}
 
-	public static getFrameCounter() {
-		return Renderer.frameCounter
+	public getFrameCounter() {
+		return this.frameCounter
 	}
 
-	public static getPerspectiveMatrix() {
-		return Renderer.perspectiveMatrix
+	public getPerspectiveMatrix() {
+		return this.perspectiveMatrix
 	}
 
-	public static getViewMatrix() {
-		return Renderer.viewMatrix
+	public getViewMatrix() {
+		return this.viewMatrix
 	}
 
-	public static getDirectionalLights() {
-		return Renderer.directionalLights
+	public getDirectionalLights() {
+		return this.directionalLights
 	}
 
-	public static getSpotights() {
-		return Renderer.spotlights
+	public getSpotights() {
+		return this.spotlights
 	}
 
-	public static setLightProjectors(lightProjectors: Matrix4[]) {
-		Renderer.lightProjectors = lightProjectors
+	public setLightProjectors(lightProjectors: Matrix4[]) {
+		this.lightProjectors = lightProjectors
 	}
 
-	public static getLightProjectors() {
-		return Renderer.lightProjectors
+	public getLightProjectors() {
+		return this.lightProjectors
 	}
 
-	public static setLightProjectorTexture(lightProjectorTexture: Texture) {
-		Renderer.lightProjectorTexture = lightProjectorTexture
+	public setLightProjectorTexture(lightProjectorTexture: Texture) {
+		this.lightProjectorTexture = lightProjectorTexture
 	}
 
-	public static getLightProjectorTexture() {
-		return Renderer.lightProjectorTexture
+	public getLightProjectorTexture() {
+		return this.lightProjectorTexture
 	}
 
 	public render(camera: Camera) {
 		this.gl.clearColor(0.2, 0.3, 0.4, 1)
 		this.gl.clear(this.gl.COLOR_BUFFER_BIT)
 
-		Renderer.frameCounter++
-		Renderer.perspectiveMatrix = camera.getPerspectiveMatrix()
-		Renderer.viewMatrix = camera.getViewMatrix()
+		this.frameCounter++
+		this.perspectiveMatrix = camera.getPerspectiveMatrix()
+		this.viewMatrix = camera.getViewMatrix()
 
 		this.entities.forEach((entity) => {
-			camera.render(this.gl, entity)
+			entity.render(this.gl, this)
 		})
 	}
 }

@@ -195,7 +195,7 @@ export function draw(time: number = window.performance.now()) {
 	cameraSwitcher.handleInput(inputHandler)
 	cameraSwitcher.updateAllCameras(delta)
 
-	Renderer.setLightProjectors(car.getProjectorsMatrix())
+	renderer.setLightProjectors(car.getProjectorsMatrix())
 	renderer.render(cameraSwitcher.getCurrentCamera())
 
 	inputHandler.reset()
