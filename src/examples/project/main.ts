@@ -110,7 +110,6 @@ export async function setupWhatToDraw() {
 	building.setScale(0.5)
 
 	carHeadlightTexture = new Texture(gl, '/assets/car_headlight.png')
-	Renderer.setLightProjectorTexture(carHeadlightTexture)
 }
 
 export async function changeAspectRatio(width: number, height: number) {
@@ -168,6 +167,8 @@ export async function setupHowToDraw() {
 	renderer.addDirectionalLight(
 		new DirectionalLight(new Vector3(-1, -1, 1), new Vector4(1, 1, 1, 1))
 	)
+
+	renderer.setLightProjectorTexture(carHeadlightTexture)
 
 	inputHandler = new InputHandler()
 	inputHandler.registerAllHandlers()

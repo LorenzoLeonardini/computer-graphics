@@ -244,6 +244,7 @@ export class Entity extends EntityKernel implements EntityInterface {
 				renderer.getLightProjectors(),
 				renderer.getLightProjectorTexture()
 			)
+			shader.loadProjectingLightsDepthTextures(renderer.getProjectorDepthTextures())
 		}
 
 		shader.loadParameters()

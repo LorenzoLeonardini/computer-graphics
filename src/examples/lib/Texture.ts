@@ -10,9 +10,9 @@ export class Texture {
 	constructor(gl: WebGL2RenderingContext, imagePath: string | null) {
 		this.gl = gl
 		if (imagePath) {
-		this.imagePath = imagePath
+			this.imagePath = imagePath
 
-		Texture.imageElementPromises.push(this._init())
+			Texture.imageElementPromises.push(this._init())
 		}
 	}
 

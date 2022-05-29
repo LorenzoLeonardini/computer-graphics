@@ -30,18 +30,21 @@ float c2 = 1.0;
 float c3 = 0.4;
 
 in vec4 vProjectingLightsUV[2];
-vec2 projectingLightsUV[2];
+vec3 projectingLightsUV[2];
 
 vec3 applyCarHeadlights(vec3 color) {
-	projectingLightsUV[0] = ((vProjectingLightsUV[0]/vProjectingLightsUV[0].w).xy + 1.0) * 0.5;
-	projectingLightsUV[1] = ((vProjectingLightsUV[1]/vProjectingLightsUV[1].w).xy + 1.0) * 0.5;
+	projectingLightsUV[0] = (vProjectingLightsUV[0] / vProjectingLightsUV[0].w).xyz * 0.5 + 0.5;
+	projectingLightsUV[1] = (vProjectingLightsUV[1] / vProjectingLightsUV[1].w).xyz * 0.5 + 0.5;
 
-	for(int i = 0; i < 2; i++) {
-		if(projectingLightsUV[i].x >= 0.0 && projectingLightsUV[i].x <= 1.0 && projectingLightsUV[i].y >= 0.0 && projectingLightsUV[i].y <= 1.0) {
-			vec4 headlight = texture(uProjectingLightTexture, projectingLightsUV[i].xy);
-			color = mix(color, headlight.rgb, headlight.a);
-		}
+	if(projectingLightsUV[0].x >= 0.0 && projectingLightsUV[0].x <= 1.0 && projectingLightsUV[0].y >= 0.0 && projectingLightsUV[0].y <= 1.0) {
+		vec4 headlight = texture(uProjectingLightTexture, projectingLightsUV[0].xy);
+		color = mix(color, headlight.rgb, headlight.a);
+
+		float storedDepth = texture(uProjectingLightDepthTexture[0], projectingLightsUV[0].xy).x;
+		if(storedDepth + 0.3 < projectingLightsUV[0].z + 1000000.0) 
+			color = vec3(projectingLightsUV[0].z);
 	}
+
 	return color;
 }
 

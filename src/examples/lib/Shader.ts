@@ -29,6 +29,7 @@ export class Shader {
 
 	projectingLightsMatLocation: WebGLUniformLocation
 	projectingLightTextureLocation: WebGLUniformLocation
+	projectingLightsDepthTexture: WebGLUniformLocation
 
 	lastFrameUniformLoaded: number = 0
 
@@ -125,6 +126,7 @@ export class Shader {
 
 		this.projectingLightsMatLocation = this.getLocation('uProjectingLightsMat')
 		this.projectingLightTextureLocation = this.getLocation('uProjectingLightTexture')
+		this.projectingLightsDepthTexture = this.getLocation('uProjectingLightDepthTexture')
 	}
 
 	getLocation(name: string): WebGLUniformLocation {
@@ -209,6 +211,28 @@ export class Shader {
 		this.gl.uniformMatrix4fv(this.projectingLightsMatLocation, false, m)
 		this.gl.uniform1i(this.projectingLightTextureLocation, this.textureCount)
 		texture.bind(this.gl, this.textureCount)
+	}
+
+	loadProjectingLightsDepthTextures(depthTextures: Texture[]) {
+		if (this.projectingLightsDepthTexture === null) {
+			return
+		}
+		if (depthTextures.length > 2) {
+			throw new Error('Maximum two projecting lights')
+		}
+		if (this.projectingLightsMatLocation === null || this.projectingLightTextureLocation === null) {
+			this.gl.uniform1iv(this.projectingLightsDepthTexture, [
+				this.textureCount,
+				this.textureCount + 1
+			])
+			depthTextures.forEach((texture, i) => texture.bind(this.gl, this.textureCount + i))
+		} else {
+			this.gl.uniform1iv(this.projectingLightsDepthTexture, [
+				this.textureCount + 1,
+				this.textureCount + 2
+			])
+			depthTextures.forEach((texture, i) => texture.bind(this.gl, this.textureCount + i + 1))
+		}
 	}
 
 	static async loadAll() {
