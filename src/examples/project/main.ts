@@ -154,6 +154,7 @@ export async function setupHowToDraw() {
 	renderer.addEntity(building)
 
 	const lamp = new StreetLamp()
+	lamp.setPosition(-0.55, 0, 0)
 	renderer.addEntity(lamp)
 	renderer.addSpotlight(lamp.getLight())
 

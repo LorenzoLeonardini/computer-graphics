@@ -36,13 +36,22 @@ vec3 applyCarHeadlights(vec3 color) {
 	projectingLightsUV[0] = (vProjectingLightsUV[0] / vProjectingLightsUV[0].w).xyz * 0.5 + 0.5;
 	projectingLightsUV[1] = (vProjectingLightsUV[1] / vProjectingLightsUV[1].w).xyz * 0.5 + 0.5;
 
-	if(projectingLightsUV[0].x >= 0.0 && projectingLightsUV[0].x <= 1.0 && projectingLightsUV[0].y >= 0.0 && projectingLightsUV[0].y <= 1.0) {
-		vec4 headlight = texture(uProjectingLightTexture, projectingLightsUV[0].xy);
-		color = mix(color, headlight.rgb, headlight.a);
+	float bias = 0.002;
 
-		float storedDepth = texture(uProjectingLightDepthTexture[0], projectingLightsUV[0].xy).x;
-		if(storedDepth + 0.3 < projectingLightsUV[0].z + 1000000.0) 
-			color = vec3(projectingLightsUV[0].z);
+	float storedDepth = texture(uProjectingLightDepthTexture[0], projectingLightsUV[0].xy).x;
+	if(projectingLightsUV[0].x >= 0.0 && projectingLightsUV[0].x <= 1.0 && projectingLightsUV[0].y >= 0.0 && projectingLightsUV[0].y <= 1.0) {
+		if(storedDepth + bias >= projectingLightsUV[0].z) { 
+			vec4 headlight = texture(uProjectingLightTexture, projectingLightsUV[0].xy);
+			color = mix(color, headlight.rgb, headlight.a);
+		}
+	}
+
+	storedDepth = texture(uProjectingLightDepthTexture[1], projectingLightsUV[1].xy).x;
+	if(projectingLightsUV[1].x >= 0.0 && projectingLightsUV[1].x <= 1.0 && projectingLightsUV[1].y >= 0.0 && projectingLightsUV[1].y <= 1.0) {
+		if(storedDepth + bias >= projectingLightsUV[1].z) { 
+			vec4 headlight = texture(uProjectingLightTexture, projectingLightsUV[1].xy);
+			color = mix(color, headlight.rgb, headlight.a);
+		}
 	}
 
 	return color;

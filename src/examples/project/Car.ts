@@ -80,7 +80,7 @@ export class Car extends EntityTree {
 		this.setScale(0.15)
 		this.wheels = wheels
 
-		this.headlightProjectors = [new Camera(1, 1, 0.01, 60), new Camera(1, 1, 0.01, 60)]
+		this.headlightProjectors = [new Camera(1, 1, 0.2, 32), new Camera(1, 1, 0.2, 32)]
 		this.headlightProjectors[0].position(0.4, 0.52, 0.8)
 		this.headlightProjectors[0].position(-0.4, 0.52, 0.8)
 	}

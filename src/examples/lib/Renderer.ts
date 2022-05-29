@@ -2,9 +2,13 @@ import { Camera } from './Camera'
 import { DirectionalLight } from './DirectionalLight'
 import { EntityInterface } from './Entity'
 import { Matrix4 } from './Matrix'
+import { Shader } from './Shader'
 import { ShadowPassShader } from './ShadowPassShader'
 import { Spotlight } from './Spotlight'
 import { Texture } from './Texture'
+import { Vector3 } from './Vector'
+
+const PROJECTOR_SIZE = 2048
 
 export class Renderer {
 	private gl: WebGL2RenderingContext
@@ -21,6 +25,8 @@ export class Renderer {
 	private spotlights: Spotlight[] = []
 	private lightProjectors: Matrix4[]
 	private lightProjectorTexture: Texture
+	private projectorPositions: Vector3[]
+	private projectorDepths: number[]
 
 	public constructor(gl: WebGL2RenderingContext) {
 		this.gl = gl
@@ -36,12 +42,12 @@ export class Renderer {
 			this.gl.texImage2D(
 				this.gl.TEXTURE_2D,
 				0,
-				this.gl.DEPTH_COMPONENT16,
-				1024,
-				1024,
+				this.gl.DEPTH_COMPONENT32F,
+				PROJECTOR_SIZE,
+				PROJECTOR_SIZE,
 				0,
 				this.gl.DEPTH_COMPONENT,
-				this.gl.UNSIGNED_INT,
+				this.gl.FLOAT,
 				null
 			)
 
@@ -67,8 +73,8 @@ export class Renderer {
 				this.gl.TEXTURE_2D,
 				0,
 				this.gl.RGBA,
-				1024,
-				1024,
+				PROJECTOR_SIZE,
+				PROJECTOR_SIZE,
 				0,
 				this.gl.RGBA,
 				this.gl.UNSIGNED_BYTE,
@@ -136,6 +142,14 @@ export class Renderer {
 		return this.lightProjectors
 	}
 
+	public setLightProjectorsPosition(positions: Vector3[]) {
+		this.projectorPositions = positions
+	}
+
+	public setLightProjectorsDepth(depths: number[]) {
+		this.projectorDepths = depths
+	}
+
 	public setLightProjectorTexture(lightProjectorTexture: Texture) {
 		this.lightProjectorTexture = lightProjectorTexture
 	}
@@ -148,36 +162,62 @@ export class Renderer {
 		return this.projectorFrameBuffersTextures
 	}
 
-	public render(camera: Camera) {
-		// Shadow pass
-		this.frameCounter++
+	public getProjectorPositions() {
+		return this.projectorPositions
+	}
 
-		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.projectorFrameBuffers[0])
-		this.gl.viewport(0, 0, 1024, 1024)
-		this.gl.clearColor(0.0, 0.0, 0.0, 1.0)
+	public getProjectorDepths() {
+		return this.projectorDepths
+	}
+
+	private renderScene(
+		viewportWidth: number,
+		viewportHeight: number,
+		perspective: Matrix4,
+		view: Matrix4,
+		shader?: Shader
+	) {
+		this.frameCounter++
+		this.gl.viewport(0, 0, viewportWidth, viewportHeight)
+		this.gl.clearColor(0.2, 0.3, 0.4, 1)
 		this.gl.clearDepth(1.0)
 		this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT)
 
-		this.perspectiveMatrix = this.lightProjectors[0]
-		this.viewMatrix = new Matrix4()
+		this.perspectiveMatrix = perspective
+		this.viewMatrix = view
 
 		this.entities.forEach((entity) => {
-			entity.render(this.gl, this, undefined, this.shadowPassShader)
+			entity.render(this.gl, this, undefined, shader)
 		})
+	}
 
-		// Main rendering
-		this.frameCounter++
+	public render(camera: Camera) {
+		// Shadow pass
+		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.projectorFrameBuffers[0])
+		this.renderScene(
+			PROJECTOR_SIZE,
+			PROJECTOR_SIZE,
+			this.lightProjectors[0],
+			new Matrix4(),
+			this.shadowPassShader
+		)
+
+		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.projectorFrameBuffers[1])
+		this.renderScene(
+			PROJECTOR_SIZE,
+			PROJECTOR_SIZE,
+			this.lightProjectors[1],
+			new Matrix4(),
+			this.shadowPassShader
+		)
 
 		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null)
-		this.gl.viewport(0, 0, document.body.clientWidth, document.body.clientHeight)
-		this.gl.clearColor(0.2, 0.3, 0.4, 1)
-		this.gl.clear(this.gl.COLOR_BUFFER_BIT)
-
-		this.perspectiveMatrix = camera.getPerspectiveMatrix()
-		this.viewMatrix = camera.getViewMatrix()
-
-		this.entities.forEach((entity) => {
-			entity.render(this.gl, this)
-		})
+		this.renderScene(
+			document.body.clientWidth,
+			document.body.clientHeight,
+			camera.getPerspectiveMatrix(),
+			camera.getViewMatrix()
+		)
+		return
 	}
 }

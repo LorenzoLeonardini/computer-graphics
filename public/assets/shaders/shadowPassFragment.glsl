@@ -12,5 +12,5 @@ float planeApprox(float depth) {
 }
 
 void main(void) {
-	outColor = vec4(gl_FragCoord.w, planeApprox(gl_FragCoord.w), 0.0, 1.0);
+	outColor = vec4(gl_FragCoord.z, planeApprox(gl_FragCoord.z), 0.0, 1.0);
 }
