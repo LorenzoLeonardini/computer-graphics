@@ -2,27 +2,29 @@ import { Shader } from './Shader'
 import { Texture } from './Texture'
 
 export class TerrainShader extends Shader {
-	blendMapTexture: Texture
-	baseTexture: Texture
-	redTexture: Texture
-	greenTexture: Texture
-	blueTexture: Texture
+	private blendMapTexture: Texture
+	private baseTexture: Texture
+	private redTexture: Texture
+	private greenTexture: Texture
+	private blueTexture: Texture
 
-	baseNormalTexture: Texture
-	redNormalTexture: Texture
-	greenNormalTexture: Texture
-	blueNormalTexture: Texture
+	private baseNormalTexture: Texture
+	private redNormalTexture: Texture
+	private greenNormalTexture: Texture
+	private blueNormalTexture: Texture
 
-	baseRoughnessTexture: Texture
-	redRoughnessTexture: Texture
-	greenRoughnessTexture: Texture
-	blueRoughnessTexture: Texture
+	private baseRoughnessTexture: Texture
+	private redRoughnessTexture: Texture
+	private greenRoughnessTexture: Texture
+	private blueRoughnessTexture: Texture
 
-	blendMapTexLocation: WebGLUniformLocation
-	baseTexLocation: WebGLUniformLocation
-	redTexLocation: WebGLUniformLocation
-	greenTexLocation: WebGLUniformLocation
-	blueTexLocation: WebGLUniformLocation
+	private blendMapTexLocation: WebGLUniformLocation
+	private baseTexLocation: WebGLUniformLocation
+	private redTexLocation: WebGLUniformLocation
+	private greenTexLocation: WebGLUniformLocation
+	private blueTexLocation: WebGLUniformLocation
+
+	private strippedDown: boolean
 
 	constructor(
 		gl: WebGL2RenderingContext,
@@ -40,7 +42,19 @@ export class TerrainShader extends Shader {
 		greenRoughnessTexture: Texture,
 		blueRoughnessTexture: Texture
 	) {
-		super(gl, '/assets/shaders/terrainVertex.glsl', '/assets/shaders/terrainFragment.glsl')
+		const strippedDown = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS) < 16
+		if (strippedDown) {
+			console.log('GPU has not enough texture units, fallbacking to simpler terrain')
+			super(
+				gl,
+				'/assets/shaders/terrainVertex.glsl',
+				'/assets/shaders/terrainFragmentStripped.glsl'
+			)
+		} else {
+			super(gl, '/assets/shaders/terrainVertex.glsl', '/assets/shaders/terrainFragment.glsl')
+		}
+		this.strippedDown = strippedDown
+
 		this.blendMapTexture = blendMapTexture
 		this.baseTexture = baseTexture
 		this.redTexture = redTexture
@@ -67,12 +81,21 @@ export class TerrainShader extends Shader {
 		this.greenTexLocation = this.gl.getUniformLocation(this.program, 'uGreenTexture')
 		this.blueTexLocation = this.gl.getUniformLocation(this.program, 'uBlueTexture')
 
-		this.gl.uniform1i(this.blendMapTexLocation, 0)
-		this.gl.uniform1iv(this.baseTexLocation, [1, 5, 9])
-		this.gl.uniform1iv(this.redTexLocation, [2, 6, 10])
-		this.gl.uniform1iv(this.greenTexLocation, [3, 7, 11])
-		this.gl.uniform1iv(this.blueTexLocation, [4, 8, 12])
-		this.textureCount = 13
+		if (this.strippedDown) {
+			this.gl.uniform1i(this.blendMapTexLocation, 0)
+			this.gl.uniform1i(this.baseTexLocation, 1)
+			this.gl.uniform1i(this.redTexLocation, 2)
+			this.gl.uniform1i(this.greenTexLocation, 3)
+			this.gl.uniform1i(this.blueTexLocation, 4)
+			this.textureCount = 5
+		} else {
+			this.gl.uniform1i(this.blendMapTexLocation, 0)
+			this.gl.uniform1iv(this.baseTexLocation, [1, 5, 9])
+			this.gl.uniform1iv(this.redTexLocation, [2, 6, 10])
+			this.gl.uniform1iv(this.greenTexLocation, [3, 7, 11])
+			this.gl.uniform1iv(this.blueTexLocation, [4, 8, 12])
+			this.textureCount = 13
+		}
 	}
 
 	loadParameters(): void {
@@ -81,13 +104,15 @@ export class TerrainShader extends Shader {
 		this.redTexture.bind(this.gl, 2)
 		this.greenTexture.bind(this.gl, 3)
 		this.blueTexture.bind(this.gl, 4)
-		this.baseNormalTexture.bind(this.gl, 5)
-		this.redNormalTexture.bind(this.gl, 6)
-		this.greenNormalTexture.bind(this.gl, 7)
-		this.blueNormalTexture.bind(this.gl, 8)
-		this.baseRoughnessTexture.bind(this.gl, 9)
-		this.redRoughnessTexture.bind(this.gl, 10)
-		this.greenRoughnessTexture.bind(this.gl, 11)
-		this.blueRoughnessTexture.bind(this.gl, 12)
+		if (!this.strippedDown) {
+			this.baseNormalTexture.bind(this.gl, 5)
+			this.redNormalTexture.bind(this.gl, 6)
+			this.greenNormalTexture.bind(this.gl, 7)
+			this.blueNormalTexture.bind(this.gl, 8)
+			this.baseRoughnessTexture.bind(this.gl, 9)
+			this.redRoughnessTexture.bind(this.gl, 10)
+			this.greenRoughnessTexture.bind(this.gl, 11)
+			this.blueRoughnessTexture.bind(this.gl, 12)
+		}
 	}
 }

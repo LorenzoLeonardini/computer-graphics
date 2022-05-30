@@ -43,7 +43,6 @@ let canvasWidth, canvasHeight
 
 export function setupWebGL(canvas: HTMLCanvasElement) {
 	gl = canvas.getContext('webgl2')
-	console.log(gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS))
 }
 
 export async function setupWhatToDraw() {
