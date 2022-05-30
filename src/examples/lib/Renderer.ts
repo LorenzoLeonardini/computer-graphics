@@ -33,6 +33,21 @@ export class Renderer {
 	private sunFrameBuffer: WebGLFramebuffer
 	private sunDepthTexture: Texture
 
+	public constructor(gl: WebGL2RenderingContext, shadowPassShader: ShadowPassShader) {
+		this.gl = gl
+		this.shadowPassShader = shadowPassShader
+
+		const depth1 = this.generateDepthTexture(PROJECTOR_SIZE)
+		const depth2 = this.generateDepthTexture(PROJECTOR_SIZE)
+		const depth3 = this.generateDepthTexture(SUN_SIZE)
+
+		this.projectorFrameBuffers = [depth1[0], depth2[0]]
+		this.projectorFrameBuffersTextures = [depth1[1], depth2[1]]
+
+		this.sunFrameBuffer = depth3[0]
+		this.sunDepthTexture = depth3[1]
+	}
+
 	private generateDepthTexture(SIZE: number): [WebGLFramebuffer, Texture] {
 		const frameBuffer = this.gl.createFramebuffer()
 
@@ -95,21 +110,6 @@ export class Renderer {
 		)
 
 		return [frameBuffer, textureObject]
-	}
-
-	public constructor(gl: WebGL2RenderingContext) {
-		this.gl = gl
-		this.shadowPassShader = new ShadowPassShader(this.gl)
-
-		const depth1 = this.generateDepthTexture(PROJECTOR_SIZE)
-		const depth2 = this.generateDepthTexture(PROJECTOR_SIZE)
-		const depth3 = this.generateDepthTexture(SUN_SIZE)
-
-		this.projectorFrameBuffers = [depth1[0], depth2[0]]
-		this.projectorFrameBuffersTextures = [depth1[1], depth2[1]]
-
-		this.sunFrameBuffer = depth3[0]
-		this.sunDepthTexture = depth3[1]
 	}
 
 	public addEntity(e: EntityInterface) {

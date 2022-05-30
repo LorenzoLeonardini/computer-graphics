@@ -16,6 +16,7 @@ import { CinematicCamera } from './CinematicCamera'
 import { TopDownCamera } from './TopDownCamera'
 import { FreeCamera } from './FreeCamera'
 import { StreetLamp } from './StreetLamp'
+import { ShadowPassShader } from '../lib/ShadowPassShader'
 
 let gl: WebGL2RenderingContext = null
 
@@ -25,7 +26,7 @@ let terrainShader: TerrainShader
 let carHeadlightTexture: Texture
 
 let car: Car
-let building: Entity
+let buildings: Entity[] = []
 
 let cameraSwitcher: CameraSwitcher
 let camera: CinematicCamera
@@ -84,25 +85,30 @@ export async function setupWhatToDraw() {
 		gl,
 		new OBJModel(gl, loadObjModel(await (await fetch('/assets/cube.obj')).text())),
 		new OBJModel(gl, loadObjModel(await (await fetch('/assets/wheel.obj')).text())),
-		new TexturedShader(
-			gl,
-			new Texture(gl, '/assets/wheel.jpg'),
-			new Texture(gl, '/assets/wheel_normal.jpg'),
-			new Texture(gl, '/assets/wheel_roughness.jpg')
-		)
+		new TexturedShader(gl, new Texture(gl, '/assets/wheel.jpg'))
 	)
 
 	const lampObj = new OBJModel(gl, loadObjModel(await (await fetch('/assets/lamp.obj')).text()))
 	const lampShader = new FlatShader(gl, new Vector3(0.4, 0.4, 0.4))
-	StreetLamp.setUpModel(lampObj, lampShader, new Vector3(0.65, 1, 0))
+	StreetLamp.setUpModel(lampObj, lampShader, new Vector3(0.44, 1.03, 0))
 
-	building = new Entity(
-		new OBJModel(gl, loadObjModel(await (await fetch('/assets/cube.obj')).text())),
-		new FlatShader(gl, new Vector3(0.5, 0.5, 0.5))
+	const buildingCoords = [
+		[-2.828125, -6.03125],
+		[5.328125, 1.578125],
+		[-7.53125, 8.0625]
+	]
+	const buildingModel = new OBJModel(
+		gl,
+		loadObjModel(await (await fetch('/assets/building.obj')).text())
 	)
-	building.setPosition(0, 0.5, -8)
-	// building.rotateY(0.1)
-	building.setScale(0.5)
+	const buildingShader = new TexturedShader(gl, new Texture(gl, '/assets/building.jpg'))
+	buildingCoords.forEach((coords) => {
+		const building = new Entity(buildingModel, buildingShader)
+		building.setPosition(coords[0], 0, coords[1])
+		// building.setScale(0.5)
+		building.rotateYAroundOrigin(Math.random() * 3.14)
+		buildings.push(building)
+	})
 
 	carHeadlightTexture = new Texture(gl, '/assets/car_headlight.png')
 }
@@ -150,10 +156,12 @@ function makeLamp(x: number, y: number, rot: number = 0) {
 export async function setupHowToDraw() {
 	// material = new NormalsShader(gl)
 
-	renderer = new Renderer(gl)
+	renderer = new Renderer(gl, new ShadowPassShader(gl))
 	renderer.addEntity(terrain)
 	renderer.addEntity(car)
-	renderer.addEntity(building)
+	buildings.forEach((building) => {
+		renderer.addEntity(building)
+	})
 
 	makeLamp(-5.765625, -12.828125, 3.14 / 3.8)
 	makeLamp(-8.390625, -7.0, 3.14)
