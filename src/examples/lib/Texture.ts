@@ -7,16 +7,15 @@ export class Texture {
 
 	static imageElementPromises = []
 
-	constructor(gl: WebGL2RenderingContext, imagePath: string | null) {
+	constructor(gl: WebGL2RenderingContext, imagePath: string | null, mipmapping: boolean = true) {
 		this.gl = gl
 		if (imagePath) {
 			this.imagePath = imagePath
-
-			Texture.imageElementPromises.push(this._init())
+			Texture.imageElementPromises.push(this._init(mipmapping))
 		}
 	}
 
-	async _init() {
+	async _init(mipmapping: boolean) {
 		const image = await loadImage(this.imagePath)
 		const gl = this.gl
 
@@ -28,21 +27,25 @@ export class Texture {
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 
-		var anisotropicFiltering =
-			gl.getExtension('EXT_texture_filter_anisotropic') ||
-			gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
-			gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
-		if (anisotropicFiltering) {
-			var max = gl.getParameter(anisotropicFiltering.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
-			gl.texParameterf(
-				gl.TEXTURE_2D,
-				anisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT,
-				Math.min(4, max)
-			)
-		}
+		if (mipmapping) {
+			const anisotropicFiltering =
+				gl.getExtension('EXT_texture_filter_anisotropic') ||
+				gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
+				gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
+			if (anisotropicFiltering) {
+				var max = gl.getParameter(anisotropicFiltering.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
+				gl.texParameterf(
+					gl.TEXTURE_2D,
+					anisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT,
+					Math.min(4, max)
+				)
+			}
 
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
-		gl.generateMipmap(gl.TEXTURE_2D)
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+			gl.generateMipmap(gl.TEXTURE_2D)
+		} else {
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+		}
 	}
 
 	bind(gl: WebGL2RenderingContext, textureUnit: number = 0) {
