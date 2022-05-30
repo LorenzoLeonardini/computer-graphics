@@ -1,10 +1,10 @@
 import { Model } from './Model'
 
 export class Quad implements Model {
-	static vao: WebGLVertexArrayObject
-	static buffer: WebGLBuffer
-	static ibo: WebGLBuffer
-	static count: number = 0
+	private static vao: WebGLVertexArrayObject
+	private static buffer: WebGLBuffer
+	private static ibo: WebGLBuffer
+	private static count: number = 0
 
 	constructor(gl: WebGL2RenderingContext) {
 		if (Quad.count > 0) {
@@ -41,7 +41,7 @@ export class Quad implements Model {
 		gl.vertexAttribPointer(2, 3, gl.FLOAT, false, 4 * 8, 4 * 5)
 	}
 
-	destroy(gl: WebGL2RenderingContext): void {
+	public destroy(gl: WebGL2RenderingContext): void {
 		Quad.count -= 1
 		if (Quad.count === 0) {
 			gl.deleteBuffer(Quad.buffer)
@@ -50,14 +50,14 @@ export class Quad implements Model {
 		}
 	}
 
-	bind(gl: WebGL2RenderingContext): void {
+	public bind(gl: WebGL2RenderingContext): void {
 		gl.bindVertexArray(Quad.vao)
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Quad.ibo)
 	}
 
-	unbind(gl: WebGL2RenderingContext): void {}
+	public unbind(gl: WebGL2RenderingContext): void {}
 
-	render(gl: WebGL2RenderingContext): void {
+	public render(gl: WebGL2RenderingContext): void {
 		gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
 	}
 }

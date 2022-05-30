@@ -16,16 +16,15 @@ export class FollowCamera extends Camera {
 	private cameraPosition: Vector3 = new Vector3(0, 0.4, 1.5)
 	private cameraYRotation: Vector3 = new Vector3(0, 0, 0)
 	private xMove: number = 0
-	private yMove: number = 0
 
 	private holdingMouse: boolean = false
 
-	attachTo(car: Car) {
+	public attachTo(car: Car): void {
 		this.car = car
 		this.computePosition()
 	}
 
-	private computePosition() {
+	private computePosition(): void {
 		this.frame = this.car
 			.getFrame()
 			.mul(Matrix4.translate(this.cameraPosition).rotate(this.cameraYRotation))
@@ -33,7 +32,7 @@ export class FollowCamera extends Camera {
 		this.frameChanged = true
 	}
 
-	handleInput(inputHandler: InputHandler): void {
+	public handleInput(inputHandler: InputHandler): void {
 		if (inputHandler.mouseWheelY() !== 0) {
 			this.desiredZoomLevel += 4 * (inputHandler.mouseWheelY() / inputHandler.canvasHeight)
 			if (this.desiredZoomLevel < MIN_ZOOM_LEVEL) {
@@ -46,11 +45,10 @@ export class FollowCamera extends Camera {
 		if ((this.holdingMouse = inputHandler.isMouseButtonClicked(MouseButton.LEFT))) {
 			const [xMouse, yMouse] = inputHandler.getMousePositionDelta()
 			this.xMove = xMouse / inputHandler.canvasWidth
-			this.yMove = yMouse / inputHandler.canvasHeight
 		}
 	}
 
-	update(delta: number) {
+	public update(delta: number): void {
 		if (!this.car) {
 			throw new Error('Camera is not attached to an entity')
 		}

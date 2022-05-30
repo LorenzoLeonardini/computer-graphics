@@ -47,6 +47,8 @@ export function loadObjModel(file: string): {
 			}
 
 			// Tangent space calculation
+			// https://www.youtube.com/watch?v=4DUfwAEx4Ts
+			// https://web.archive.org/web/20150515090411/http://www.terathon.com/code/tangent.html
 			const deltaPos1 = new Vector3(
 				data[triangle_indices[1] * (3 + 2 + 3 + 3) + 0] -
 					data[triangle_indices[0] * (3 + 2 + 3 + 3) + 0],

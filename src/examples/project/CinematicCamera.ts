@@ -9,11 +9,11 @@ export class CinematicCamera extends Camera {
 	private xMove: number = 0
 	private yMove: number = 0
 
-	attachTo(entity: EntityInterface) {
+	public attachTo(entity: EntityInterface): void {
 		this.entity = entity
 	}
 
-	handleInput(inputHandler: InputHandler): void {
+	public handleInput(inputHandler: InputHandler): void {
 		if (inputHandler.mouseWheelY() !== 0) {
 			this.desiredZoom += 10 * (inputHandler.mouseWheelY() / inputHandler.canvasHeight)
 		}
@@ -24,7 +24,7 @@ export class CinematicCamera extends Camera {
 		}
 	}
 
-	update(delta: number): void {
+	public update(delta: number): void {
 		if (!this.entity) {
 			throw new Error('Camera is not attached to an entity')
 		}

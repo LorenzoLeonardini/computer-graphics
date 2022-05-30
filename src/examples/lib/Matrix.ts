@@ -25,17 +25,17 @@ export class Matrix3 extends Float32Array implements Matrix<Matrix3> {
 		}
 	}
 
-	add(mat: Matrix3): Matrix3 {
+	public add(mat: Matrix3): Matrix3 {
 		for (let i = 0; i < 9; i++) this[i] += mat[i]
 		return this
 	}
 
-	sub(mat: Matrix3): Matrix3 {
+	public sub(mat: Matrix3): Matrix3 {
 		for (let i = 0; i < 9; i++) this[i] -= mat[i]
 		return this
 	}
 
-	mul(b: number | Vector | Matrix3): any {
+	public mul(b: number | Vector | Matrix3): any {
 		if (b instanceof Matrix3) {
 			return new Matrix3([
 				this[0] * b[0] + this[3] * b[1] + this[6] * b[2],
@@ -63,13 +63,13 @@ export class Matrix3 extends Float32Array implements Matrix<Matrix3> {
 		}
 	}
 
-	translate(vec: Vector2 | Vector3 | Vector4): Matrix3 {
+	public translate(vec: Vector2 | Vector3 | Vector4): Matrix3 {
 		let translation = new Matrix3([1, 0, 0, 0, 1, 0, vec[0], vec[1], 1])
 
 		return translation.mul(this) as unknown as Matrix3
 	}
 
-	rotate(vec: Vector3): Matrix3 {
+	public rotate(vec: Vector3): Matrix3 {
 		if (vec[0] !== 0 || vec[1] !== 0) {
 			throw new Error('Cannot rotate on axis different than z')
 		}
@@ -89,7 +89,7 @@ export class Matrix3 extends Float32Array implements Matrix<Matrix3> {
 		return rotation.mul(this) as unknown as Matrix3
 	}
 
-	scale(vec: Vector2 | Vector3 | Vector4 | number): Matrix3 {
+	public scale(vec: Vector2 | Vector3 | Vector4 | number): Matrix3 {
 		if (typeof vec === 'number') {
 			let scale = new Matrix3([vec, 0, 0, 0, vec, 0, 0, 0, 1])
 
@@ -101,21 +101,21 @@ export class Matrix3 extends Float32Array implements Matrix<Matrix3> {
 		}
 	}
 
-	row(idx: number): Vector3 {
+	public row(idx: number): Vector3 {
 		if (idx < 0 || idx >= 4) {
 			throw new Error('Invalid index')
 		}
 		return new Vector3(this[idx], this[idx + 3], this[idx + 9])
 	}
 
-	col(idx: number): Vector3 {
+	public col(idx: number): Vector3 {
 		if (idx < 0 || idx >= 4) {
 			throw new Error('Invalid index')
 		}
 		return new Vector3(this[idx * 3], this[idx * 3 + 1], this[idx * 3 + 2])
 	}
 
-	toString(): string {
+	public toString(): string {
 		return `
 [ ${this[0]}, ${this[3]}, ${this[6]},
   ${this[1]}, ${this[4]}, ${this[7]},
@@ -123,7 +123,7 @@ export class Matrix3 extends Float32Array implements Matrix<Matrix3> {
 		`
 	}
 
-	copy(): Matrix3 {
+	public copy(): Matrix3 {
 		return new Matrix3([
 			this[0],
 			this[1],
@@ -168,17 +168,17 @@ export class Matrix4 extends Float32Array implements Matrix<Matrix4> {
 		}
 	}
 
-	add(mat: Matrix4): Matrix4 {
+	public add(mat: Matrix4): Matrix4 {
 		for (let i = 0; i < 16; i++) this[i] += mat[i]
 		return this
 	}
 
-	sub(mat: Matrix4): Matrix4 {
+	public sub(mat: Matrix4): Matrix4 {
 		for (let i = 0; i < 16; i++) this[i] -= mat[i]
 		return this
 	}
 
-	mul(b: number | Vector | Matrix4): any {
+	public mul(b: number | Vector | Matrix4): any {
 		if (b instanceof Matrix4) {
 			return new Matrix4([
 				this[0] * b[0] + this[4] * b[1] + this[8] * b[2] + this[12] * b[3],
@@ -215,17 +215,17 @@ export class Matrix4 extends Float32Array implements Matrix<Matrix4> {
 		}
 	}
 
-	static translate(vec: Vector3 | Vector4): Matrix4 {
+	public static translate(vec: Vector3 | Vector4): Matrix4 {
 		return new Matrix4([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, vec[0], vec[1], vec[2], 1])
 	}
 
-	translate(vec: Vector3 | Vector4): Matrix4 {
+	public translate(vec: Vector3 | Vector4): Matrix4 {
 		let translation = Matrix4.translate(vec)
 
 		return translation.mul(this) as unknown as Matrix4
 	}
 
-	static rotate(vec: Vector3): Matrix4 {
+	public static rotate(vec: Vector3): Matrix4 {
 		if (vec[0] === 0 && vec[1] === 0 && vec[2] === 0) {
 			return new Matrix4()
 		}
@@ -292,12 +292,12 @@ export class Matrix4 extends Float32Array implements Matrix<Matrix4> {
 		throw new Error('Invalid rotation')
 	}
 
-	rotate(vec: Vector3): Matrix4 {
+	public rotate(vec: Vector3): Matrix4 {
 		const rotation = Matrix4.rotate(vec)
 		return rotation.mul(this)
 	}
 
-	static scale(vec: Vector3 | Vector4 | number): Matrix4 {
+	public static scale(vec: Vector3 | Vector4 | number): Matrix4 {
 		if (typeof vec === 'number') {
 			return new Matrix4([vec, 0, 0, 0, 0, vec, 0, 0, 0, 0, vec, 0, 0, 0, 0, 1])
 		} else {
@@ -305,26 +305,26 @@ export class Matrix4 extends Float32Array implements Matrix<Matrix4> {
 		}
 	}
 
-	scale(vec: Vector3 | Vector4 | number): Matrix4 {
+	public scale(vec: Vector3 | Vector4 | number): Matrix4 {
 		let scale = Matrix4.scale(vec)
 		return scale.mul(this)
 	}
 
-	row(idx: number): Vector4 {
+	public row(idx: number): Vector4 {
 		if (idx < 0 || idx >= 4) {
 			throw new Error('Invalid index')
 		}
 		return new Vector4(this[idx], this[idx + 4], this[idx + 8], this[idx + 12])
 	}
 
-	col(idx: number): Vector4 {
+	public col(idx: number): Vector4 {
 		if (idx < 0 || idx >= 4) {
 			throw new Error('Invalid index')
 		}
 		return new Vector4(this[idx * 4], this[idx * 4 + 1], this[idx * 4 + 2], this[idx * 4 + 3])
 	}
 
-	toString(): string {
+	public toString(): string {
 		return `
 [ ${this[0]}, ${this[4]}, ${this[8]}, ${this[12]},
   ${this[1]}, ${this[5]}, ${this[9]}, ${this[13]},
@@ -333,7 +333,7 @@ export class Matrix4 extends Float32Array implements Matrix<Matrix4> {
 		`
 	}
 
-	static perspective(
+	public static perspective(
 		yfov: number,
 		aspectRatio: number,
 		nearPlane: number,
@@ -362,7 +362,7 @@ export class Matrix4 extends Float32Array implements Matrix<Matrix4> {
 		])
 	}
 
-	copy(): Matrix4 {
+	public copy(): Matrix4 {
 		return new Matrix4([
 			this[0],
 			this[1],
@@ -384,7 +384,7 @@ export class Matrix4 extends Float32Array implements Matrix<Matrix4> {
 	}
 
 	// This implementation is from the Mesa OpenGL function `__gluInvertMatrixd()` found in `project.c`
-	inverse(): Matrix4 {
+	public inverse(): Matrix4 {
 		let r = new Matrix4()
 		r[0] =
 			this[5] * this[10] * this[15] -

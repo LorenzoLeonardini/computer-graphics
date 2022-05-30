@@ -10,13 +10,13 @@ export class FlatShader extends Shader {
 		this.color = color
 	}
 
-	protected async _init() {
+	protected async _init(): Promise<void> {
 		await super._init()
 
 		this.colorUniformLocation = this.gl.getUniformLocation(this.program, 'uColor')
 	}
 
-	loadParameters(): void {
+	public loadParameters(): void {
 		this.gl.uniform3fv(this.colorUniformLocation, this.color)
 	}
 }

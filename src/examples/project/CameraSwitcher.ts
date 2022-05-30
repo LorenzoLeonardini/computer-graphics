@@ -9,7 +9,7 @@ export class CameraSwitcher {
 		this.allCameras = cameras
 	}
 
-	public handleInput(inputHandler: InputHandler) {
+	public handleInput(inputHandler: InputHandler): void {
 		for (let i in this.allCameras) {
 			const { camera, key } = this.allCameras[i]
 
@@ -22,7 +22,7 @@ export class CameraSwitcher {
 		this.currentCamera.handleInput(inputHandler)
 	}
 
-	public updateAllCameras(delta: number) {
+	public updateAllCameras(delta: number): void {
 		this.allCameras.forEach(({ key: _, camera }) => camera.update(delta))
 	}
 

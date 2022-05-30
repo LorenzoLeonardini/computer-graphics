@@ -1,3 +1,5 @@
+import { Vector2 } from './Vector'
+
 export enum MouseButton {
 	LEFT,
 	MIDDLE,
@@ -39,7 +41,7 @@ export class InputHandler {
 		this.keyStatus[event.code] = false
 	}
 
-	isKeyPressed(keyCode: string) {
+	public isKeyPressed(keyCode: string): boolean {
 		return keyCode in this.keyStatus && this.keyStatus[keyCode]
 	}
 
@@ -67,19 +69,19 @@ export class InputHandler {
 		event.preventDefault()
 	}
 
-	isMouseButtonClicked(btn: MouseButton): boolean {
+	public isMouseButtonClicked(btn: MouseButton): boolean {
 		return this.mouseButtonStatus[btn]
 	}
 
-	getMousePosition(): [number, number] {
-		return [this.mousePosition.current.x, this.mousePosition.current.y]
+	public getMousePosition(): Vector2 {
+		return new Vector2(this.mousePosition.current.x, this.mousePosition.current.y)
 	}
 
-	getMousePositionDelta(): [number, number] {
-		return [
+	public getMousePositionDelta(): Vector2 {
+		return new Vector2(
 			this.mousePosition.current.x - this.mousePosition.last.x,
 			this.mousePosition.current.y - this.mousePosition.last.y
-		]
+		)
 	}
 
 	onMouseMoveHandler = (event: MouseEvent) => {
@@ -92,15 +94,15 @@ export class InputHandler {
 		this.mouseWheel.deltaY = event.deltaY
 	}
 
-	mouseWheelY() {
+	public mouseWheelY(): number {
 		return this.mouseWheel.deltaY
 	}
 
-	mouseWheelX() {
+	public mouseWheelX(): number {
 		return this.mouseWheel.deltaX
 	}
 
-	registerAllHandlers() {
+	public registerAllHandlers(): void {
 		document.body.onkeydown = this.onKeyDownHandler
 		document.body.onkeyup = this.onKeyUpHandler
 
@@ -112,7 +114,7 @@ export class InputHandler {
 		document.body.onwheel = this.onWheelHandler
 	}
 
-	reset() {
+	public reset(): void {
 		this.mouseWheel.deltaX = 0
 		this.mouseWheel.deltaY = 0
 

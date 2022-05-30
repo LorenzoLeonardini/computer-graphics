@@ -2,16 +2,16 @@ import { Shader } from './Shader'
 import { Texture } from './Texture'
 
 export class TexturedShader extends Shader {
-	texture: Texture
-	normalMap: Texture
-	roughnessMap: Texture
+	private texture: Texture
+	private normalMap: Texture
+	private roughnessMap: Texture
 
-	textureSamplerLocation: WebGLUniformLocation
-	normalSamplerLocation: WebGLUniformLocation | undefined
-	roughnessSamplerLocation: WebGLUniformLocation | undefined
+	private textureSamplerLocation: WebGLUniformLocation
+	private normalSamplerLocation: WebGLUniformLocation | undefined
+	private roughnessSamplerLocation: WebGLUniformLocation | undefined
 
-	hasNormalMap: WebGLUniformLocation
-	hasRoughnessMap: WebGLUniformLocation
+	private hasNormalMap: WebGLUniformLocation
+	private hasRoughnessMap: WebGLUniformLocation
 
 	constructor(
 		gl: WebGL2RenderingContext,
@@ -25,7 +25,7 @@ export class TexturedShader extends Shader {
 		this.roughnessMap = roughnessMap
 	}
 
-	protected async _init() {
+	protected async _init(): Promise<void> {
 		await super._init()
 
 		this.textureSamplerLocation = this.gl.getUniformLocation(this.program, 'uTexture')
@@ -50,7 +50,7 @@ export class TexturedShader extends Shader {
 		}
 	}
 
-	loadParameters(): void {
+	public loadParameters(): void {
 		this.texture.bind(this.gl, 0)
 		this.normalMap?.bind(this.gl, 1)
 		this.roughnessMap?.bind(this.gl, 2)

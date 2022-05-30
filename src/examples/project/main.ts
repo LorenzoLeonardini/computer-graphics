@@ -26,7 +26,6 @@ let terrainShader: TerrainShader
 
 let carHeadlightTexture: Texture
 
-let sphere: Entity
 let car: Car
 let building: Entity
 
@@ -95,10 +94,6 @@ export async function setupWhatToDraw() {
 		)
 	)
 
-	const obj = await (await fetch('/assets/sphere.obj')).text()
-	sphere = new Entity(new OBJModel(gl, loadObjModel(obj)), new FlatShader(gl, new Vector3(0, 1, 0)))
-	sphere.setScale(0.05)
-
 	const lampObj = new OBJModel(gl, loadObjModel(await (await fetch('/assets/lamp.obj')).text()))
 	const lampShader = new FlatShader(gl, new Vector3(0.4, 0.4, 0.4))
 	StreetLamp.setUpModel(lampObj, lampShader, new Vector3(0.65, 1, 0))
@@ -152,7 +147,6 @@ export async function setupHowToDraw() {
 	renderer = new Renderer(gl)
 	renderer.addEntity(terrain)
 	renderer.addEntity(car)
-	renderer.addEntity(sphere)
 	renderer.addEntity(building)
 
 	const lamp = new StreetLamp()
@@ -192,8 +186,6 @@ export function draw(time: number = window.performance.now()) {
 	if (!cameraSwitcher.getCurrentCamera().consumesInput()) {
 		car.update(delta, inputHandler)
 	}
-	let spherePosition = car.getSpherePosition()
-	sphere.setPosition(spherePosition[0], spherePosition[1], spherePosition[2])
 	cameraSwitcher.handleInput(inputHandler)
 	cameraSwitcher.updateAllCameras(delta)
 

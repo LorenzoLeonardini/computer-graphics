@@ -1,10 +1,10 @@
 import { Model } from './Model'
 
 export class OBJModel implements Model {
-	vao: WebGLVertexArrayObject
-	buffer: WebGLBuffer
-	ibo: WebGLBuffer
-	vertexCount: number
+	private vao: WebGLVertexArrayObject
+	private buffer: WebGLBuffer
+	private ibo: WebGLBuffer
+	private vertexCount: number
 
 	constructor(
 		gl: WebGL2RenderingContext,
@@ -43,20 +43,20 @@ export class OBJModel implements Model {
 		gl.vertexAttribPointer(3, 3, gl.FLOAT, false, 4 * 11, 4 * 8)
 	}
 
-	destroy(gl: WebGL2RenderingContext): void {
+	public destroy(gl: WebGL2RenderingContext): void {
 		gl.deleteBuffer(this.buffer)
 		gl.deleteBuffer(this.ibo)
 		gl.deleteVertexArray(this.vao)
 	}
 
-	bind(gl: WebGL2RenderingContext): void {
+	public bind(gl: WebGL2RenderingContext): void {
 		gl.bindVertexArray(this.vao)
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo)
 	}
 
-	unbind(gl: WebGL2RenderingContext): void {}
+	public unbind(gl: WebGL2RenderingContext): void {}
 
-	render(gl: WebGL2RenderingContext): void {
+	public render(gl: WebGL2RenderingContext): void {
 		gl.drawElements(gl.TRIANGLES, this.vertexCount, gl.UNSIGNED_SHORT, 0)
 	}
 }

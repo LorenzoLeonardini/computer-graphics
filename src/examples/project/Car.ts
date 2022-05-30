@@ -1,12 +1,9 @@
 import { Camera } from '../lib/Camera'
-import { Cube } from '../lib/Cube'
-import { Cylinder } from '../lib/Cylinder'
 import { Entity, EntityTree } from '../lib/Entity'
 import { FlatShader } from '../lib/FlatShader'
 import { InputHandler } from '../lib/InputHandler'
 import { Matrix4 } from '../lib/Matrix'
 import { OBJModel } from '../lib/OBJModel'
-import { Texture } from '../lib/Texture'
 import { TexturedShader } from '../lib/TexturedShader'
 import { Vector3, Vector4 } from '../lib/Vector'
 
@@ -85,15 +82,15 @@ export class Car extends EntityTree {
 		this.headlightProjectors[0].position(-0.4, 0.52, 0.8)
 	}
 
-	getSpeed(): number {
+	public getSpeed(): number {
 		return this.velocity
 	}
 
-	getTurningAngle(): number {
+	public getTurningAngle(): number {
 		return this.wheelTurning
 	}
 
-	update(delta: number, inputHandler: InputHandler) {
+	public update(delta: number, inputHandler: InputHandler): void {
 		// BEGIN ACCELERATION CALCULATION
 		if (inputHandler.isKeyPressed('KeyW') || inputHandler.isKeyPressed('ArrowUp')) {
 			if (this.velocity >= 0) {
@@ -196,11 +193,7 @@ export class Car extends EntityTree {
 		}
 	}
 
-	getSpherePosition() {
-		return this.rotationPoint
-	}
-
-	getProjectorsMatrix = () => {
+	public getProjectorsMatrix = () => {
 		this.headlightProjectors[0].frame = this.updateMatrix().mul(
 			Matrix4.translate(new Vector3(-0.35, 0.45, -0.8))
 		)

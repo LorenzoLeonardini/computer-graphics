@@ -68,7 +68,7 @@ export class Cylinder implements Model {
 		gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 4 * 3, 0)
 	}
 
-	destroy(gl: WebGL2RenderingContext): void {
+	public destroy(gl: WebGL2RenderingContext): void {
 		Cylinder.count -= 1
 		if (Cylinder.count === 0) {
 			gl.deleteBuffer(Cylinder.buffer)
@@ -77,14 +77,14 @@ export class Cylinder implements Model {
 		}
 	}
 
-	bind(gl: WebGL2RenderingContext): void {
+	public bind(gl: WebGL2RenderingContext): void {
 		gl.bindVertexArray(Cylinder.vao)
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Cylinder.ibo)
 	}
 
-	unbind(gl: WebGL2RenderingContext): void {}
+	public unbind(gl: WebGL2RenderingContext): void {}
 
-	render(gl: WebGL2RenderingContext): void {
+	public render(gl: WebGL2RenderingContext): void {
 		gl.drawElements(gl.TRIANGLES, this.indicesCount, gl.UNSIGNED_SHORT, 0)
 	}
 }

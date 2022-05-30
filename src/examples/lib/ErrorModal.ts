@@ -1,4 +1,4 @@
-export function showErrorModal(title: string, src: string, line: number) {
+export function showErrorModal(title: string, src: string, line: number): void {
 	const backdrop = document.createElement('div')
 	backdrop.classList.add('modal-backdrop')
 	document.body.appendChild(backdrop)

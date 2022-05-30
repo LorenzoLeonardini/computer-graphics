@@ -1,4 +1,4 @@
-import { Vector3, Vector4 } from './Vector'
+import { Vector3 } from './Vector'
 
 export class DirectionalLight {
 	private direction: Vector3
@@ -9,15 +9,15 @@ export class DirectionalLight {
 		this.color = color
 	}
 
-	public getDirection() {
+	public getDirection(): Vector3 {
 		return this.direction
 	}
 
-	public getColor() {
+	public getColor(): Vector3 {
 		return this.color
 	}
 
-	public setDirection(direction: Vector3) {
+	public setDirection(direction: Vector3): void {
 		this.direction = direction
 	}
 

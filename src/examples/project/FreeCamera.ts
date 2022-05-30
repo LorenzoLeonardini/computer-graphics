@@ -1,15 +1,13 @@
 import { Camera } from '../lib/Camera'
-import { DummyEntity, EntityInterface } from '../lib/Entity'
+import { DummyEntity } from '../lib/Entity'
 import { InputHandler, MouseButton } from '../lib/InputHandler'
 import { Matrix4 } from '../lib/Matrix'
 import { Vector3, Vector4 } from '../lib/Vector'
-import { FollowCamera } from './FollowCamera'
 
 const MIN_ZOOM_LEVEL = 0.3
 const MAX_ZOOM_LEVEL = 6
 
 export class FreeCamera extends Camera {
-	private desiredPosition: Vector3 = new Vector3(0, 0, 0)
 	private movement: Vector3 = new Vector3(0, 0, 0)
 	private centerEntity: DummyEntity = new DummyEntity()
 
@@ -17,11 +15,10 @@ export class FreeCamera extends Camera {
 	private desiredZoomLevel: number = 1.6
 
 	private cameraPosition: Vector3 = new Vector3(0, 0.4, 1.5)
-	private cameraYRotation: Vector3 = new Vector3(0, 0, 0)
 	private xMove: number = 0
 	private yMove: number = 0
 
-	handleInput(inputHandler: InputHandler): void {
+	public handleInput(inputHandler: InputHandler): void {
 		if (inputHandler.mouseWheelY() !== 0) {
 			this.desiredZoomLevel += 4 * (inputHandler.mouseWheelY() / inputHandler.canvasHeight)
 			if (this.desiredZoomLevel < MIN_ZOOM_LEVEL) {
@@ -51,9 +48,7 @@ export class FreeCamera extends Camera {
 		}
 	}
 
-	private rotationY: number = 0
-
-	update(delta: number): void {
+	public update(delta: number): void {
 		if (this.movement.getLength() !== 0) {
 			this.movement.normalize().mul(delta * 0.1)
 			this.centerEntity.moveZ(this.movement[2])
@@ -96,7 +91,7 @@ export class FreeCamera extends Camera {
 		this.frameChanged = true
 	}
 
-	consumesInput(): boolean {
+	public consumesInput(): boolean {
 		return true
 	}
 }

@@ -43,7 +43,7 @@ export class Cube implements Model {
 		gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 4 * 5, 4 * 3)
 	}
 
-	destroy(gl: WebGL2RenderingContext): void {
+	public destroy(gl: WebGL2RenderingContext): void {
 		Cube.count -= 1
 		if (Cube.count === 0) {
 			gl.deleteBuffer(Cube.buffer)
@@ -52,14 +52,14 @@ export class Cube implements Model {
 		}
 	}
 
-	bind(gl: WebGL2RenderingContext): void {
+	public bind(gl: WebGL2RenderingContext): void {
 		gl.bindVertexArray(Cube.vao)
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Cube.ibo)
 	}
 
-	unbind(gl: WebGL2RenderingContext): void {}
+	public unbind(gl: WebGL2RenderingContext): void {}
 
-	render(gl: WebGL2RenderingContext): void {
+	public render(gl: WebGL2RenderingContext): void {
 		gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0)
 	}
 }

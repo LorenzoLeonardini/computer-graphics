@@ -28,11 +28,7 @@ export class StreetLamp extends Entity {
 		}
 		super(StreetLamp.lampModel, StreetLamp.shader)
 		this.light = new Spotlight(
-			new Vector3(
-				StreetLamp.lightRelativePosition[0],
-				StreetLamp.lightRelativePosition[1],
-				StreetLamp.lightRelativePosition[2]
-			),
+			StreetLamp.lightRelativePosition.xyz(),
 			new Vector3(0, -1, 0),
 			new Vector3(1, 0.753, 0.128)
 		)
@@ -42,8 +38,8 @@ export class StreetLamp extends Entity {
 
 	protected updateMatrix(): Matrix4 {
 		const matrix = super.updateMatrix()
-		const lightPosition = matrix.mul(StreetLamp.lightRelativePosition)
-		this.light.setPosition(new Vector3(lightPosition[0], lightPosition[1], lightPosition[2]))
+		const lightPosition: Vector4 = matrix.mul(StreetLamp.lightRelativePosition)
+		this.light.setPosition(lightPosition.xyz())
 		return matrix
 	}
 

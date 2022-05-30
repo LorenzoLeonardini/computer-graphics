@@ -1,9 +1,9 @@
 import { loadImage } from './Utils'
 
 export class Texture {
-	gl: WebGL2RenderingContext
-	texture: WebGLTexture
-	imagePath: string
+	private gl: WebGL2RenderingContext
+	public texture: WebGLTexture
+	private imagePath: string
 
 	static imageElementPromises = []
 
@@ -15,7 +15,7 @@ export class Texture {
 		}
 	}
 
-	async _init(mipmapping: boolean) {
+	public async _init(mipmapping: boolean): Promise<void> {
 		const image = await loadImage(this.imagePath)
 		const gl = this.gl
 
@@ -48,17 +48,17 @@ export class Texture {
 		}
 	}
 
-	bind(gl: WebGL2RenderingContext, textureUnit: number = 0) {
+	public bind(gl: WebGL2RenderingContext, textureUnit: number = 0): void {
 		gl.activeTexture(gl.TEXTURE0 + textureUnit)
 		gl.bindTexture(gl.TEXTURE_2D, this.texture)
 	}
 
-	unbind(gl: WebGL2RenderingContext, textureUnit: number = 0) {
+	public unbind(gl: WebGL2RenderingContext, textureUnit: number = 0): void {
 		gl.activeTexture(gl.TEXTURE0 + textureUnit)
 		gl.bindTexture(gl.TEXTURE_2D, null)
 	}
 
-	static async loadAll() {
+	public static async loadAll(): Promise<void> {
 		await Promise.all(Texture.imageElementPromises)
 	}
 }

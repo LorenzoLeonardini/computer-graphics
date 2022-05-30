@@ -8,12 +8,12 @@ export class TopDownCamera extends Camera {
 	private zoomLevel: number = 0
 	private desiredZoomLevel: number = 2.5
 
-	attachTo(entity: EntityInterface) {
+	public attachTo(entity: EntityInterface): void {
 		this.entity = entity
 		this.frame = new Matrix4([1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, this.zoomLevel, 0, 1])
 	}
 
-	handleInput(inputHandler: InputHandler): void {
+	public handleInput(inputHandler: InputHandler): void {
 		if (inputHandler.mouseWheelY() !== 0) {
 			this.desiredZoomLevel += 10 * (inputHandler.mouseWheelY() / inputHandler.canvasHeight)
 			if (this.desiredZoomLevel < 1) {
@@ -25,7 +25,7 @@ export class TopDownCamera extends Camera {
 		}
 	}
 
-	update(delta: number) {
+	public update(delta: number): void {
 		if (!this.entity) {
 			throw new Error('Camera is not attached to an entity')
 		}

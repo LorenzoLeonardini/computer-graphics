@@ -1,4 +1,4 @@
-import { Vector3, Vector4 } from './Vector'
+import { Vector3 } from './Vector'
 
 export class Spotlight {
 	private position: Vector3
@@ -15,19 +15,19 @@ export class Spotlight {
 		return this.position
 	}
 
-	public getDirection() {
+	public getDirection(): Vector3 {
 		return this.direction
 	}
 
-	public getColor() {
+	public getColor(): Vector3 {
 		return this.color
 	}
 
-	public setPosition(position: Vector3) {
+	public setPosition(position: Vector3): void {
 		this.position = position
 	}
 
-	public setDirection(direction: Vector3) {
+	public setDirection(direction: Vector3): void {
 		this.direction = direction
 	}
 

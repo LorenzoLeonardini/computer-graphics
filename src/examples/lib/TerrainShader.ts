@@ -72,7 +72,7 @@ export class TerrainShader extends Shader {
 		this.blueRoughnessTexture = blueRoughnessTexture
 	}
 
-	protected async _init() {
+	protected async _init(): Promise<void> {
 		await super._init()
 
 		this.blendMapTexLocation = this.gl.getUniformLocation(this.program, 'uBlendMapTexture')
@@ -98,7 +98,7 @@ export class TerrainShader extends Shader {
 		}
 	}
 
-	loadParameters(): void {
+	public loadParameters(): void {
 		this.blendMapTexture.bind(this.gl, 0)
 		this.baseTexture.bind(this.gl, 1)
 		this.redTexture.bind(this.gl, 2)
