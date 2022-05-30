@@ -22,8 +22,8 @@ vec3 normalToColor(vec3 normal) {
 }
 
 float AMBIENT_CONTRIBUTION = 0.4;
-float SPOTLIGHT_INNER = 0.4;
-float SPOTLIGHT_OUTER = 0.8;
+float SPOTLIGHT_INNER = 0.6;
+float SPOTLIGHT_OUTER = 1.2;
 
 float c1 = 0.0;
 float c2 = 1.0;
@@ -78,7 +78,7 @@ vec3 phongLighting(vec3 normal, vec3 color, float roughness) {
 
 	for(int i = 0; i < uSpotlightsCount; i++) {
 		float angle = dot(normalize(vToSpotlightsVector[i]), normalize(vSpotlightsDirection[i]));
-		float fs = pow(angle, 6.0);
+		float fs = pow(angle, 2.0);
 		if(angle > cos(SPOTLIGHT_INNER)) {
 			fs = 1.0;
 		} else if(angle < cos(SPOTLIGHT_OUTER)) {

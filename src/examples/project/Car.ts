@@ -7,7 +7,7 @@ import { OBJModel } from '../lib/OBJModel'
 import { TexturedShader } from '../lib/TexturedShader'
 import { Vector3, Vector4 } from '../lib/Vector'
 
-const ENGINE_POWER: number = 0.005
+const ENGINE_POWER: number = 0.004
 const ENGINE_POWER_REVERSE: number = 0.0015
 const BRAKES = -0.0027
 const FRICTION: number = -0.018

@@ -2,7 +2,6 @@ import { DirectionalLight } from '../lib/DirectionalLight'
 import { Entity } from '../lib/Entity'
 import { FlatShader } from '../lib/FlatShader'
 import { InputHandler } from '../lib/InputHandler'
-import { NormalsShader } from '../lib/NormalsShader'
 import { loadObjModel } from '../lib/ObjectLoader'
 import { OBJModel } from '../lib/OBJModel'
 import { Renderer } from '../lib/Renderer'
@@ -19,7 +18,6 @@ import { FreeCamera } from './FreeCamera'
 import { StreetLamp } from './StreetLamp'
 
 let gl: WebGL2RenderingContext = null
-let shader: NormalsShader
 
 let terrain: Entity
 let terrainShader: TerrainShader
@@ -80,7 +78,7 @@ export async function setupWhatToDraw() {
 		terrainShader
 	)
 	terrain.rotateX(-Math.PI / 2)
-	terrain.setScale(32)
+	terrain.setScale(16)
 
 	car = new Car(
 		gl,
@@ -141,6 +139,14 @@ export async function changeAspectRatio(width: number, height: number) {
 	}
 }
 
+function makeLamp(x: number, y: number, rot: number = 0) {
+	const lamp = new StreetLamp()
+	lamp.setPosition(x, 0, y)
+	lamp.rotateYAroundOrigin(rot)
+	renderer.addEntity(lamp)
+	renderer.addSpotlight(lamp.getLight())
+}
+
 export async function setupHowToDraw() {
 	// material = new NormalsShader(gl)
 
@@ -149,16 +155,16 @@ export async function setupHowToDraw() {
 	renderer.addEntity(car)
 	renderer.addEntity(building)
 
-	const lamp = new StreetLamp()
-	lamp.setPosition(-0.55, 0, 0)
-	renderer.addEntity(lamp)
-	renderer.addSpotlight(lamp.getLight())
-
-	const lamp2 = new StreetLamp()
-	lamp2.setPosition(4, 0, 0)
-	lamp2.rotateY(Math.PI / 4)
-	renderer.addEntity(lamp2)
-	renderer.addSpotlight(lamp2.getLight())
+	makeLamp(-5.765625, -12.828125, 3.14 / 3.8)
+	makeLamp(-8.390625, -7.0, 3.14)
+	makeLamp(-10.328125, -1.65625)
+	makeLamp(-10.28125, 6.453125, 3.14)
+	makeLamp(-7.328125, 12.875, -3.14 / 2.3)
+	makeLamp(1.21875, 10.34375, 3.14 / 3.8)
+	makeLamp(6.078125, 8.21875, -3.14 * 0.8)
+	makeLamp(9.3125, 0.140625)
+	makeLamp(11.453125, -7.8125, 3.14 * 0.8)
+	makeLamp(4.890625, -11.453125, -3.14 / 3.8)
 
 	// SUN
 	renderer.addDirectionalLight(new DirectionalLight(new Vector3(-1, -1, 1), new Vector3(1, 1, 1)))

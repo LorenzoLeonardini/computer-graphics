@@ -15,7 +15,7 @@ in vec3 vNormal;
 out vec4 outColor;
 
 void main(void) {
-	vec2 texCoords = fract(vTexCoords * 120.0);
+	vec2 texCoords = fract(vTexCoords * 60.0);
 
 	vec4 blendMap = texture(uBlendMapTexture, vTexCoords);
 	float baseAlpha = 1.0 - (blendMap.r + blendMap.g + blendMap.b);

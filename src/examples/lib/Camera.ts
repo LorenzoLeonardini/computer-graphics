@@ -1,4 +1,3 @@
-import { EntityInterface } from './Entity'
 import { InputHandler } from './InputHandler'
 import { Matrix4 } from './Matrix'
 import { Vector3, Vector4 } from './Vector'
