@@ -6,10 +6,10 @@ in vec3 vToSpotlightsVector[MAX_SPOTLIGHTS];
 in vec3 vSpotlightsDirection[MAX_SPOTLIGHTS];
 in vec3 toCameraVector;
 
-uniform vec4 uSpotlightsColor[MAX_SPOTLIGHTS]; // 4th component is the intensity
+uniform vec3 uSpotlightsColor[MAX_SPOTLIGHTS]; // 4th component is the intensity
 uniform int uSpotlightsCount;
 
-uniform vec4 uDirectionalLightsColor[MAX_DIRECTIONAL_LIGHTS]; // 4th component is the intensity
+uniform vec3 uDirectionalLightsColor[MAX_DIRECTIONAL_LIGHTS]; // 4th component is the intensity
 uniform int uDirectionalLightsCount;
 
 uniform sampler2D uProjectingLightTexture;

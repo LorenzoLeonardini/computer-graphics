@@ -34,7 +34,7 @@ export class StreetLamp extends Entity {
 				StreetLamp.lightRelativePosition[2]
 			),
 			new Vector3(0, -1, 0),
-			new Vector4(1, 0.753, 0.128, 1)
+			new Vector3(1, 0.753, 0.128)
 		)
 		this.setScale(0.8)
 		this.needsUpdating = true

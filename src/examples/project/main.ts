@@ -167,9 +167,7 @@ export async function setupHowToDraw() {
 	renderer.addSpotlight(lamp2.getLight())
 
 	// SUN
-	renderer.addDirectionalLight(
-		new DirectionalLight(new Vector3(-1, -1, 1), new Vector4(1, 1, 1, 1))
-	)
+	renderer.addDirectionalLight(new DirectionalLight(new Vector3(-1, -1, 1), new Vector3(1, 1, 1)))
 
 	renderer.setLightProjectorTexture(carHeadlightTexture)
 

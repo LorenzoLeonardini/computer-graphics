@@ -2,9 +2,9 @@ import { Vector3, Vector4 } from './Vector'
 
 export class DirectionalLight {
 	private direction: Vector3
-	private color: Vector4
+	private color: Vector3
 
-	public constructor(direction: Vector3, color: Vector4) {
+	public constructor(direction: Vector3, color: Vector3) {
 		this.direction = direction
 		this.color = color
 	}
@@ -21,7 +21,7 @@ export class DirectionalLight {
 		this.direction = direction
 	}
 
-	public setColor(color: Vector4) {
+	public setColor(color: Vector3): void {
 		this.color = color
 	}
 }

@@ -169,7 +169,7 @@ export class Shader {
 			colors.push(...light.getColor())
 		})
 		this.gl.uniform3fv(this.directionalLightsDirectionLocation, new Float32Array(directions))
-		this.gl.uniform4fv(this.directionalLightsColorLocation, new Float32Array(colors))
+		this.gl.uniform3fv(this.directionalLightsColorLocation, new Float32Array(colors))
 	}
 
 	loadSpotlights(lights: Spotlight[]) {
@@ -190,7 +190,7 @@ export class Shader {
 		})
 		this.gl.uniform3fv(this.spotlightsPositionLocation, new Float32Array(positions))
 		this.gl.uniform3fv(this.spotlightsDirectionLocation, new Float32Array(directions))
-		this.gl.uniform4fv(this.spotlightsColorLocation, new Float32Array(colors))
+		this.gl.uniform3fv(this.spotlightsColorLocation, new Float32Array(colors))
 	}
 
 	loadProjectingLights(matrices: Matrix4[], texture: Texture) {

@@ -3,9 +3,9 @@ import { Vector3, Vector4 } from './Vector'
 export class Spotlight {
 	private position: Vector3
 	private direction: Vector3
-	private color: Vector4
+	private color: Vector3
 
-	public constructor(position: Vector3, direction: Vector3, color: Vector4) {
+	public constructor(position: Vector3, direction: Vector3, color: Vector3) {
 		this.position = position
 		this.direction = direction
 		this.color = color
@@ -31,7 +31,7 @@ export class Spotlight {
 		this.direction = direction
 	}
 
-	public setColor(color: Vector4) {
+	public setColor(color: Vector3): void {
 		this.color = color
 	}
 }
