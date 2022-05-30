@@ -16,7 +16,8 @@ out vec3 vNormal;
 void main(void) {
 	vTexCoords = aTexCoords;
 	calculateTangentFrame(uViewMat, uObjectMat);
-	calculatePorjectingLightsUV();
+	calculateProjectingLightsUV();
+	calculateSunUV();
 
 	gl_Position = uProjectionMat * positionRelativeToCamera;
 }

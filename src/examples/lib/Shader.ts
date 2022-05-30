@@ -29,7 +29,10 @@ export class Shader {
 
 	private projectingLightsMatLocation: WebGLUniformLocation
 	private projectingLightTextureLocation: WebGLUniformLocation
-	private projectingLightsDepthTexture: WebGLUniformLocation
+	private projectingLightsDepthTextureLocation: WebGLUniformLocation
+
+	private sunMatLocation: WebGLUniformLocation
+	private sunDepthTextureLocation: WebGLUniformLocation
 
 	public lastFrameUniformLoaded: number = 0
 
@@ -126,7 +129,10 @@ export class Shader {
 
 		this.projectingLightsMatLocation = this.getLocation('uProjectingLightsMat')
 		this.projectingLightTextureLocation = this.getLocation('uProjectingLightTexture')
-		this.projectingLightsDepthTexture = this.getLocation('uProjectingLightDepthTexture')
+		this.projectingLightsDepthTextureLocation = this.getLocation('uProjectingLightDepthTexture')
+
+		this.sunMatLocation = this.getLocation('uSunMat')
+		this.sunDepthTextureLocation = this.getLocation('uSunDepthTexture')
 	}
 
 	public getLocation(name: string): WebGLUniformLocation {
@@ -214,25 +220,42 @@ export class Shader {
 	}
 
 	public loadProjectingLightsDepthTextures(depthTextures: Texture[]) {
-		if (this.projectingLightsDepthTexture === null) {
+		if (this.projectingLightsDepthTextureLocation === null) {
 			return
 		}
 		if (depthTextures.length > 2) {
 			throw new Error('Maximum two projecting lights')
 		}
-		if (this.projectingLightsMatLocation === null || this.projectingLightTextureLocation === null) {
-			this.gl.uniform1iv(this.projectingLightsDepthTexture, [
-				this.textureCount,
-				this.textureCount + 1
-			])
-			depthTextures.forEach((texture, i) => texture.bind(this.gl, this.textureCount + i))
-		} else {
-			this.gl.uniform1iv(this.projectingLightsDepthTexture, [
-				this.textureCount + 1,
-				this.textureCount + 2
-			])
-			depthTextures.forEach((texture, i) => texture.bind(this.gl, this.textureCount + i + 1))
+
+		let baseTextureUnit = this.textureCount
+		if (this.projectingLightsMatLocation !== null && this.projectingLightTextureLocation !== null) {
+			baseTextureUnit += 1
 		}
+
+		this.gl.uniform1iv(this.projectingLightsDepthTextureLocation, [
+			baseTextureUnit,
+			baseTextureUnit + 1
+		])
+		depthTextures.forEach((texture, i) => texture.bind(this.gl, baseTextureUnit + i))
+	}
+
+	public loadSun(matrix: Matrix4, depthTexture: Texture) {
+		if (this.sunMatLocation === null || this.sunDepthTextureLocation === null) {
+			return
+		}
+
+		let baseTextureUnit = this.textureCount
+		if (this.projectingLightsMatLocation !== null && this.projectingLightTextureLocation !== null) {
+			baseTextureUnit += 1
+		}
+		if (this.projectingLightsDepthTextureLocation !== null) {
+			baseTextureUnit += 2
+		}
+
+		this.gl.uniformMatrix4fv(this.sunMatLocation, false, matrix)
+
+		this.gl.uniform1i(this.sunDepthTextureLocation, baseTextureUnit)
+		depthTexture.bind(this.gl, baseTextureUnit)
 	}
 
 	public static async loadAll() {

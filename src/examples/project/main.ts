@@ -167,7 +167,7 @@ export async function setupHowToDraw() {
 	makeLamp(4.890625, -11.453125, -3.14 / 3.8)
 
 	// SUN
-	renderer.addDirectionalLight(new DirectionalLight(new Vector3(-1, -1, 1), new Vector3(1, 1, 1)))
+	renderer.addSun(new DirectionalLight(new Vector3(-1, -1, 1), new Vector3(1, 1, 1)))
 
 	renderer.setLightProjectorTexture(carHeadlightTexture)
 

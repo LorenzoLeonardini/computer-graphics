@@ -32,6 +32,10 @@ float c3 = 0.4;
 in vec4 vProjectingLightsUV[2];
 vec3 projectingLightsUV[2];
 
+uniform sampler2D uSunDepthTexture;
+in vec4 vSunUV;
+vec3 sunUV;
+
 vec3 applyCarHeadlights(vec3 color) {
 	projectingLightsUV[0] = (vProjectingLightsUV[0] / vProjectingLightsUV[0].w).xyz * 0.5 + 0.5;
 	projectingLightsUV[1] = (vProjectingLightsUV[1] / vProjectingLightsUV[1].w).xyz * 0.5 + 0.5;
@@ -55,6 +59,27 @@ vec3 applyCarHeadlights(vec3 color) {
 	}
 
 	return color;
+}
+
+float linstep(float low, float high, float v){
+	return clamp((v-low)/(high-low), 0.0, 1.0);
+}
+
+vec3 applySunShadow(vec3 color) {
+	sunUV = (vSunUV / vSunUV.w).xyz * 0.5 + 0.5;
+
+	vec2 m = texture(uSunDepthTexture, sunUV.xy).xy;
+	float mu = m.x;
+	float p = step(sunUV.z, mu);
+	float sq_sigma = max(m.y - mu*mu, 0.005);
+
+	float d = sunUV.z - mu;
+	float pMax = linstep(0.005, 1.0, sq_sigma / (sq_sigma + d*d));
+
+	float light_contr =  min(max(p, pMax), 1.0);
+
+	light_contr = 0.5 + light_contr * 0.5;
+	return color * light_contr;
 }
 
 vec3 phongLighting(vec3 normal, vec3 color, float roughness) {
@@ -96,5 +121,6 @@ vec3 phongLighting(vec3 normal, vec3 color, float roughness) {
 	}
 
 	vec3 finalColor = ambient * color * AMBIENT_CONTRIBUTION + (color * diffuse + specular) * (1.0 - AMBIENT_CONTRIBUTION);
-	return applyCarHeadlights(finalColor);
+	finalColor = applyCarHeadlights(finalColor);
+	return applySunShadow(finalColor);
 }

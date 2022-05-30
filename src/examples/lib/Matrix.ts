@@ -362,6 +362,34 @@ export class Matrix4 extends Float32Array implements Matrix<Matrix4> {
 		])
 	}
 
+	public static orthogonal(
+		rightPlane: number,
+		leftPlane: number,
+		topPlane: number,
+		bottomPlane: number,
+		nearPlane: number,
+		farPlane: number
+	): Matrix4 {
+		return new Matrix4([
+			2 / (rightPlane - leftPlane),
+			0,
+			0,
+			0,
+			0,
+			2 / (topPlane - bottomPlane),
+			0,
+			0,
+			0,
+			0,
+			-2 / (farPlane - nearPlane),
+			0,
+			(rightPlane + leftPlane) / (rightPlane - leftPlane),
+			(topPlane + bottomPlane) / (topPlane - bottomPlane),
+			-(farPlane + nearPlane) / (farPlane - nearPlane),
+			1
+		])
+	}
+
 	public copy(): Matrix4 {
 		return new Matrix4([
 			this[0],
