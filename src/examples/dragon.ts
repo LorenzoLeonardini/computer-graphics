@@ -34,7 +34,7 @@ export async function changeAspectRatio(width: number, height: number) {
 }
 
 export async function setupHowToDraw() {
-	renderer = new Renderer(gl)
+	renderer = new Renderer(gl, null)
 	renderer.addEntity(dragon)
 }
 

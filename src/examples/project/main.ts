@@ -2,13 +2,13 @@ import { DirectionalLight } from '../lib/DirectionalLight'
 import { Entity } from '../lib/Entity'
 import { FlatShader } from '../lib/FlatShader'
 import { InputHandler } from '../lib/InputHandler'
-import { loadObjModel } from '../lib/ObjectLoader'
+import { loadObjModel, loadObj } from '../lib/ObjectLoader'
 import { OBJModel } from '../lib/OBJModel'
 import { Renderer } from '../lib/Renderer'
 import { TerrainShader } from '../lib/TerrainShader'
 import { Texture } from '../lib/Texture'
 import { TexturedShader } from '../lib/TexturedShader'
-import { Vector3, Vector4 } from '../lib/Vector'
+import { Vector3 } from '../lib/Vector'
 import { CameraSwitcher } from './CameraSwitcher'
 import { Car } from './Car'
 import { FollowCamera } from './FollowCamera'
@@ -20,13 +20,7 @@ import { ShadowPassShader } from '../lib/ShadowPassShader'
 
 let gl: WebGL2RenderingContext = null
 
-let terrain: Entity
-let terrainShader: TerrainShader
-
-let carHeadlightTexture: Texture
-
 let car: Car
-let buildings: Entity[] = []
 
 let cameraSwitcher: CameraSwitcher
 let camera: CinematicCamera
@@ -43,74 +37,50 @@ export function setupWebGL(canvas: HTMLCanvasElement) {
 	gl = canvas.getContext('webgl2')
 }
 
-export async function setupWhatToDraw() {
-	const blendMapTexture = new Texture(gl, '/assets/project/terrainBlendMap.png')
-	const grassTexture = new Texture(gl, '/assets/grass.png')
-	const grassNormal = new Texture(gl, '/assets/grass_normal.png')
-	const grassRoughness = new Texture(gl, '/assets/grass_roughness.png')
-	const asphaltTexture = new Texture(gl, '/assets/asphalt.jpg')
-	const asphaltNormal = new Texture(gl, '/assets/asphalt_normal.jpg')
-	const asphaltRoughness = new Texture(gl, '/assets/asphalt_roughness.jpg')
-	const groundTexture = new Texture(gl, '/assets/ground.png')
-	const groundNormal = new Texture(gl, '/assets/ground_normal.png')
-	const groundRoughness = new Texture(gl, '/assets/ground_roughness.png')
-	const gravelTexture = new Texture(gl, '/assets/gravel.png')
-	const gravelNormal = new Texture(gl, '/assets/gravel_normal.png')
-	const gravelRoughness = new Texture(gl, '/assets/gravel_roughness.png')
-	terrainShader = new TerrainShader(
-		gl,
-		blendMapTexture,
-		grassTexture,
-		asphaltTexture,
-		groundTexture,
-		gravelTexture,
-		grassNormal,
-		asphaltNormal,
-		groundNormal,
-		gravelNormal,
-		grassRoughness,
-		asphaltRoughness,
-		groundRoughness,
-		gravelRoughness
-	)
+const textures: Map<string, Texture> = new Map()
+const objects: Map<string, OBJModel> = new Map()
 
-	terrain = new Entity(
-		new OBJModel(gl, loadObjModel(await (await fetch('/assets/plane.obj')).text())),
-		terrainShader
-	)
-	terrain.rotateX(-Math.PI / 2)
-	terrain.setScale(16)
+export async function setupWhatToDraw() {
+	// terrain
+	textures.set('blendMapTexture', new Texture(gl, '/assets/project/terrainBlendMap.png'))
+	textures.set('grassTexture', new Texture(gl, '/assets/grass.png'))
+	textures.set('grassNormal', new Texture(gl, '/assets/grass_normal.png'))
+	textures.set('grassRoughness', new Texture(gl, '/assets/grass_roughness.png'))
+	textures.set('asphaltTexture', new Texture(gl, '/assets/asphalt.jpg'))
+	textures.set('asphaltNormal', new Texture(gl, '/assets/asphalt_normal.jpg'))
+	textures.set('asphaltRoughness', new Texture(gl, '/assets/asphalt_roughness.jpg'))
+	textures.set('groundTexture', new Texture(gl, '/assets/ground.png'))
+	textures.set('groundNormal', new Texture(gl, '/assets/ground_normal.png'))
+	textures.set('groundRoughness', new Texture(gl, '/assets/ground_roughness.png'))
+	textures.set('gravelTexture', new Texture(gl, '/assets/gravel.png'))
+	textures.set('gravelNormal', new Texture(gl, '/assets/gravel_normal.png'))
+	textures.set('gravelRoughness', new Texture(gl, '/assets/gravel_roughness.png'))
+
+	objects.set('plane', new OBJModel(gl, await loadObj('/assets/plane.obj')))
+
+	// car
+	textures.set('wheel', new Texture(gl, '/assets/wheel.jpg'))
+	textures.set('carHeadlight', new Texture(gl, '/assets/car_headlight.png'))
+
+	objects.set('cube', new OBJModel(gl, await loadObj('/assets/cube.obj')))
+	objects.set('wheel', new OBJModel(gl, await loadObj('/assets/wheel.obj')))
 
 	car = new Car(
 		gl,
-		new OBJModel(gl, loadObjModel(await (await fetch('/assets/cube.obj')).text())),
-		new OBJModel(gl, loadObjModel(await (await fetch('/assets/wheel.obj')).text())),
-		new TexturedShader(gl, new Texture(gl, '/assets/wheel.jpg'))
+		objects.get('cube'),
+		objects.get('wheel'),
+		new TexturedShader(gl, textures.get('wheel'))
 	)
 
-	const lampObj = new OBJModel(gl, loadObjModel(await (await fetch('/assets/lamp.obj')).text()))
+	// buildings
+	textures.set('building', new Texture(gl, '/assets/building.jpg'))
+
+	objects.set('building', new OBJModel(gl, await loadObj('/assets/building.obj')))
+
+	// lamp setup
+	const lampObj = new OBJModel(gl, await loadObj('/assets/lamp.obj'))
 	const lampShader = new FlatShader(gl, new Vector3(0.4, 0.4, 0.4))
 	StreetLamp.setUpModel(lampObj, lampShader, new Vector3(0.44, 1.03, 0))
-
-	const buildingCoords = [
-		[-2.828125, -6.03125],
-		[5.328125, 1.578125],
-		[-7.53125, 8.0625]
-	]
-	const buildingModel = new OBJModel(
-		gl,
-		loadObjModel(await (await fetch('/assets/building.obj')).text())
-	)
-	const buildingShader = new TexturedShader(gl, new Texture(gl, '/assets/building.jpg'))
-	buildingCoords.forEach((coords) => {
-		const building = new Entity(buildingModel, buildingShader)
-		building.setPosition(coords[0], 0, coords[1])
-		// building.setScale(0.5)
-		building.rotateYAroundOrigin(Math.random() * 3.14)
-		buildings.push(building)
-	})
-
-	carHeadlightTexture = new Texture(gl, '/assets/car_headlight.png')
 }
 
 export async function changeAspectRatio(width: number, height: number) {
@@ -154,12 +124,47 @@ function makeLamp(x: number, y: number, rot: number = 0) {
 }
 
 export async function setupHowToDraw() {
-	// material = new NormalsShader(gl)
-
+	// Setup renderer
 	renderer = new Renderer(gl, new ShadowPassShader(gl))
+
+	// terrain
+	const terrainShader = new TerrainShader(
+		gl,
+		textures.get('blendMapTexture'),
+		textures.get('grassTexture'),
+		textures.get('asphaltTexture'),
+		textures.get('groundTexture'),
+		textures.get('gravelTexture'),
+		textures.get('grassNormal'),
+		textures.get('asphaltNormal'),
+		textures.get('groundNormal'),
+		textures.get('gravelNormal'),
+		textures.get('grassRoughness'),
+		textures.get('asphaltRoughness'),
+		textures.get('groundRoughness'),
+		textures.get('gravelRoughness')
+	)
+
+	const terrain = new Entity(objects.get('plane'), terrainShader)
+	terrain.rotateX(-Math.PI / 2)
+	terrain.setScale(16)
 	renderer.addEntity(terrain)
+
+	// car
 	renderer.addEntity(car)
-	buildings.forEach((building) => {
+
+	// buildings
+	const buildingCoords = [
+		[-2.828125, -6.03125],
+		[5.328125, 1.578125],
+		[-7.53125, 8.0625]
+	]
+
+	const buildingShader = new TexturedShader(gl, textures.get('building'))
+	buildingCoords.forEach((coords) => {
+		const building = new Entity(objects.get('building'), buildingShader)
+		building.setPosition(coords[0], 0, coords[1])
+		building.rotateYAroundOrigin(Math.random() * 3.14)
 		renderer.addEntity(building)
 	})
 
@@ -177,7 +182,7 @@ export async function setupHowToDraw() {
 	// SUN
 	renderer.addSun(new DirectionalLight(new Vector3(-1, -1, 1), new Vector3(1, 1, 1)))
 
-	renderer.setLightProjectorTexture(carHeadlightTexture)
+	renderer.setLightProjectorTexture(textures.get('carHeadlight'))
 
 	inputHandler = new InputHandler()
 	inputHandler.registerAllHandlers()

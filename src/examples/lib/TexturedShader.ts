@@ -6,12 +6,12 @@ export class TexturedShader extends Shader {
 	private normalMap: Texture
 	private roughnessMap: Texture
 
-	private textureSamplerLocation: WebGLUniformLocation
-	private normalSamplerLocation: WebGLUniformLocation | undefined
-	private roughnessSamplerLocation: WebGLUniformLocation | undefined
+	private __uTexture: WebGLUniformLocation
+	private __uNormalMap: WebGLUniformLocation | undefined
+	private __uRoughnessMap: WebGLUniformLocation | undefined
 
-	private hasNormalMap: WebGLUniformLocation
-	private hasRoughnessMap: WebGLUniformLocation
+	private __uHasNormalMap: WebGLUniformLocation
+	private __uHasRoughnessMap: WebGLUniformLocation
 
 	constructor(
 		gl: WebGL2RenderingContext,
@@ -28,24 +28,24 @@ export class TexturedShader extends Shader {
 	protected async _init(): Promise<void> {
 		await super._init()
 
-		this.textureSamplerLocation = this.gl.getUniformLocation(this.program, 'uTexture')
-		this.normalSamplerLocation = this.gl.getUniformLocation(this.program, 'uNormalMap')
-		this.roughnessSamplerLocation = this.gl.getUniformLocation(this.program, 'uRoughnessMap')
+		this.__uTexture = this.getLocation('uTexture')
+		this.__uNormalMap = this.getLocation('uNormalMap')
+		this.__uRoughnessMap = this.getLocation('uRoughnessMap')
 
-		this.hasNormalMap = this.gl.getUniformLocation(this.program, 'uHasNormalMap')
-		this.hasRoughnessMap = this.gl.getUniformLocation(this.program, 'uHasRoughnessMap')
+		this.__uHasNormalMap = this.getLocation('uHasNormalMap')
+		this.__uHasRoughnessMap = this.getLocation('uHasRoughnessMap')
 
-		this.gl.uniform1i(this.hasNormalMap, this.normalMap !== undefined ? 1 : 0)
-		this.gl.uniform1i(this.hasRoughnessMap, this.roughnessMap !== undefined ? 1 : 0)
+		this.gl.uniform1i(this.__uHasNormalMap, this.normalMap !== undefined ? 1 : 0)
+		this.gl.uniform1i(this.__uHasRoughnessMap, this.roughnessMap !== undefined ? 1 : 0)
 
-		this.gl.uniform1i(this.textureSamplerLocation, 0)
+		this.gl.uniform1i(this.__uTexture, 0)
 		this.textureCount++
 		if (this.normalMap) {
-			this.gl.uniform1i(this.normalSamplerLocation, 1)
+			this.gl.uniform1i(this.__uNormalMap, 1)
 			this.textureCount++
 		}
 		if (this.roughnessMap) {
-			this.gl.uniform1i(this.roughnessSamplerLocation, 2)
+			this.gl.uniform1i(this.__uRoughnessMap, 2)
 			this.textureCount++
 		}
 	}

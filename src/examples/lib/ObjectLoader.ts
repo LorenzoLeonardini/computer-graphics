@@ -1,5 +1,9 @@
 import { Vector2, Vector3 } from './Vector'
 
+export async function loadObj(file: string) {
+	return loadObjModel(await (await fetch(file)).text())
+}
+
 export function loadObjModel(file: string): {
 	vertices: number[]
 	indices: number[]

@@ -3,17 +3,12 @@ import { Matrix4 } from './Matrix'
 import { Vector3, Vector4 } from './Vector'
 
 export class Camera {
-	private uid: number
-	private static IDS: number = 0
-
 	private perspective: Matrix4
 	private view: Matrix4
-	frame: Matrix4 = new Matrix4()
-	frameChanged: boolean = false
+	public frame: Matrix4 = new Matrix4()
+	public frameChanged: boolean = false
 
 	public constructor(yfov: number, aspectRatio: number, nearPlane: number, farPlane: number) {
-		this.uid = Camera.IDS++
-
 		this.perspective = Matrix4.perspective(yfov, aspectRatio, nearPlane, farPlane)
 	}
 

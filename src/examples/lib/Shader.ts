@@ -5,34 +5,36 @@ import { Spotlight } from './Spotlight'
 import { Texture } from './Texture'
 
 export class Shader {
+	protected gl: WebGL2RenderingContext
+
 	protected vertexShader: WebGLShader
 	protected fragmentShader: WebGLShader
 	protected program: WebGLProgram
+
 	protected vertexPath: string
 	protected fragmentPath: string
 	protected vertexSrc: string
 	protected fragmentSrc: string
-	protected gl: WebGL2RenderingContext
 
-	private projectionMatUniformLocation: WebGLUniformLocation
-	private viewMatUniformLocation: WebGLUniformLocation
-	private objMatUniformLocation: WebGLUniformLocation
+	private __uProjectionMat: WebGLUniformLocation
+	private __uViewMat: WebGLUniformLocation
+	private __uObjectMat: WebGLUniformLocation
 
-	private directionalLightsCountLocation: WebGLUniformLocation
-	private directionalLightsDirectionLocation: WebGLUniformLocation
-	private directionalLightsColorLocation: WebGLUniformLocation
+	private __uDirectionalLightsCount: WebGLUniformLocation
+	private __uDirectionalLightsDirection: WebGLUniformLocation
+	private __uDirectionalLightsColor: WebGLUniformLocation
 
-	private spotlightsCountLocation: WebGLUniformLocation
-	private spotlightsPositionLocation: WebGLUniformLocation
-	private spotlightsDirectionLocation: WebGLUniformLocation
-	private spotlightsColorLocation: WebGLUniformLocation
+	private __uSpotlightsCount: WebGLUniformLocation
+	private __uSpotlightsPosition: WebGLUniformLocation
+	private __uSpotlightsDirection: WebGLUniformLocation
+	private __uSpotlightsColor: WebGLUniformLocation
 
-	private projectingLightsMatLocation: WebGLUniformLocation
-	private projectingLightTextureLocation: WebGLUniformLocation
-	private projectingLightsDepthTextureLocation: WebGLUniformLocation
+	private __uProjectingLightsMat: WebGLUniformLocation
+	private __uProjectingLightTexture: WebGLUniformLocation
+	private __uProjectingLightDepthTexture: WebGLUniformLocation
 
-	private sunMatLocation: WebGLUniformLocation
-	private sunDepthTextureLocation: WebGLUniformLocation
+	private __uSunMat: WebGLUniformLocation
+	private __uSunDepthTexture: WebGLUniformLocation
 
 	public lastFrameUniformLoaded: number = 0
 
@@ -108,34 +110,34 @@ export class Shader {
 		}
 		this.program = await Shader.programCache.get(shaderName)
 
-		this.projectionMatUniformLocation = this.getLocation('uProjectionMat')
-		this.viewMatUniformLocation = this.getLocation('uViewMat')
-		this.objMatUniformLocation = this.getLocation('uObjectMat')
+		this.__uProjectionMat = this.getLocation('uProjectionMat')
+		this.__uViewMat = this.getLocation('uViewMat')
+		this.__uObjectMat = this.getLocation('uObjectMat')
 
-		this.directionalLightsCountLocation = this.getLocation('uDirectionalLightsCount')
-		this.directionalLightsDirectionLocation = this.getLocation('uDirectionalLightsDirection')
-		this.directionalLightsColorLocation = this.getLocation('uDirectionalLightsColor')
-		if (this.directionalLightsCountLocation) {
-			this.gl.uniform1i(this.directionalLightsCountLocation, 0)
+		this.__uDirectionalLightsCount = this.getLocation('uDirectionalLightsCount')
+		this.__uDirectionalLightsDirection = this.getLocation('uDirectionalLightsDirection')
+		this.__uDirectionalLightsColor = this.getLocation('uDirectionalLightsColor')
+		if (this.__uDirectionalLightsCount) {
+			this.gl.uniform1i(this.__uDirectionalLightsCount, 0)
 		}
 
-		this.spotlightsCountLocation = this.getLocation('uSpotlightsCount')
-		this.spotlightsPositionLocation = this.getLocation('uSpotlightsPosition')
-		this.spotlightsDirectionLocation = this.getLocation('uSpotlightsDirection')
-		this.spotlightsColorLocation = this.getLocation('uSpotlightsColor')
-		if (this.spotlightsCountLocation) {
-			this.gl.uniform1i(this.spotlightsCountLocation, 0)
+		this.__uSpotlightsCount = this.getLocation('uSpotlightsCount')
+		this.__uSpotlightsPosition = this.getLocation('uSpotlightsPosition')
+		this.__uSpotlightsDirection = this.getLocation('uSpotlightsDirection')
+		this.__uSpotlightsColor = this.getLocation('uSpotlightsColor')
+		if (this.__uSpotlightsCount) {
+			this.gl.uniform1i(this.__uSpotlightsCount, 0)
 		}
 
-		this.projectingLightsMatLocation = this.getLocation('uProjectingLightsMat')
-		this.projectingLightTextureLocation = this.getLocation('uProjectingLightTexture')
-		this.projectingLightsDepthTextureLocation = this.getLocation('uProjectingLightDepthTexture')
+		this.__uProjectingLightsMat = this.getLocation('uProjectingLightsMat')
+		this.__uProjectingLightTexture = this.getLocation('uProjectingLightTexture')
+		this.__uProjectingLightDepthTexture = this.getLocation('uProjectingLightDepthTexture')
 
-		this.sunMatLocation = this.getLocation('uSunMat')
-		this.sunDepthTextureLocation = this.getLocation('uSunDepthTexture')
+		this.__uSunMat = this.getLocation('uSunMat')
+		this.__uSunDepthTexture = this.getLocation('uSunDepthTexture')
 	}
 
-	public getLocation(name: string): WebGLUniformLocation {
+	protected getLocation(name: string): WebGLUniformLocation {
 		return this.gl.getUniformLocation(this.program, name)
 	}
 
@@ -148,23 +150,23 @@ export class Shader {
 
 	public loadParameters() {}
 
-	public loadPerspective(perspective: Matrix4) {
-		this.gl.uniformMatrix4fv(this.projectionMatUniformLocation, false, perspective)
+	public loadPerspectiveMatrix(perspective: Matrix4) {
+		this.gl.uniformMatrix4fv(this.__uProjectionMat, false, perspective)
 	}
 
-	public loadView(viewMatrix: Matrix4) {
-		this.gl.uniformMatrix4fv(this.viewMatUniformLocation, false, viewMatrix)
+	public loadViewMatrix(viewMatrix: Matrix4) {
+		this.gl.uniformMatrix4fv(this.__uViewMat, false, viewMatrix)
 	}
 
 	public loadObjectMatrix(objectMatrix: Matrix4) {
-		this.gl.uniformMatrix4fv(this.objMatUniformLocation, false, objectMatrix)
+		this.gl.uniformMatrix4fv(this.__uObjectMat, false, objectMatrix)
 	}
 
 	public loadDirectionalLights(lights: DirectionalLight[]) {
-		if (this.directionalLightsCountLocation === null) {
+		if (this.__uDirectionalLightsCount === null) {
 			return
 		}
-		this.gl.uniform1i(this.directionalLightsCountLocation, lights.length)
+		this.gl.uniform1i(this.__uDirectionalLightsCount, lights.length)
 		if (lights.length === 0) {
 			return
 		}
@@ -174,15 +176,15 @@ export class Shader {
 			directions.push(...light.getDirection())
 			colors.push(...light.getColor())
 		})
-		this.gl.uniform3fv(this.directionalLightsDirectionLocation, new Float32Array(directions))
-		this.gl.uniform3fv(this.directionalLightsColorLocation, new Float32Array(colors))
+		this.gl.uniform3fv(this.__uDirectionalLightsDirection, new Float32Array(directions))
+		this.gl.uniform3fv(this.__uDirectionalLightsColor, new Float32Array(colors))
 	}
 
 	public loadSpotlights(lights: Spotlight[]) {
-		if (this.spotlightsCountLocation === null) {
+		if (this.__uSpotlightsCount === null) {
 			return
 		}
-		this.gl.uniform1i(this.spotlightsCountLocation, lights.length)
+		this.gl.uniform1i(this.__uSpotlightsCount, lights.length)
 		if (lights.length === 0) {
 			return
 		}
@@ -194,15 +196,15 @@ export class Shader {
 			directions.push(...light.getDirection())
 			colors.push(...light.getColor())
 		})
-		this.gl.uniform3fv(this.spotlightsPositionLocation, new Float32Array(positions))
-		this.gl.uniform3fv(this.spotlightsDirectionLocation, new Float32Array(directions))
-		this.gl.uniform3fv(this.spotlightsColorLocation, new Float32Array(colors))
+		this.gl.uniform3fv(this.__uSpotlightsPosition, new Float32Array(positions))
+		this.gl.uniform3fv(this.__uSpotlightsDirection, new Float32Array(directions))
+		this.gl.uniform3fv(this.__uSpotlightsColor, new Float32Array(colors))
 	}
 
 	public loadProjectingLights(matrices: Matrix4[], texture: Texture) {
 		if (
-			this.projectingLightsMatLocation === null ||
-			this.projectingLightTextureLocation === null ||
+			this.__uProjectingLightsMat === null ||
+			this.__uProjectingLightTexture === null ||
 			!texture
 		) {
 			return
@@ -214,13 +216,13 @@ export class Shader {
 		matrices.forEach((mat) => {
 			m.push(...mat)
 		})
-		this.gl.uniformMatrix4fv(this.projectingLightsMatLocation, false, m)
-		this.gl.uniform1i(this.projectingLightTextureLocation, this.textureCount)
+		this.gl.uniformMatrix4fv(this.__uProjectingLightsMat, false, m)
+		this.gl.uniform1i(this.__uProjectingLightTexture, this.textureCount)
 		texture.bind(this.gl, this.textureCount)
 	}
 
 	public loadProjectingLightsDepthTextures(depthTextures: Texture[]) {
-		if (this.projectingLightsDepthTextureLocation === null) {
+		if (this.__uProjectingLightDepthTexture === null) {
 			return
 		}
 		if (depthTextures.length > 2) {
@@ -228,33 +230,30 @@ export class Shader {
 		}
 
 		let baseTextureUnit = this.textureCount
-		if (this.projectingLightsMatLocation !== null && this.projectingLightTextureLocation !== null) {
+		if (this.__uProjectingLightsMat !== null && this.__uProjectingLightTexture !== null) {
 			baseTextureUnit += 1
 		}
 
-		this.gl.uniform1iv(this.projectingLightsDepthTextureLocation, [
-			baseTextureUnit,
-			baseTextureUnit + 1
-		])
+		this.gl.uniform1iv(this.__uProjectingLightDepthTexture, [baseTextureUnit, baseTextureUnit + 1])
 		depthTextures.forEach((texture, i) => texture.bind(this.gl, baseTextureUnit + i))
 	}
 
 	public loadSun(matrix: Matrix4, depthTexture: Texture) {
-		if (this.sunMatLocation === null || this.sunDepthTextureLocation === null) {
+		if (this.__uSunMat === null || this.__uSunDepthTexture === null) {
 			return
 		}
 
 		let baseTextureUnit = this.textureCount
-		if (this.projectingLightsMatLocation !== null && this.projectingLightTextureLocation !== null) {
+		if (this.__uProjectingLightsMat !== null && this.__uProjectingLightTexture !== null) {
 			baseTextureUnit += 1
 		}
-		if (this.projectingLightsDepthTextureLocation !== null) {
+		if (this.__uProjectingLightDepthTexture !== null) {
 			baseTextureUnit += 2
 		}
 
-		this.gl.uniformMatrix4fv(this.sunMatLocation, false, matrix)
+		this.gl.uniformMatrix4fv(this.__uSunMat, false, matrix)
 
-		this.gl.uniform1i(this.sunDepthTextureLocation, baseTextureUnit)
+		this.gl.uniform1i(this.__uSunDepthTexture, baseTextureUnit)
 		depthTexture.bind(this.gl, baseTextureUnit)
 	}
 

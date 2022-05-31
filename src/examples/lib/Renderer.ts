@@ -14,37 +14,41 @@ const SUN_SIZE = 1024 * 2
 export class Renderer {
 	private gl: WebGL2RenderingContext
 	private entities: EntityInterface[] = []
-	private shadowPassShader: ShadowPassShader
+	private shadowPassShader: ShadowPassShader | null
 
-	private projectorFrameBuffers: WebGLFramebuffer[]
-	private projectorFrameBuffersTextures: Texture[]
+	private projectorsFBOs: WebGLFramebuffer[]
+	private projectorsFBOTextures: Texture[]
 
 	private frameCounter: number = 0
 	private perspectiveMatrix: Matrix4
 	private viewMatrix: Matrix4
+
 	private directionalLights: DirectionalLight[] = []
 	private spotlights: Spotlight[] = []
+
 	private lightProjectors: Matrix4[]
 	private lightProjectorTexture: Texture
-	private projectorPositions: Vector3[]
-	private projectorDepths: number[]
 
 	private sunMatrix: Matrix4
-	private sunFrameBuffer: WebGLFramebuffer
+	private sunFBO: WebGLFramebuffer
 	private sunDepthTexture: Texture
 
-	public constructor(gl: WebGL2RenderingContext, shadowPassShader: ShadowPassShader) {
+	public constructor(gl: WebGL2RenderingContext, shadowPassShader: ShadowPassShader | null) {
 		this.gl = gl
 		this.shadowPassShader = shadowPassShader
+
+		if (shadowPassShader === null) {
+			return
+		}
 
 		const depth1 = this.generateDepthTexture(PROJECTOR_SIZE)
 		const depth2 = this.generateDepthTexture(PROJECTOR_SIZE)
 		const depth3 = this.generateDepthTexture(SUN_SIZE)
 
-		this.projectorFrameBuffers = [depth1[0], depth2[0]]
-		this.projectorFrameBuffersTextures = [depth1[1], depth2[1]]
+		this.projectorsFBOs = [depth1[0], depth2[0]]
+		this.projectorsFBOTextures = [depth1[1], depth2[1]]
 
-		this.sunFrameBuffer = depth3[0]
+		this.sunFBO = depth3[0]
 		this.sunDepthTexture = depth3[1]
 	}
 
@@ -180,14 +184,6 @@ export class Renderer {
 		return this.lightProjectors
 	}
 
-	public setLightProjectorsPosition(positions: Vector3[]) {
-		this.projectorPositions = positions
-	}
-
-	public setLightProjectorsDepth(depths: number[]) {
-		this.projectorDepths = depths
-	}
-
 	public setLightProjectorTexture(lightProjectorTexture: Texture) {
 		this.lightProjectorTexture = lightProjectorTexture
 	}
@@ -196,16 +192,8 @@ export class Renderer {
 		return this.lightProjectorTexture
 	}
 
-	public getProjectorDepthTextures() {
-		return this.projectorFrameBuffersTextures
-	}
-
-	public getProjectorPositions() {
-		return this.projectorPositions
-	}
-
-	public getProjectorDepths() {
-		return this.projectorDepths
+	public getProjectorsDepthTextures() {
+		return this.projectorsFBOTextures
 	}
 
 	public getSunMatrix() {
@@ -245,27 +233,29 @@ export class Renderer {
 	}
 
 	public render(camera: Camera) {
-		// Shadow pass
-		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.projectorFrameBuffers[0])
-		this.renderScene(
-			PROJECTOR_SIZE,
-			PROJECTOR_SIZE,
-			this.lightProjectors[0],
-			new Matrix4(),
-			this.shadowPassShader
-		)
+		if (this.shadowPassShader !== null) {
+			// Shadow pass
+			this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.projectorsFBOs[0])
+			this.renderScene(
+				PROJECTOR_SIZE,
+				PROJECTOR_SIZE,
+				this.lightProjectors[0],
+				new Matrix4(),
+				this.shadowPassShader
+			)
 
-		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.projectorFrameBuffers[1])
-		this.renderScene(
-			PROJECTOR_SIZE,
-			PROJECTOR_SIZE,
-			this.lightProjectors[1],
-			new Matrix4(),
-			this.shadowPassShader
-		)
+			this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.projectorsFBOs[1])
+			this.renderScene(
+				PROJECTOR_SIZE,
+				PROJECTOR_SIZE,
+				this.lightProjectors[1],
+				new Matrix4(),
+				this.shadowPassShader
+			)
 
-		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.sunFrameBuffer)
-		this.renderScene(SUN_SIZE, SUN_SIZE, this.sunMatrix, new Matrix4(), this.shadowPassShader)
+			this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.sunFBO)
+			this.renderScene(SUN_SIZE, SUN_SIZE, this.sunMatrix, new Matrix4(), this.shadowPassShader)
+		}
 
 		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null)
 		this.renderScene(

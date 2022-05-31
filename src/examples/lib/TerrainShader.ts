@@ -3,26 +3,26 @@ import { Texture } from './Texture'
 
 export class TerrainShader extends Shader {
 	private blendMapTexture: Texture
-	private baseTexture: Texture
-	private redTexture: Texture
-	private greenTexture: Texture
-	private blueTexture: Texture
+	private base_Tex: Texture
+	private r_Tex: Texture
+	private g_Tex: Texture
+	private b_Tex: Texture
 
-	private baseNormalTexture: Texture
-	private redNormalTexture: Texture
-	private greenNormalTexture: Texture
-	private blueNormalTexture: Texture
+	private base_NormalTex: Texture
+	private r_NormalTex: Texture
+	private g_NormalTex: Texture
+	private b_NormalTex: Texture
 
-	private baseRoughnessTexture: Texture
-	private redRoughnessTexture: Texture
-	private greenRoughnessTexture: Texture
-	private blueRoughnessTexture: Texture
+	private base_RoughTex: Texture
+	private r_RoughTex: Texture
+	private g_RoughTex: Texture
+	private b_RoughTex: Texture
 
-	private blendMapTexLocation: WebGLUniformLocation
-	private baseTexLocation: WebGLUniformLocation
-	private redTexLocation: WebGLUniformLocation
-	private greenTexLocation: WebGLUniformLocation
-	private blueTexLocation: WebGLUniformLocation
+	private __uBlendMapTexture: WebGLUniformLocation
+	private __uBaseTexture: WebGLUniformLocation
+	private __uRedTexture: WebGLUniformLocation
+	private __uGreenTexture: WebGLUniformLocation
+	private __uBlueTexture: WebGLUniformLocation
 
 	private strippedDown: boolean
 
@@ -37,12 +37,12 @@ export class TerrainShader extends Shader {
 		redNormalTexture: Texture,
 		greenNormalTexture: Texture,
 		blueNormalTexture: Texture,
-		baseRoughnessTexture: Texture,
-		redRoughnessTexture: Texture,
-		greenRoughnessTexture: Texture,
-		blueRoughnessTexture: Texture
+		baseRoughTex: Texture,
+		redRoughTex: Texture,
+		greenRoughTex: Texture,
+		blueRoughTex: Texture
 	) {
-		const strippedDown = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS) < 16
+		const strippedDown = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS) < 17
 		if (strippedDown) {
 			console.log('GPU has not enough texture units, fallbacking to simpler terrain')
 			super(
@@ -56,63 +56,63 @@ export class TerrainShader extends Shader {
 		this.strippedDown = strippedDown
 
 		this.blendMapTexture = blendMapTexture
-		this.baseTexture = baseTexture
-		this.redTexture = redTexture
-		this.greenTexture = greenTexture
-		this.blueTexture = blueTexture
+		this.base_Tex = baseTexture
+		this.r_Tex = redTexture
+		this.g_Tex = greenTexture
+		this.b_Tex = blueTexture
 
-		this.baseNormalTexture = baseNormalTexture
-		this.redNormalTexture = redNormalTexture
-		this.greenNormalTexture = greenNormalTexture
-		this.blueNormalTexture = blueNormalTexture
+		this.base_NormalTex = baseNormalTexture
+		this.r_NormalTex = redNormalTexture
+		this.g_NormalTex = greenNormalTexture
+		this.b_NormalTex = blueNormalTexture
 
-		this.baseRoughnessTexture = baseRoughnessTexture
-		this.redRoughnessTexture = redRoughnessTexture
-		this.greenRoughnessTexture = greenRoughnessTexture
-		this.blueRoughnessTexture = blueRoughnessTexture
+		this.base_RoughTex = baseRoughTex
+		this.r_RoughTex = redRoughTex
+		this.g_RoughTex = greenRoughTex
+		this.b_RoughTex = blueRoughTex
 	}
 
 	protected async _init(): Promise<void> {
 		await super._init()
 
-		this.blendMapTexLocation = this.gl.getUniformLocation(this.program, 'uBlendMapTexture')
-		this.baseTexLocation = this.gl.getUniformLocation(this.program, 'uBaseTexture')
-		this.redTexLocation = this.gl.getUniformLocation(this.program, 'uRedTexture')
-		this.greenTexLocation = this.gl.getUniformLocation(this.program, 'uGreenTexture')
-		this.blueTexLocation = this.gl.getUniformLocation(this.program, 'uBlueTexture')
+		this.__uBlendMapTexture = this.getLocation('uBlendMapTexture')
+		this.__uBaseTexture = this.getLocation('uBaseTexture')
+		this.__uRedTexture = this.getLocation('uRedTexture')
+		this.__uGreenTexture = this.getLocation('uGreenTexture')
+		this.__uBlueTexture = this.getLocation('uBlueTexture')
 
 		if (this.strippedDown) {
-			this.gl.uniform1i(this.blendMapTexLocation, 0)
-			this.gl.uniform1i(this.baseTexLocation, 1)
-			this.gl.uniform1i(this.redTexLocation, 2)
-			this.gl.uniform1i(this.greenTexLocation, 3)
-			this.gl.uniform1i(this.blueTexLocation, 4)
+			this.gl.uniform1i(this.__uBlendMapTexture, 0)
+			this.gl.uniform1i(this.__uBaseTexture, 1)
+			this.gl.uniform1i(this.__uRedTexture, 2)
+			this.gl.uniform1i(this.__uGreenTexture, 3)
+			this.gl.uniform1i(this.__uBlueTexture, 4)
 			this.textureCount = 5
 		} else {
-			this.gl.uniform1i(this.blendMapTexLocation, 0)
-			this.gl.uniform1iv(this.baseTexLocation, [1, 5, 9])
-			this.gl.uniform1iv(this.redTexLocation, [2, 6, 10])
-			this.gl.uniform1iv(this.greenTexLocation, [3, 7, 11])
-			this.gl.uniform1iv(this.blueTexLocation, [4, 8, 12])
+			this.gl.uniform1i(this.__uBlendMapTexture, 0)
+			this.gl.uniform1iv(this.__uBaseTexture, [1, 5, 9])
+			this.gl.uniform1iv(this.__uRedTexture, [2, 6, 10])
+			this.gl.uniform1iv(this.__uGreenTexture, [3, 7, 11])
+			this.gl.uniform1iv(this.__uBlueTexture, [4, 8, 12])
 			this.textureCount = 13
 		}
 	}
 
 	public loadParameters(): void {
 		this.blendMapTexture.bind(this.gl, 0)
-		this.baseTexture.bind(this.gl, 1)
-		this.redTexture.bind(this.gl, 2)
-		this.greenTexture.bind(this.gl, 3)
-		this.blueTexture.bind(this.gl, 4)
+		this.base_Tex.bind(this.gl, 1)
+		this.r_Tex.bind(this.gl, 2)
+		this.g_Tex.bind(this.gl, 3)
+		this.b_Tex.bind(this.gl, 4)
 		if (!this.strippedDown) {
-			this.baseNormalTexture.bind(this.gl, 5)
-			this.redNormalTexture.bind(this.gl, 6)
-			this.greenNormalTexture.bind(this.gl, 7)
-			this.blueNormalTexture.bind(this.gl, 8)
-			this.baseRoughnessTexture.bind(this.gl, 9)
-			this.redRoughnessTexture.bind(this.gl, 10)
-			this.greenRoughnessTexture.bind(this.gl, 11)
-			this.blueRoughnessTexture.bind(this.gl, 12)
+			this.base_NormalTex.bind(this.gl, 5)
+			this.r_NormalTex.bind(this.gl, 6)
+			this.g_NormalTex.bind(this.gl, 7)
+			this.b_NormalTex.bind(this.gl, 8)
+			this.base_RoughTex.bind(this.gl, 9)
+			this.r_RoughTex.bind(this.gl, 10)
+			this.g_RoughTex.bind(this.gl, 11)
+			this.b_RoughTex.bind(this.gl, 12)
 		}
 	}
 }

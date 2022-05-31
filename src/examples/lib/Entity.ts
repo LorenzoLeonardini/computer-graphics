@@ -236,15 +236,15 @@ export class Entity extends EntityKernel implements EntityInterface {
 		shader.bind()
 		if (shader.lastFrameUniformLoaded !== renderer.getFrameCounter()) {
 			shader.lastFrameUniformLoaded = renderer.getFrameCounter()
-			shader.loadPerspective(renderer.getPerspectiveMatrix())
-			shader.loadView(renderer.getViewMatrix())
+			shader.loadPerspectiveMatrix(renderer.getPerspectiveMatrix())
+			shader.loadViewMatrix(renderer.getViewMatrix())
 			shader.loadDirectionalLights(renderer.getDirectionalLights())
 			shader.loadSpotlights(renderer.getSpotights())
 			shader.loadProjectingLights(
 				renderer.getLightProjectors(),
 				renderer.getLightProjectorTexture()
 			)
-			shader.loadProjectingLightsDepthTextures(renderer.getProjectorDepthTextures())
+			shader.loadProjectingLightsDepthTextures(renderer.getProjectorsDepthTextures())
 			shader.loadSun(renderer.getSunMatrix(), renderer.getSunDepthTexture())
 		}
 
