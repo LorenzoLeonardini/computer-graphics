@@ -3,8 +3,9 @@ import { Entity, EntityTree } from '../lib/Entity'
 import { FlatShader } from '../lib/FlatShader'
 import { InputHandler } from '../lib/InputHandler'
 import { Matrix4 } from '../lib/Matrix'
+import { loadObj } from '../lib/ObjectLoader'
 import { OBJModel } from '../lib/OBJModel'
-import { TexturedShader } from '../lib/TexturedShader'
+import { Shader } from '../lib/Shader'
 import { Vector3, Vector4 } from '../lib/Vector'
 
 const ENGINE_POWER: number = 0.004
@@ -13,8 +14,8 @@ const BRAKES = -0.0027
 const FRICTION: number = -0.018
 const DRAG: number = -0.0002
 
-const WHEELS_DISTANCE = 0.9
-const WHEELS_WIDTH = 1
+const WHEELS_DISTANCE = 2.9
+const WHEELS_WIDTH = 1.7
 
 export class Car extends EntityTree {
 	private wheelTurning: number = 0
@@ -26,36 +27,31 @@ export class Car extends EntityTree {
 
 	private headlightProjectors: [Camera, Camera]
 
-	private wheels: Entity[]
+	private wheels: EntityTree[]
 
 	public constructor(
 		gl: WebGL2RenderingContext,
 		cubeModel: OBJModel,
+		carBodyMaterial: Shader,
 		wheelModel: OBJModel,
-		wheelShader: TexturedShader
+		wheelShader: Shader,
+		tireModel: OBJModel,
+		tireShader: Shader
 	) {
-		let carBodyMaterial = new FlatShader(gl, new Vector3(0.8, 0.15, 0.15))
-
-		let carBottomBody = new Entity(cubeModel, carBodyMaterial)
-		carBottomBody.setScaleX(0.5)
-		carBottomBody.setScaleY(0.25)
-		carBottomBody.setScaleZ(0.8)
-		carBottomBody.moveY(0.45)
-
-		let carTopBody = new Entity(cubeModel, carBodyMaterial)
-		carTopBody.setScaleX(0.5)
-		carTopBody.setScaleY(0.15)
-		carTopBody.setScaleZ(0.625)
-		carTopBody.moveY(0.85)
-		carTopBody.moveZ(0.8 - 0.625)
+		let carBody = new Entity(cubeModel, carBodyMaterial)
+		carBody.moveY(0.65)
+		carBody.moveZ(-0.05)
 
 		let wheels = Array(4)
 			.fill(0)
 			.map((_) => {
-				let wheel = new Entity(wheelModel, wheelShader)
+				let wheelRim = new Entity(wheelModel, wheelShader)
+				let tire = new Entity(tireModel, tireShader)
+
+				let wheel = new EntityTree([wheelRim, tire])
 				wheel.setRotationZ(Math.PI / 2)
-				wheel.setScale(0.8)
-				wheel.setPositionY(0.2)
+				wheel.setScale(1.05)
+				wheel.setPositionY(0.3)
 				return wheel
 			})
 
@@ -73,13 +69,13 @@ export class Car extends EntityTree {
 		wheels[3].setPositionZ(WHEELS_DISTANCE / 2)
 		wheels[3].rotateYAroundOrigin(Math.PI)
 
-		super([carBottomBody, carTopBody, ...wheels])
-		this.setScale(0.15)
+		super([carBody, ...wheels])
+		this.setScale(0.1)
 		this.wheels = wheels
 
 		this.headlightProjectors = [new Camera(1, 1, 0.2, 32), new Camera(1, 1, 0.2, 32)]
-		this.headlightProjectors[0].position(0.4, 0.52, 0.8)
-		this.headlightProjectors[0].position(-0.4, 0.52, 0.8)
+		this.headlightProjectors[0].position(0.55, 0.8, -2.2)
+		this.headlightProjectors[0].position(-0.55, 0.8, -2.2)
 	}
 
 	public getSpeed(): number {

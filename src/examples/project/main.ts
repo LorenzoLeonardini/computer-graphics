@@ -59,17 +59,21 @@ export async function setupWhatToDraw() {
 	objects.set('plane', new OBJModel(gl, await loadObj('/assets/plane.obj')))
 
 	// car
-	textures.set('wheel', new Texture(gl, '/assets/wheel.jpg'))
 	textures.set('carHeadlight', new Texture(gl, '/assets/car_headlight.png'))
+	textures.set('car', new Texture(gl, '/assets/car.png', false))
 
-	objects.set('cube', new OBJModel(gl, await loadObj('/assets/cube.obj')))
+	objects.set('car', new OBJModel(gl, await loadObj('/assets/car.obj')))
 	objects.set('wheel', new OBJModel(gl, await loadObj('/assets/wheel.obj')))
+	objects.set('tire', new OBJModel(gl, await loadObj('/assets/tire.obj')))
 
 	car = new Car(
 		gl,
-		objects.get('cube'),
+		objects.get('car'),
+		new TexturedShader(gl, textures.get('car')),
 		objects.get('wheel'),
-		new TexturedShader(gl, textures.get('wheel'))
+		new FlatShader(gl, new Vector3(0.7, 0.7, 0.7)),
+		objects.get('tire'),
+		new FlatShader(gl, new Vector3(0.2, 0.2, 0.2))
 	)
 
 	// buildings
