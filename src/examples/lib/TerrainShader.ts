@@ -42,7 +42,7 @@ export class TerrainShader extends Shader {
 		greenRoughTex: Texture,
 		blueRoughTex: Texture
 	) {
-		const strippedDown = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS) < 17
+		const strippedDown = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS) < 17
 		if (strippedDown) {
 			console.log('GPU has not enough texture units, fallbacking to simpler terrain')
 			super(
